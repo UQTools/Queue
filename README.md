@@ -1,2 +1,3 @@
-# queue
-A simple queueing system to manage student questions in practicals.
+# Q
+A simple Q(ueue) to manage students in practical sessions
+
