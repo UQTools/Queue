@@ -2,7 +2,7 @@ import "./config";
 import express, { Express, Response } from "express";
 import { createServer } from "http";
 
-import asyncHandler from "express-async-handler";
+// import asyncHandler from "express-async-handler";
 // import { uqAuthMiddleware } from "./auth/uqAuthMiddleware";
 import cors from "cors";
 import * as path from "path";
