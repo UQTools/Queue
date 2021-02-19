@@ -17,7 +17,7 @@ type Props = {
     quickDescription: string;
     examples: string[];
     theme: QueueTheme;
-    studentList: Array<any>
+    studentList: Array<any>;
 };
 
 export const Queue: React.FC<Props> = ({
@@ -44,7 +44,6 @@ export const Queue: React.FC<Props> = ({
                     <ListItem>{example}</ListItem>
                 ))}
             </UnorderedList>
-
         </HStack>
     );
 };
