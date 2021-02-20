@@ -23,6 +23,10 @@ export class Queue extends BaseEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
+    @Field()
+    @Column()
+    name: string;
+
     @Field(() => [String])
     @Column("varchar", { array: true, default: () => "array[]::varchar[]" })
     examples: Array<string>;
@@ -57,8 +61,4 @@ export class Queue extends BaseEntity {
     @Field()
     @Column({ default: false })
     clearAfterMidnight: boolean;
-
-    @Field()
-    @Column({ type: "timestamp without time zone" })
-    lastAccessed: Date;
 }

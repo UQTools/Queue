@@ -1,17 +1,42 @@
 import {
     Arg,
     Ctx,
+    Field,
     FieldResolver,
+    InputType,
     Mutation,
     Resolver,
     Root,
 } from "type-graphql";
-import { CourseUserMeta, Question, Queue, User } from "../entities";
+import { CourseUserMeta, Question, Queue, Room, User } from "../entities";
 import { MyContext } from "../types/context";
 import { getRepository } from "typeorm";
 import { updatedQueue } from "../utils/queue";
 import { QuestionStatus } from "../types/question";
 import { permissionDeniedMsg } from "../../constants";
+import { QueueAction, QueueSortType, QueueTheme } from "../types/queue";
+import { getCourseStaff } from "../utils/course-staff";
+
+@InputType()
+class QueueInput {
+    @Field()
+    name: string;
+
+    @Field(() => [String])
+    examples: string[];
+
+    @Field(() => QueueTheme)
+    theme: QueueTheme;
+
+    @Field(() => QueueSortType)
+    sortedBy: QueueSortType;
+
+    @Field(() => [QueueAction])
+    actions: QueueAction[];
+
+    @Field()
+    clearAfterMidnight: boolean;
+}
 
 @Resolver(() => Queue)
 export class QueueResolver {
@@ -124,5 +149,23 @@ export class QueueResolver {
         return (await queue.questions).filter(
             (question) => question.status === QuestionStatus.OPEN
         );
+    }
+
+    @Mutation(() => Queue)
+    async createQueue(
+        @Arg("roomId") roomId: string,
+        @Arg("queueInput", () => QueueInput) queueInput: QueueInput,
+        @Ctx() { req }: MyContext
+    ) {
+        let room: Room;
+        try {
+            room = await Room.findOneOrFail(roomId);
+        } catch (e) {
+            throw new Error("Cannot find room");
+        }
+        await getCourseStaff(room.courseId, req.user.id);
+        const newQueue = Queue.create(queueInput);
+        newQueue.room = Promise.resolve(room);
+        return await newQueue.save();
     }
 }
