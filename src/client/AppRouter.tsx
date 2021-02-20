@@ -10,7 +10,7 @@ export const AppRouter: React.FunctionComponent<{}> = () => {
             <NavBar />
             <Switch>
                 <Route path="/" component={HomePageContainer} exact />
-                <Route path="/:courseId">
+                <Route path="/:courseCode">
                     <CoursePageContainer />
                 </Route>
             </Switch>

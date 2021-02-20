@@ -56,6 +56,7 @@ export type WeeklyEvent = {
 export type Queue = {
   __typename?: 'Queue';
   id: Scalars['String'];
+  name: Scalars['String'];
   examples: Array<Scalars['String']>;
   theme: QueueTheme;
   sortedBy: QueueSortType;
@@ -63,7 +64,6 @@ export type Queue = {
   room: Room;
   questions: Array<Question>;
   clearAfterMidnight: Scalars['Boolean'];
-  lastAccessed: Scalars['DateTime'];
   activeQuestions: Array<Question>;
 };
 
@@ -163,8 +163,11 @@ export type Mutation = {
   __typename?: 'Mutation';
   askQuestion: Question;
   removeQuestion: Question;
+  createQueue: Queue;
   createCourse: Course;
   addStaff: Array<CourseStaff>;
+  createRoom: Room;
+  updateRoom: Room;
 };
 
 
@@ -180,6 +183,12 @@ export type MutationRemoveQuestionArgs = {
 };
 
 
+export type MutationCreateQueueArgs = {
+  queueInput: QueueInput;
+  roomId: Scalars['String'];
+};
+
+
 export type MutationCreateCourseArgs = {
   courseInput: CourseInput;
 };
@@ -191,9 +200,44 @@ export type MutationAddStaffArgs = {
   courseId: Scalars['String'];
 };
 
+
+export type MutationCreateRoomArgs = {
+  roomInput: RoomInput;
+  courseId: Scalars['String'];
+};
+
+
+export type MutationUpdateRoomArgs = {
+  roomInput: RoomInput;
+  roomId: Scalars['String'];
+};
+
+export type QueueInput = {
+  name: Scalars['String'];
+  examples: Array<Scalars['String']>;
+  theme: QueueTheme;
+  sortedBy: QueueSortType;
+  actions: Array<QueueAction>;
+  clearAfterMidnight: Scalars['Boolean'];
+};
+
 export type CourseInput = {
   code: Scalars['String'];
   title: Scalars['String'];
+};
+
+export type RoomInput = {
+  name: Scalars['String'];
+  capacity: Scalars['Int'];
+  enforceCapacity: Scalars['Boolean'];
+  manuallyDisabled: Scalars['Boolean'];
+  activeTimes: Array<EventInput>;
+};
+
+export type EventInput = {
+  startTime: Scalars['Float'];
+  endTime: Scalars['Float'];
+  day: Scalars['Int'];
 };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;

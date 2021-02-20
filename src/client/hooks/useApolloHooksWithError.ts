@@ -9,7 +9,7 @@ import {
 import { useContext, useEffect, useMemo } from "react";
 import { ErrorContext } from "../utils/errors";
 
-export const useApolloHooksWithError = <T, S>(
+export const useQueryWithError = <T, S>(
     useApolloQuery: (baseOptions: QueryHookOptions<T, S>) => QueryResult<T, S>,
     args?: S
 ) => {
