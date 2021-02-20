@@ -5,6 +5,8 @@
         "node": true
     },
     "extends": [
+        "plugin:react/recommended",
+        "standard",
         "eslint:recommended",
         "react-app",
         "prettier",
@@ -23,11 +25,11 @@
     },
     "plugins": [
         "react",
-        "@typescript-eslint",
-        "prettier"
+        "@typescript-eslint"
     ],
     "rules": {
         "semi": ["warn", "always"],
-        "quotes": ["warn", "double"]
+        "quotes": ["warn", "double"],
+        "react/prop-types": 0
     }
 }

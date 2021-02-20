@@ -57,6 +57,7 @@ export type Queue = {
   __typename?: 'Queue';
   id: Scalars['String'];
   name: Scalars['String'];
+  shortDescription: Scalars['String'];
   examples: Array<Scalars['String']>;
   theme: QueueTheme;
   sortedBy: QueueSortType;
@@ -164,6 +165,7 @@ export type Mutation = {
   askQuestion: Question;
   removeQuestion: Question;
   createQueue: Queue;
+  updateQueue: Queue;
   createCourse: Course;
   addStaff: Array<CourseStaff>;
   createRoom: Room;
@@ -186,6 +188,12 @@ export type MutationRemoveQuestionArgs = {
 export type MutationCreateQueueArgs = {
   queueInput: QueueInput;
   roomId: Scalars['String'];
+};
+
+
+export type MutationUpdateQueueArgs = {
+  queueInput: QueueInput;
+  queueId: Scalars['String'];
 };
 
 
@@ -284,12 +292,17 @@ export type GetRoomByIdQuery = (
     & Pick<Room, 'id' | 'name'>
     & { queues: Array<(
       { __typename?: 'Queue' }
+      & Pick<Queue, 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme'>
       & { activeQuestions: Array<(
         { __typename?: 'Question' }
         & Pick<Question, 'status' | 'createdTime'>
         & { op: (
           { __typename?: 'User' }
           & Pick<User, 'name' | 'username' | 'email'>
+          & { courseMetas: Array<(
+            { __typename?: 'CourseUserMeta' }
+            & Pick<CourseUserMeta, 'questionsAsked'>
+          )> }
         ), claimer?: Maybe<(
           { __typename?: 'User' }
           & Pick<User, 'name' | 'username' | 'email'>
@@ -380,11 +393,19 @@ export const GetRoomByIdDocument = gql`
     id
     name
     queues {
+      name
+      shortDescription
+      examples
+      actions
+      theme
       activeQuestions {
         op {
           name
           username
           email
+          courseMetas {
+            questionsAsked
+          }
         }
         status
         createdTime

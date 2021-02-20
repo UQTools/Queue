@@ -27,6 +27,10 @@ export class Queue extends BaseEntity {
     @Column()
     name: string;
 
+    @Field()
+    @Column()
+    shortDescription: string;
+
     @Field(() => [String])
     @Column("varchar", { array: true, default: () => "array[]::varchar[]" })
     examples: Array<string>;

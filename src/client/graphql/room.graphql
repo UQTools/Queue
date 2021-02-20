@@ -10,11 +10,19 @@ query GetRoomById($roomId: String!) {
         id
         name
         queues {
+            name
+            shortDescription
+            examples
+            actions
+            theme
             activeQuestions {
                 op {
                     name
                     username
                     email
+                    courseMetas {
+                        questionsAsked
+                    }
                 }
                 status
                 createdTime

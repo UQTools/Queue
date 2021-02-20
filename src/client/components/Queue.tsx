@@ -7,22 +7,15 @@ import {
     useColorModeValue,
 } from "@chakra-ui/react";
 import React from "react";
-import { QueueTheme } from "../../server/types/queue";
 import { useQueueBgColour, useQueueTextColour } from "../hooks/useQueueColour";
+import { GetRoomByIdQuery } from "../generated/graphql";
+import { ArrayElement } from "../types/helpers";
 
-// TODO: types
-type Props = {
-    id: number;
-    name: string;
-    quickDescription: string;
-    examples: string[];
-    theme: QueueTheme;
-    studentList: Array<any>;
-};
+type Props = ArrayElement<GetRoomByIdQuery["getRoomById"]["queues"]>;
 
 export const Queue: React.FC<Props> = ({
     name,
-    quickDescription,
+    shortDescription,
     examples,
     theme,
 }) => {
@@ -36,12 +29,12 @@ export const Queue: React.FC<Props> = ({
                     {name}
                 </Text>
                 <Text fontSize="3xl" colour={descriptionColour}>
-                    {quickDescription}
+                    {shortDescription}
                 </Text>
             </Box>
             <UnorderedList>
-                {examples.map((example) => (
-                    <ListItem>{example}</ListItem>
+                {examples.map((example, key) => (
+                    <ListItem key={key}>{example}</ListItem>
                 ))}
             </UnorderedList>
         </HStack>
