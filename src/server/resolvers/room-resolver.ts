@@ -84,7 +84,9 @@ export class RoomResolver {
         @Arg("roomInput", () => RoomInput) roomInput: RoomInput,
         @Ctx() { req }: MyContext
     ): Promise<Room> {
-        await getCourseStaff(courseId, req.user.id);
+        if (!req.user.isAdmin) {
+            await getCourseStaff(courseId, req.user.id);
+        }
         const newEvents: WeeklyEvent[] = [];
         for (const { startTime, endTime, day } of roomInput.activeTimes) {
             newEvents.push(
@@ -120,7 +122,9 @@ export class RoomResolver {
         } catch (e) {
             throw new Error("Cannot find room");
         }
-        await getCourseStaff(room.courseId, req.user.id);
+        if (!req.user.isAdmin) {
+            await getCourseStaff(room.courseId, req.user.id);
+        }
         // Remove old events
         const eventsToRemove = await room.activeTimes;
         await WeeklyEvent.remove(eventsToRemove);

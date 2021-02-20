@@ -113,7 +113,10 @@ export class QueueResolver {
             .where("queue.id = :queueId", { queueId: queue.id })
             .getMany();
         // only staff can accept/claim/close questions
-        if (staffMembers.map((staff) => staff.id).includes(user.id)) {
+        if (
+            staffMembers.map((staff) => staff.id).includes(user.id) ||
+            user.isAdmin
+        ) {
             question.status = questionStatus;
             if (questionStatus === QuestionStatus.CLAIMED) {
                 // Claim student
@@ -132,7 +135,11 @@ export class QueueResolver {
                 await courseUserMeta.save();
             }
         } else {
-            if (questionStatus !== QuestionStatus.CLOSED || op.id !== user.id) {
+            if (
+                questionStatus !== QuestionStatus.CLOSED &&
+                op.id !== user.id &&
+                !user.isAdmin
+            ) {
                 throw new Error(permissionDeniedMsg);
             }
             question.status = QuestionStatus.CLOSED;
@@ -159,7 +166,9 @@ export class QueueResolver {
         } catch (e) {
             throw new Error("Cannot find room");
         }
-        await getCourseStaff(room.courseId, req.user.id);
+        if (!req.user.isAdmin) {
+            await getCourseStaff(room.courseId, req.user.id);
+        }
         const newQueue = Queue.create(queueInput);
         newQueue.room = Promise.resolve(room);
         return await newQueue.save();
@@ -178,7 +187,9 @@ export class QueueResolver {
             throw new Error("Cannot find queue");
         }
         const room = await queue.room;
-        await getCourseStaff(room.courseId, req.user.id);
+        if (!req.user.isAdmin) {
+            await getCourseStaff(room.courseId, req.user.id);
+        }
         const {
             name,
             examples,
