@@ -46,6 +46,12 @@ export class Room extends BaseEntity {
     queues: Lazy<Queue[]>;
 
     @Field(() => Course)
-    @ManyToOne(() => Course, (course) => course.rooms, { lazy: true })
+    @ManyToOne(() => Course, (course) => course.rooms, {
+        lazy: true,
+        onDelete: "CASCADE",
+    })
     course: Lazy<Course>;
+
+    @Column()
+    courseId: string;
 }
