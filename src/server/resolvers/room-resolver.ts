@@ -97,7 +97,7 @@ export class RoomResolver {
                 })
             );
         }
-        const savedEvents = WeeklyEvent.save(newEvents);
+        const savedEvents = await WeeklyEvent.save(newEvents);
         const { name, capacity, enforceCapacity, manuallyDisabled } = roomInput;
         const newRoom = Room.create({
             name,
@@ -134,7 +134,7 @@ export class RoomResolver {
         for (const activeTime of roomInput.activeTimes) {
             newEvents.push(WeeklyEvent.create(activeTime));
         }
-        const savedEvents = WeeklyEvent.save(newEvents);
+        const savedEvents = await WeeklyEvent.save(newEvents);
         const { name, capacity, enforceCapacity, manuallyDisabled } = roomInput;
         room.name = name;
         room.capacity = capacity;

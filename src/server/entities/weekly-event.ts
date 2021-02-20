@@ -33,6 +33,9 @@ export class WeeklyEvent extends BaseEntity {
     day: IsoDay;
 
     @Field(() => Room)
-    @ManyToOne(() => Room, (room) => room.activeTimes, { lazy: true })
+    @ManyToOne(() => Room, (room) => room.activeTimes, {
+        lazy: true,
+        onDelete: "CASCADE",
+    })
     room: Lazy<Room>;
 }
