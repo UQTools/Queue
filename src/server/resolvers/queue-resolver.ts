@@ -5,7 +5,6 @@ import { getRepository } from "typeorm";
 import { updatedQueue } from "../utils/queue";
 import { QuestionStatus } from "../types/question";
 import { permissionDeniedMsg } from "../../constants";
-import isSameDay from "date-fns/isSameDay";
 
 @Resolver()
 export class QueueResolver {
@@ -39,26 +38,15 @@ export class QueueResolver {
             opId: req.user.id,
             queueId: queue.id,
         }).save();
-        try {
-            // Update metadata
-            const courseUserMeta = await CourseUserMeta.findOneOrFail({
-                userId: req.user.id,
-                courseId: course.id,
-            });
-            const today = new Date();
-            // If last question asked was yesterday, reset count
-            if (!isSameDay(courseUserMeta.date, today)) {
-                courseUserMeta.date = today;
-                courseUserMeta.questionsAsked = 0;
-            }
-            await courseUserMeta.save();
-        } catch (e) {
+        const courseUserMeta = await CourseUserMeta.findOne({
+            userId: req.user.id,
+        });
+        if (!courseUserMeta) {
             // Create new metadata if none exists
             await CourseUserMeta.create({
                 userId: req.user.id,
                 courseId: course.id,
                 questionsAsked: 0,
-                date: new Date(),
             }).save();
         }
         const newQueue = await Queue.findOneOrFail({ id: queueId });
@@ -69,7 +57,7 @@ export class QueueResolver {
     @Mutation(() => Question)
     async removeQuestion(
         @Arg("questionStatus", () => QuestionStatus)
-            questionStatus: QuestionStatus,
+        questionStatus: QuestionStatus,
         @Arg("questionId") questionId: string,
         @Arg("message", { nullable: true }) message: string | undefined,
         @Ctx() { req }: MyContext

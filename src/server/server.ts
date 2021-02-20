@@ -43,6 +43,7 @@ app.use("*", (_, res: Response) => {
     });
 });
 
+// TODO: clear queue and questions at midnight
 const main = async () => {
     await createConnection(ormconfig);
     const apolloServer = new ApolloServer({

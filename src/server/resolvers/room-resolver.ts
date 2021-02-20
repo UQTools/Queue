@@ -32,6 +32,9 @@ export class RoomResolver {
         });
     }
 
+    /**
+     * This is the main interaction with the client side
+     */
     @Query(() => Room)
     async getRoomById(@Arg("roomId") roomId: string): Promise<Room> {
         try {

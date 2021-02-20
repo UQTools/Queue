@@ -35,10 +35,6 @@ export class CourseUserMeta extends BaseEntity {
     @Column("int")
     questionsAsked: number;
 
-    @Field(() => Date)
-    @Column({ type: "timestamp without time zone" })
-    date: Date;
-
     @Field({ nullable: true })
     @Column({ nullable: true })
     enrolledSession: string;
