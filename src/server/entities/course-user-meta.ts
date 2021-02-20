@@ -25,6 +25,12 @@ export class CourseUserMeta extends BaseEntity {
     @ManyToOne(() => Course, (course) => course.userMetas, { lazy: true })
     course: Lazy<Course>;
 
+    @Column()
+    userId: string;
+
+    @Column()
+    courseId: string;
+
     @Field(() => Int)
     @Column("int")
     questionsAsked: number;
@@ -33,7 +39,7 @@ export class CourseUserMeta extends BaseEntity {
     @Column({ type: "timestamp without time zone" })
     date: Date;
 
-    @Field()
-    @Column()
+    @Field({ nullable: true })
+    @Column({ nullable: true })
     enrolledSession: string;
 }

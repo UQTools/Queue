@@ -1,5 +1,6 @@
 import {
     BaseEntity,
+    Check,
     Column,
     Entity,
     ManyToOne,
@@ -7,10 +8,13 @@ import {
 } from "typeorm";
 import { Lazy } from "../types/query";
 import { Room } from "./room";
-import { Field, ObjectType } from "type-graphql";
+import { Field, Int, ObjectType } from "type-graphql";
+import { IsoDay } from "../types/day";
+import { checkFieldValueInEnum } from "../utils/query";
 
 @ObjectType()
 @Entity()
+@Check(checkFieldValueInEnum(IsoDay, "day", true))
 export class WeeklyEvent extends BaseEntity {
     @Field()
     @PrimaryGeneratedColumn()
@@ -23,6 +27,10 @@ export class WeeklyEvent extends BaseEntity {
     @Field()
     @Column()
     endTime: number;
+
+    @Field(() => Int)
+    @Column("int")
+    day: IsoDay;
 
     @Field(() => Room)
     @ManyToOne(() => Room, (room) => room.activeTimes, { lazy: true })

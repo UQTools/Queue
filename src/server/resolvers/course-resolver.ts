@@ -5,6 +5,7 @@ import { permissionDeniedMsg, redacted } from "../../constants";
 import { CourseStaff } from "../entities/course-staff";
 import { getRepository } from "typeorm";
 import { StaffRole } from "../types/course-staff";
+import { getCourseStaff } from "../utils/course-staff";
 
 @InputType()
 class CourseInput {
@@ -42,15 +43,7 @@ export class CourseResolver {
         @Ctx() { req }: MyContext
     ): Promise<CourseStaff[]> {
         const user = req.user;
-        let courseStaff: CourseStaff;
-        try {
-            courseStaff = await CourseStaff.findOneOrFail({
-                courseId,
-                userId: user.id,
-            });
-        } catch (e) {
-            throw new Error(permissionDeniedMsg);
-        }
+        const courseStaff = await getCourseStaff(courseId, user.id);
         if (
             role === StaffRole.COORDINATOR &&
             !(courseStaff.role === StaffRole.COORDINATOR || user.isAdmin)

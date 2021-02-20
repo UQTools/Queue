@@ -20,6 +20,7 @@
     "graphql": "^15.5.0",
     "graphql-tag": "^2.11.0",
     "identity-obj-proxy": "3.0.0",
+    "node-filter-async": "^2.0.0",
     "pg": "^8.5.1",
     "prompts": "2.4.0",
     "react": "^17.0.1",
