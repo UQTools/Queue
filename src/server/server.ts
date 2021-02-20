@@ -17,6 +17,7 @@ import { CourseResolver } from "./resolvers/course-resolver";
 import { RoomResolver } from "./resolvers/room-resolver";
 import { scheduleJob } from "node-schedule";
 import { endOfDayRule, resetQuestionCount, resetQueues } from "./jobs/queue";
+import { UserResolver } from "./resolvers/user-resolver";
 
 const app: Express = express();
 const server = createServer(app);
@@ -26,40 +27,45 @@ export const io: Server = new Server(server, {
 });
 const port = process.env.PORT || 5000;
 
-// Automatically serve the index.html file from the build folder
-app.set("trust proxy", "loopback");
-app.use(
-    cors({
-        credentials: true,
-        origin: process.env.CORS_ORIGIN,
-    })
-);
-app.use("/", express.static("build/client"));
-
-app.use(asyncHandler(uqAuthMiddleware));
-
-// Catch-all route
-app.use("*", (_, res: Response) => {
-    res.sendFile("index.html", {
-        root: path.resolve("./build", "client"),
-    });
-});
-
-// TODO: clear queue and questions at midnight
 const main = async () => {
     await createConnection(ormconfig);
+    // Automatically serve the index.html file from the build folder
+    app.set("trust proxy", "loopback");
+    app.use(
+        cors({
+            credentials: true,
+            origin: process.env.CORS_ORIGIN,
+        })
+    );
+
+    app.use(asyncHandler(uqAuthMiddleware));
+
+    scheduleJob(endOfDayRule, resetQueues);
+    scheduleJob(endOfDayRule, resetQuestionCount);
+
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [QueueResolver, CourseResolver, RoomResolver],
+            resolvers: [
+                QueueResolver,
+                CourseResolver,
+                RoomResolver,
+                UserResolver,
+            ],
             dateScalarMode: "isoDate",
         }),
         context: ({ req, res }): MyContext => ({ req, res }),
     });
 
-    scheduleJob(endOfDayRule, resetQueues);
-    scheduleJob(endOfDayRule, resetQuestionCount);
-
     apolloServer.applyMiddleware({ app });
+
+    app.use("/", express.static("build/client"));
+
+    // Catch-all route
+    app.use("*", (_, res: Response) => {
+        res.sendFile("index.html", {
+            root: path.resolve("./build", "client"),
+        });
+    });
     server.listen(port, () => {
         console.log(`Listening on port ${port}`);
     });
