@@ -79,7 +79,7 @@ export class RoomResolver {
      * Add a room that has specified weekly active time frames
      */
     @Mutation(() => Room)
-    async addRoom(
+    async createRoom(
         @Arg("courseId") courseId: string,
         @Arg("roomInput", () => RoomInput) roomInput: RoomInput,
         @Ctx() { req }: MyContext
@@ -106,6 +106,38 @@ export class RoomResolver {
         });
         newRoom.activeTimes = savedEvents;
         return await newRoom.save();
+    }
+
+    @Mutation(() => Room)
+    async updateRoom(
+        @Arg("roomId") roomId: string,
+        @Arg("roomInput", () => RoomInput) roomInput: RoomInput,
+        @Ctx() { req }: MyContext
+    ): Promise<Room> {
+        let room;
+        try {
+            room = await Room.findOneOrFail(roomId);
+        } catch (e) {
+            throw new Error("Cannot find room");
+        }
+        await getCourseStaff(room.courseId, req.user.id);
+        // Remove old events
+        const eventsToRemove = await room.activeTimes;
+        await WeeklyEvent.remove(eventsToRemove);
+
+        // Replace with new events
+        const newEvents: WeeklyEvent[] = [];
+        for (const activeTime of roomInput.activeTimes) {
+            newEvents.push(WeeklyEvent.create(activeTime));
+        }
+        const savedEvents = WeeklyEvent.save(newEvents);
+        const { name, capacity, enforceCapacity, manuallyDisabled } = roomInput;
+        room.name = name;
+        room.capacity = capacity;
+        room.enforceCapacity = enforceCapacity;
+        room.manuallyDisabled = manuallyDisabled;
+        room.activeTimes = savedEvents;
+        return await room.save();
     }
 
     /**

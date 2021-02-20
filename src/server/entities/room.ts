@@ -38,6 +38,7 @@ export class Room extends BaseEntity {
     @Field(() => [WeeklyEvent])
     @OneToMany(() => WeeklyEvent, (weeklyEvent) => weeklyEvent.room, {
         lazy: true,
+        onDelete: "CASCADE",
     })
     activeTimes: Lazy<WeeklyEvent[]>;
 

@@ -51,6 +51,9 @@ export class Queue extends BaseEntity {
     @ManyToOne(() => Room, (room) => room.queues, { lazy: true })
     room: Lazy<Room>;
 
+    @Column()
+    roomId: string;
+
     @Field(() => [Question])
     @OneToMany(() => Question, (question) => question.queue, {
         lazy: true,

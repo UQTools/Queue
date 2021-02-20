@@ -11,7 +11,6 @@ import {
 import { CourseUserMeta, Question, Queue, Room, User } from "../entities";
 import { MyContext } from "../types/context";
 import { getRepository } from "typeorm";
-import { updatedQueue } from "../utils/queue";
 import { QuestionStatus } from "../types/question";
 import { permissionDeniedMsg } from "../../constants";
 import { QueueAction, QueueSortType, QueueTheme } from "../types/queue";
@@ -81,8 +80,6 @@ export class QueueResolver {
                 questionsAsked: 0,
             }).save();
         }
-        const newQueue = await Queue.findOneOrFail({ id: queueId });
-        await updatedQueue(newQueue);
         return question;
     }
 
@@ -140,7 +137,6 @@ export class QueueResolver {
             }
             question.status = QuestionStatus.CLOSED;
         }
-        await updatedQueue(queue);
         return await question.save();
     }
 
@@ -167,5 +163,36 @@ export class QueueResolver {
         const newQueue = Queue.create(queueInput);
         newQueue.room = Promise.resolve(room);
         return await newQueue.save();
+    }
+
+    @Mutation(() => Queue)
+    async updateQueue(
+        @Arg("queueId") queueId: string,
+        @Arg("queueInput", () => QueueInput) queueInput: QueueInput,
+        @Ctx() { req }: MyContext
+    ) {
+        let queue: Queue;
+        try {
+            queue = await Queue.findOneOrFail(queueId);
+        } catch (e) {
+            throw new Error("Cannot find queue");
+        }
+        const room = await queue.room;
+        await getCourseStaff(room.courseId, req.user.id);
+        const {
+            name,
+            examples,
+            theme,
+            sortedBy,
+            actions,
+            clearAfterMidnight,
+        } = queueInput;
+        queue.name = name;
+        queue.examples = examples;
+        queue.theme = theme;
+        queue.sortedBy = sortedBy;
+        queue.actions = actions;
+        queue.clearAfterMidnight = clearAfterMidnight;
+        return await queue.save();
     }
 }
