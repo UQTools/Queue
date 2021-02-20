@@ -1,4 +1,11 @@
-import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
+import {
+    Arg,
+    Ctx,
+    FieldResolver,
+    Mutation,
+    Resolver,
+    Root,
+} from "type-graphql";
 import { CourseUserMeta, Question, Queue, User } from "../entities";
 import { MyContext } from "../types/context";
 import { getRepository } from "typeorm";
@@ -6,7 +13,7 @@ import { updatedQueue } from "../utils/queue";
 import { QuestionStatus } from "../types/question";
 import { permissionDeniedMsg } from "../../constants";
 
-@Resolver()
+@Resolver(() => Queue)
 export class QueueResolver {
     @Mutation(() => Question)
     async askQuestion(
@@ -110,5 +117,12 @@ export class QueueResolver {
         }
         await updatedQueue(queue);
         return await question.save();
+    }
+
+    @FieldResolver(() => [Question])
+    async activeQuestions(@Root() queue: Queue): Promise<Question[]> {
+        return (await queue.questions).filter(
+            (question) => question.status === QuestionStatus.OPEN
+        );
     }
 }

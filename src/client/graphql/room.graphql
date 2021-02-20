@@ -1,7 +1,29 @@
 query GetActiveRooms($courseCode: String!) {
     getActiveRooms(courseCode: $courseCode) {
         id
+        name
     }
 }
 
-query GetRoomById()
+query GetRoomById($roomId: String!) {
+    getRoomById(roomId: $roomId) {
+        id
+        name
+        queues {
+            activeQuestions {
+                op {
+                    name
+                    username
+                    email
+                }
+                status
+                createdTime
+                claimer {
+                    name
+                    username
+                    email
+                }
+            }
+        }
+    }
+}

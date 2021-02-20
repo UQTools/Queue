@@ -64,6 +64,7 @@ export type Queue = {
   questions: Array<Question>;
   clearAfterMidnight: Scalars['Boolean'];
   lastAccessed: Scalars['DateTime'];
+  activeQuestions: Array<Question>;
 };
 
 export enum QueueTheme {
@@ -223,8 +224,35 @@ export type GetActiveRoomsQuery = (
   { __typename?: 'Query' }
   & { getActiveRooms: Array<(
     { __typename?: 'Room' }
-    & Pick<Room, 'id'>
+    & Pick<Room, 'id' | 'name'>
   )> }
+);
+
+export type GetRoomByIdQueryVariables = Exact<{
+  roomId: Scalars['String'];
+}>;
+
+
+export type GetRoomByIdQuery = (
+  { __typename?: 'Query' }
+  & { getRoomById: (
+    { __typename?: 'Room' }
+    & Pick<Room, 'id' | 'name'>
+    & { queues: Array<(
+      { __typename?: 'Queue' }
+      & { activeQuestions: Array<(
+        { __typename?: 'Question' }
+        & Pick<Question, 'status' | 'createdTime'>
+        & { op: (
+          { __typename?: 'User' }
+          & Pick<User, 'name' | 'username' | 'email'>
+        ), claimer?: Maybe<(
+          { __typename?: 'User' }
+          & Pick<User, 'name' | 'username' | 'email'>
+        )> }
+      )> }
+    )> }
+  ) }
 );
 
 
@@ -272,6 +300,7 @@ export const GetActiveRoomsDocument = gql`
     query GetActiveRooms($courseCode: String!) {
   getActiveRooms(courseCode: $courseCode) {
     id
+    name
   }
 }
     `;
@@ -301,3 +330,53 @@ export function useGetActiveRoomsLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetActiveRoomsQueryHookResult = ReturnType<typeof useGetActiveRoomsQuery>;
 export type GetActiveRoomsLazyQueryHookResult = ReturnType<typeof useGetActiveRoomsLazyQuery>;
 export type GetActiveRoomsQueryResult = Apollo.QueryResult<GetActiveRoomsQuery, GetActiveRoomsQueryVariables>;
+export const GetRoomByIdDocument = gql`
+    query GetRoomById($roomId: String!) {
+  getRoomById(roomId: $roomId) {
+    id
+    name
+    queues {
+      activeQuestions {
+        op {
+          name
+          username
+          email
+        }
+        status
+        createdTime
+        claimer {
+          name
+          username
+          email
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetRoomByIdQuery__
+ *
+ * To run a query within a React component, call `useGetRoomByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRoomByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRoomByIdQuery({
+ *   variables: {
+ *      roomId: // value for 'roomId'
+ *   },
+ * });
+ */
+export function useGetRoomByIdQuery(baseOptions: Apollo.QueryHookOptions<GetRoomByIdQuery, GetRoomByIdQueryVariables>) {
+        return Apollo.useQuery<GetRoomByIdQuery, GetRoomByIdQueryVariables>(GetRoomByIdDocument, baseOptions);
+      }
+export function useGetRoomByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoomByIdQuery, GetRoomByIdQueryVariables>) {
+          return Apollo.useLazyQuery<GetRoomByIdQuery, GetRoomByIdQueryVariables>(GetRoomByIdDocument, baseOptions);
+        }
+export type GetRoomByIdQueryHookResult = ReturnType<typeof useGetRoomByIdQuery>;
+export type GetRoomByIdLazyQueryHookResult = ReturnType<typeof useGetRoomByIdLazyQuery>;
+export type GetRoomByIdQueryResult = Apollo.QueryResult<GetRoomByIdQuery, GetRoomByIdQueryVariables>;
