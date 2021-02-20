@@ -48,7 +48,10 @@ export class Queue extends BaseEntity {
     room: Lazy<Room>;
 
     @Field(() => [Question])
-    @OneToMany(() => Question, (question) => question.queue)
+    @OneToMany(() => Question, (question) => question.queue, {
+        lazy: true,
+        onDelete: "CASCADE",
+    })
     questions: Lazy<Question[]>;
 
     @Field()

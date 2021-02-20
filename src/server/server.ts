@@ -15,6 +15,8 @@ import { uqAuthMiddleware } from "./auth/uqAuthMiddleware";
 import { QueueResolver } from "./resolvers/queue-resolver";
 import { CourseResolver } from "./resolvers/course-resolver";
 import { RoomResolver } from "./resolvers/room-resolver";
+import { scheduleJob } from "node-schedule";
+import { endOfDayRule, resetQuestionCount, resetQueues } from "./jobs/queue";
 
 const app: Express = express();
 const server = createServer(app);
@@ -53,6 +55,10 @@ const main = async () => {
         }),
         context: ({ req, res }): MyContext => ({ req, res }),
     });
+
+    scheduleJob(endOfDayRule, resetQueues);
+    scheduleJob(endOfDayRule, resetQuestionCount);
+
     apolloServer.applyMiddleware({ app });
     server.listen(port, () => {
         console.log(`Listening on port ${port}`);
