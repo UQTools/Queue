@@ -2,15 +2,14 @@ import {
     BaseEntity,
     Column,
     Entity,
-    ManyToMany,
     OneToMany,
     PrimaryGeneratedColumn,
 } from "typeorm";
-import { User } from "./user";
 import { Lazy } from "../types/query";
 import { CourseUserMeta } from "./course-user-meta";
 import { Room } from "./room";
 import { Field, ObjectType } from "type-graphql";
+import { CourseStaff } from "./course-staff";
 
 @ObjectType()
 @Entity()
@@ -27,9 +26,11 @@ export class Course extends BaseEntity {
     @Column()
     title: string;
 
-    @Field(() => [User])
-    @ManyToMany(() => User, (user) => user.isStaffOf, { lazy: true })
-    staff: Lazy<User[]>;
+    @Field(() => [CourseStaff])
+    @OneToMany(() => CourseStaff, (courseStaff) => courseStaff.course, {
+        lazy: true,
+    })
+    courseStaff: Lazy<CourseStaff[]>;
 
     @Field(() => [CourseUserMeta])
     @OneToMany(() => CourseUserMeta, (courseMeta) => courseMeta.course, {

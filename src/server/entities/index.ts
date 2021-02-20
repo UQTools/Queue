@@ -1,6 +1,7 @@
 import { registerEnumType } from "type-graphql";
 import { QueueAction, QueueSortType, QueueTheme } from "../types/queue";
 import { QuestionStatus } from "../types/question";
+import { StaffRole } from "../types/course-staff";
 
 registerEnumType(QueueTheme, {
     name: "QueueTheme",
@@ -16,6 +17,10 @@ registerEnumType(QueueSortType, {
 
 registerEnumType(QueueAction, {
     name: "QueueAction",
+});
+
+registerEnumType(StaffRole, {
+    name: "StaffRole",
 });
 
 export { Course } from "./course";

@@ -4,6 +4,7 @@ import { MyContext } from "../types/context";
 import { getRepository } from "typeorm";
 import { updatedQueue } from "../utils/queue";
 import { QuestionStatus } from "../types/question";
+import { permissionDeniedMsg } from "../../constants";
 
 @Resolver()
 export class QueueResolver {
@@ -79,9 +80,7 @@ export class QueueResolver {
             }
         } else {
             if (questionStatus !== QuestionStatus.CLOSED || op.id !== user.id) {
-                throw new Error(
-                    "You don't have permission to perform this action"
-                );
+                throw new Error(permissionDeniedMsg);
             }
             question.status = QuestionStatus.CLOSED;
         }

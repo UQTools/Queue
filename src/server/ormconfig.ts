@@ -9,12 +9,14 @@ import {
     User,
     WeeklyEvent,
 } from "./entities";
+import { CourseStaff } from "./entities/course-staff";
 
 export default {
     type: "postgres",
     url: process.env.DB_URL,
     entities: [
         Course,
+        CourseStaff,
         CourseUserMeta,
         Question,
         Queue,

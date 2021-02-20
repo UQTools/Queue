@@ -1,8 +1,4 @@
 import values from "lodash/values";
-import { User } from "../entities";
-import { BaseEntity, FindOneOptions, ObjectID } from "typeorm";
-
-type Constructor<I> = new (...args: any[]) => I;
 
 export const checkFieldValueInEnum = <T extends any>(
     enumType: T,
