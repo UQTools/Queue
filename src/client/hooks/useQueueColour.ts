@@ -1,5 +1,5 @@
 import { useColorModeValue } from "@chakra-ui/react";
-import { QueueTheme } from "../../types/queue";
+import { QueueTheme } from "../../server/types/queue";
 import { useMemo } from "react";
 
 export const useQueueBgColour = (theme: QueueTheme) => {

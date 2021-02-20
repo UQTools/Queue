@@ -7,7 +7,7 @@ import {
     useColorModeValue,
 } from "@chakra-ui/react";
 import React from "react";
-import { QueueTheme } from "../../types/queue";
+import { QueueTheme } from "../../server/types/queue";
 import { useQueueBgColour, useQueueTextColour } from "../hooks/useQueueColour";
 
 // TODO: types

@@ -1,0 +1,7 @@
+query GetActiveRooms($courseCode: String!) {
+    getActiveRooms(courseCode: $courseCode) {
+        id
+    }
+}
+
+query GetRoomById()

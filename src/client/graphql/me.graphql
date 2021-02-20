@@ -1,0 +1,13 @@
+query Me {
+    me {
+        id
+        username
+        name
+        courseStaff {
+            course {
+                code
+            }
+            role
+        }
+    }
+}
