@@ -43,12 +43,14 @@ export class CourseResolver {
         @Ctx() { req }: MyContext
     ): Promise<CourseStaff[]> {
         const user = req.user;
-        const courseStaff = await getCourseStaff(courseId, user.id);
-        if (
-            role === StaffRole.COORDINATOR &&
-            !(courseStaff.role === StaffRole.COORDINATOR || user.isAdmin)
-        ) {
-            throw new Error(permissionDeniedMsg);
+        if (!user.isAdmin) {
+            const courseStaff = await getCourseStaff(courseId, user.id);
+            if (
+                role === StaffRole.COORDINATOR &&
+                courseStaff.role !== StaffRole.COORDINATOR
+            ) {
+                throw new Error(permissionDeniedMsg);
+            }
         }
         const existingStaff = await getRepository(User)
             .createQueryBuilder("user")
