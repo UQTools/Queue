@@ -1,8 +1,21 @@
 import { registerEnumType } from "type-graphql";
-import { QueueTheme } from "../types/queue";
+import { QueueAction, QueueSortType, QueueTheme } from "../types/queue";
+import { QuestionStatus } from "../types/question";
 
 registerEnumType(QueueTheme, {
     name: "QueueTheme",
+});
+
+registerEnumType(QuestionStatus, {
+    name: "QuestionStatus",
+});
+
+registerEnumType(QueueSortType, {
+    name: "QueueSortType",
+});
+
+registerEnumType(QueueAction, {
+    name: "QueueAction",
 });
 
 export { Course } from "./course";

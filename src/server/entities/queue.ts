@@ -7,15 +7,19 @@ import {
     OneToMany,
     PrimaryGeneratedColumn,
 } from "typeorm";
-import { Field } from "type-graphql";
-import { QueueAction, QueueSort, QueueTheme } from "../types/queue";
+import { Field, ObjectType } from "type-graphql";
+import { QueueAction, QueueSortType, QueueTheme } from "../types/queue";
 import { checkFieldValueInEnum } from "../utils/query";
 import { Room } from "./room";
 import { Lazy } from "../types/query";
+import { Question } from "./question";
 
+@ObjectType()
 @Entity()
 @Check(checkFieldValueInEnum(QueueTheme, "theme"))
+@Check(checkFieldValueInEnum(QueueSortType, "sortedBy"))
 export class Queue extends BaseEntity {
+    @Field()
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
@@ -27,9 +31,11 @@ export class Queue extends BaseEntity {
     @Column({ type: "varchar" })
     theme: QueueTheme;
 
+    @Field(() => QueueSortType)
     @Column({ type: "varchar" })
-    sortedBy: QueueSort;
+    sortedBy: QueueSortType;
 
+    @Field(() => [QueueAction])
     @Column({
         type: "varchar",
         array: true,
@@ -37,6 +43,11 @@ export class Queue extends BaseEntity {
     })
     actions: QueueAction[];
 
+    @Field(() => Room)
     @ManyToOne(() => Room, (room) => room.queues, { lazy: true })
     room: Lazy<Room>;
+
+    @Field(() => [Question])
+    @OneToMany(() => Question, (question) => question.queue)
+    questions: Lazy<Question[]>;
 }

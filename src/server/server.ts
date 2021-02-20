@@ -12,6 +12,7 @@ import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { MyContext } from "./types/context";
 import { uqAuthMiddleware } from "./auth/uqAuthMiddleware";
+import { QueueResolver } from "./resolvers/queue-resolver";
 
 const app: Express = express();
 const server = createServer(app);
@@ -44,7 +45,7 @@ const main = async () => {
     await createConnection(ormconfig);
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [],
+            resolvers: [QueueResolver],
             dateScalarMode: "isoDate",
         }),
         context: ({ req, res }): MyContext => ({ req, res }),

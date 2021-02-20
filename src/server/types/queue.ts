@@ -18,7 +18,7 @@ export enum QueueAction {
     EMAIL = "Email",
 }
 
-export enum QueueSort {
+export enum QueueSortType {
     TIME = "Time",
     QUESTIONS = "Questions",
     QUESTIONS_AND_TIME = "Question and time",
