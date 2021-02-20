@@ -41,6 +41,9 @@ export class Question extends BaseEntity {
     })
     claimer: Lazy<User>;
 
+    @Column()
+    claimerId: string;
+
     @Field(() => Date)
     @CreateDateColumn()
     createdTime: Date;

@@ -50,4 +50,12 @@ export class Queue extends BaseEntity {
     @Field(() => [Question])
     @OneToMany(() => Question, (question) => question.queue)
     questions: Lazy<Question[]>;
+
+    @Field()
+    @Column({ default: false })
+    clearAfterMidnight: boolean;
+
+    @Field()
+    @Column({ type: "timestamp without time zone" })
+    lastAccessed: Date;
 }
