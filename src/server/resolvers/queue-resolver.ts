@@ -59,7 +59,8 @@ export class QueueResolver {
         @Arg("questionStatus", () => QuestionStatus)
         questionStatus: QuestionStatus,
         @Arg("questionId") questionId: string,
-        @Arg("message", { nullable: true }) message: string | undefined,
+        @Arg("message", () => String, { nullable: true })
+        message: string | undefined,
         @Ctx() { req }: MyContext
     ): Promise<Question> {
         if (questionStatus === QuestionStatus.OPEN) {

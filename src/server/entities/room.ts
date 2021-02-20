@@ -10,8 +10,9 @@ import { Queue } from "./queue";
 import { Lazy } from "../types/query";
 import { WeeklyEvent } from "./weekly-event";
 import { Course } from "./course";
-import { Field, Int } from "type-graphql";
+import { Field, Int, ObjectType } from "type-graphql";
 
+@ObjectType()
 @Entity()
 export class Room extends BaseEntity {
     @Field()
