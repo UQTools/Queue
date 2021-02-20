@@ -2,30 +2,24 @@ import "./config";
 import express, { Express, Response } from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { connect } from "mongoose";
+import asyncHandler from "express-async-handler";
 
-// import asyncHandler from "express-async-handler";
-// import { uqAuthMiddleware } from "./auth/uqAuthMiddleware";
 import cors from "cors";
 import * as path from "path";
-
-connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+import { createConnection } from "typeorm";
+import ormconfig from "./ormconfig";
+import { ApolloServer } from "apollo-server-express";
+import { buildSchema } from "type-graphql";
+import { MyContext } from "./types/context";
+import { uqAuthMiddleware } from "./auth/uqAuthMiddleware";
 
 const app: Express = express();
 const server = createServer(app);
-const port = process.env.PORT || 5000;
-
 export const io: Server = new Server(server, {
     serveClient: false,
     upgradeTimeout: 30000,
 });
-
-io.on("connection", () => {
-    console.log("Socket listening");
-});
+const port = process.env.PORT || 5000;
 
 // Automatically serve the index.html file from the build folder
 app.set("trust proxy", "loopback");
@@ -37,7 +31,7 @@ app.use(
 );
 app.use("/", express.static("build/client"));
 
-// app.use(asyncHandler(uqAuthMiddleware));
+app.use(asyncHandler(uqAuthMiddleware));
 
 // Catch-all route
 app.use("*", (_, res: Response) => {
@@ -46,6 +40,21 @@ app.use("*", (_, res: Response) => {
     });
 });
 
-server.listen(port, () => {
-    console.log(`Listening on port ${port}`);
+const main = async () => {
+    await createConnection(ormconfig);
+    const apolloServer = new ApolloServer({
+        schema: await buildSchema({
+            resolvers: [],
+            dateScalarMode: "isoDate",
+        }),
+        context: ({ req, res }): MyContext => ({ req, res }),
+    });
+    apolloServer.applyMiddleware({ app });
+    server.listen(port, () => {
+        console.log(`Listening on port ${port}`);
+    });
+};
+
+main().catch((err) => {
+    console.error(err);
 });
