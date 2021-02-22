@@ -1,9 +1,10 @@
 import { HStack, Td, Tr, useColorModeValue } from "@chakra-ui/react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { QuestionStatus, QueueAction } from "../../generated/graphql";
 import { differenceInSeconds } from "date-fns";
 import { ActionButton } from "./ActionButton";
 import { secondsToText } from "../../utils/queue";
+import { sentenceCase } from "change-case";
 
 export type QuestionProps = {
     id: string;
@@ -11,12 +12,13 @@ export type QuestionProps = {
     askedTime: Date;
     questionCount: number;
     status: QuestionStatus;
-    claimerName?: string; // TODO: Remove "?"
+    claimerName?: string;
 };
 
 type Props = QuestionProps & {
     index: number;
     actions: QueueAction[];
+    buttonsOnClick: (questionId: string, queueAction: QueueAction) => void;
 };
 
 export const Question: React.FC<Props> = ({
@@ -27,15 +29,22 @@ export const Question: React.FC<Props> = ({
     status,
     questionCount,
     actions,
+    buttonsOnClick,
 }) => {
     // TODO: Different colors for different status
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
+    // Continuously update the time every 10 seconds
+    const updateTime = useCallback(() => {
+        setElapsedSeconds(differenceInSeconds(new Date(), askedTime));
+        setTimeout(updateTime, 10000);
+    }, [askedTime]);
+
     useEffect(() => {
-        setInterval(() => {
-            setElapsedSeconds(differenceInSeconds(new Date(), askedTime));
-        }, 10000);
+        // Call this for the first time
+        console.log("Updating time");
+        updateTime();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [updateTime]);
     const elapsedTimeDisplay = useMemo(() => {
         return secondsToText(elapsedSeconds);
     }, [elapsedSeconds]);
@@ -45,15 +54,15 @@ export const Question: React.FC<Props> = ({
             <Td>{index}</Td>
             <Td>{askerName}</Td>
             <Td isNumeric>{questionCount}</Td>
-            <Td>{elapsedTimeDisplay} ago</Td>
+            <Td>{sentenceCase(elapsedTimeDisplay)} ago</Td>
             <Td>
-                <HStack spacing={2}>
+                <HStack spacing={1}>
                     {actions.map((action, key) => (
                         <ActionButton
                             action={action}
-                            questionId={id}
                             key={key}
                             claimed={status === QuestionStatus.Claimed}
+                            onClick={() => buttonsOnClick(id, action)}
                         />
                     ))}
                 </HStack>

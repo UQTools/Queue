@@ -1,5 +1,5 @@
 import { Divider, Table, Tbody, Text, Th, Thead, Tr } from "@chakra-ui/react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { QueueAction, QueueSortType } from "../../generated/graphql";
 import { Question, QuestionProps } from "./Question";
 import sortBy from "lodash/sortBy";
@@ -10,13 +10,18 @@ export type Props = {
     sortType: QueueSortType;
     questions: QuestionProps[];
     actions: QueueAction[];
+    buttonsOnClick: (questionId: string, queueAction: QueueAction) => void;
 };
 
 export const QuestionList: React.FC<Props> = ({
     questions,
     sortType,
     actions,
+    buttonsOnClick,
 }) => {
+    const [currentInterval, setCurrentInterval] = useState<
+        ReturnType<typeof setInterval>
+    >();
     const sortedQuestions = useMemo(() => {
         switch (sortType) {
             case QueueSortType.Questions:
@@ -34,23 +39,23 @@ export const QuestionList: React.FC<Props> = ({
         }
     }, [questions, sortType]);
     const [averageWaitTime, setAverageWaitTime] = useState(0);
-    const [currentInterval, setCurrentInterval] = useState<
-        ReturnType<typeof setInterval>
-    >();
+    const updateAverageTime = useCallback(() => {
+        const totalWaitTime = questions
+            .map((question) =>
+                differenceInSeconds(new Date(), question.askedTime)
+            )
+            .reduce((a, b) => a + b, 0);
+        console.log(totalWaitTime);
+        setAverageWaitTime(totalWaitTime / questions.length);
+        setCurrentInterval(setTimeout(updateAverageTime, 10000));
+    }, [questions]);
+    useEffect(() => {
+        updateAverageTime();
+    }, [updateAverageTime]);
     useEffect(() => {
         if (currentInterval) {
             clearInterval(currentInterval);
         }
-        setCurrentInterval(
-            setInterval(() => {
-                const totalWaitTime = questions
-                    .map((question) =>
-                        differenceInSeconds(new Date(), question.askedTime)
-                    )
-                    .reduce((a, b) => a + b, 0);
-                setAverageWaitTime(totalWaitTime / questions.length);
-            }, 10000)
-        );
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [questions]);
     return (
@@ -61,7 +66,8 @@ export const QuestionList: React.FC<Props> = ({
                     <>
                         An average wait time of{" "}
                         <strong>{secondsToText(averageWaitTime)}</strong> for{" "}
-                        <em>{questions.length}</em> student(s)
+                        <em>{questions.length}</em> student
+                        {questions.length > 1 && "s"}
                     </>
                 ) : (
                     "No students on queue"
@@ -84,6 +90,7 @@ export const QuestionList: React.FC<Props> = ({
                             key={key}
                             actions={actions}
                             index={key + 1}
+                            buttonsOnClick={buttonsOnClick}
                         />
                     ))}
                 </Tbody>

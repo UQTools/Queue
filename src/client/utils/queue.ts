@@ -1,9 +1,11 @@
 export const secondsToText = (seconds: number) => {
     if (seconds > 3600) {
-        return `${Math.round(seconds / 3600)} hour(s)`;
+        const hours = Math.round(seconds / 3600);
+        return `${hours} hour${hours > 1 ? "s" : ""}`;
     } else if (seconds > 60) {
-        return `${Math.round(seconds / 60)} minute(s)`;
+        const minutes = Math.round(seconds / 60);
+        return `${minutes} minute${minutes > 1 ? "s" : ""}`;
     } else {
-        return "A few seconds";
+        return "a few seconds";
     }
 };

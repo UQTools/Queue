@@ -170,7 +170,7 @@ export type Mutation = {
   createRoom: Room;
   updateRoom: Room;
   askQuestion: Question;
-  removeQuestion: Question;
+  updateQuestionStatus: Question;
 };
 
 
@@ -215,7 +215,7 @@ export type MutationAskQuestionArgs = {
 };
 
 
-export type MutationRemoveQuestionArgs = {
+export type MutationUpdateQuestionStatusArgs = {
   message?: Maybe<Scalars['String']>;
   questionId: Scalars['String'];
   questionStatus: QuestionStatus;
@@ -277,6 +277,31 @@ export type AskQuestionMutationVariables = Exact<{
 export type AskQuestionMutation = (
   { __typename?: 'Mutation' }
   & { askQuestion: (
+    { __typename?: 'Question' }
+    & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked'>
+    & { op: (
+      { __typename?: 'User' }
+      & Pick<User, 'name'>
+    ), claimer?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'name'>
+    )>, queue: (
+      { __typename?: 'Queue' }
+      & Pick<Queue, 'id'>
+    ) }
+  ) }
+);
+
+export type UpdateQuestionStatusMutationVariables = Exact<{
+  questionStatus: QuestionStatus;
+  questionId: Scalars['String'];
+  message?: Maybe<Scalars['String']>;
+}>;
+
+
+export type UpdateQuestionStatusMutation = (
+  { __typename?: 'Mutation' }
+  & { updateQuestionStatus: (
     { __typename?: 'Question' }
     & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked'>
     & { op: (
@@ -418,6 +443,56 @@ export function useAskQuestionMutation(baseOptions?: Apollo.MutationHookOptions<
 export type AskQuestionMutationHookResult = ReturnType<typeof useAskQuestionMutation>;
 export type AskQuestionMutationResult = Apollo.MutationResult<AskQuestionMutation>;
 export type AskQuestionMutationOptions = Apollo.BaseMutationOptions<AskQuestionMutation, AskQuestionMutationVariables>;
+export const UpdateQuestionStatusDocument = gql`
+    mutation UpdateQuestionStatus($questionStatus: QuestionStatus!, $questionId: String!, $message: String) {
+  updateQuestionStatus(
+    questionStatus: $questionStatus
+    questionId: $questionId
+    message: $message
+  ) {
+    id
+    status
+    op {
+      name
+    }
+    createdTime
+    claimer {
+      name
+    }
+    questionsAsked
+    queue {
+      id
+    }
+  }
+}
+    `;
+export type UpdateQuestionStatusMutationFn = Apollo.MutationFunction<UpdateQuestionStatusMutation, UpdateQuestionStatusMutationVariables>;
+
+/**
+ * __useUpdateQuestionStatusMutation__
+ *
+ * To run a mutation, you first call `useUpdateQuestionStatusMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateQuestionStatusMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateQuestionStatusMutation, { data, loading, error }] = useUpdateQuestionStatusMutation({
+ *   variables: {
+ *      questionStatus: // value for 'questionStatus'
+ *      questionId: // value for 'questionId'
+ *      message: // value for 'message'
+ *   },
+ * });
+ */
+export function useUpdateQuestionStatusMutation(baseOptions?: Apollo.MutationHookOptions<UpdateQuestionStatusMutation, UpdateQuestionStatusMutationVariables>) {
+        return Apollo.useMutation<UpdateQuestionStatusMutation, UpdateQuestionStatusMutationVariables>(UpdateQuestionStatusDocument, baseOptions);
+      }
+export type UpdateQuestionStatusMutationHookResult = ReturnType<typeof useUpdateQuestionStatusMutation>;
+export type UpdateQuestionStatusMutationResult = Apollo.MutationResult<UpdateQuestionStatusMutation>;
+export type UpdateQuestionStatusMutationOptions = Apollo.BaseMutationOptions<UpdateQuestionStatusMutation, UpdateQuestionStatusMutationVariables>;
 export const GetActiveRoomsDocument = gql`
     query GetActiveRooms($courseCode: String!) {
   getActiveRooms(courseCode: $courseCode) {

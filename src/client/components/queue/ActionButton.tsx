@@ -5,15 +5,11 @@ import { QueueAction } from "../../generated/graphql";
 
 type Props = {
     action: QueueAction;
-    questionId: string;
     claimed: boolean;
+    onClick: () => void;
 };
 
-export const ActionButton: React.FC<Props> = ({
-    action,
-    questionId,
-    claimed,
-}) => {
+export const ActionButton: React.FC<Props> = ({ action, claimed, onClick }) => {
     const Icon = useMemo(() => {
         switch (action) {
             case QueueAction.Accept:
@@ -43,7 +39,12 @@ export const ActionButton: React.FC<Props> = ({
             aria-label={action}
             icon={<Icon />}
             colorScheme={colourScheme}
-            variant="outline"
+            variant={
+                claimed && action === QueueAction.Claim ? "solid" : "ghost"
+            }
+            size="sm"
+            onClick={onClick}
+            isRound
         />
     );
 };

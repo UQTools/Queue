@@ -15,3 +15,29 @@ mutation AskQuestion($queueId: String!) {
         }
     }
 }
+
+mutation UpdateQuestionStatus(
+    $questionStatus: QuestionStatus!
+    $questionId: String!
+    $message: String
+) {
+    updateQuestionStatus(
+        questionStatus: $questionStatus
+        questionId: $questionId
+        message: $message
+    ) {
+        id
+        status
+        op {
+            name
+        }
+        createdTime
+        claimer {
+            name
+        }
+        questionsAsked
+        queue {
+            id
+        }
+    }
+}

@@ -37,6 +37,9 @@ export class QuestionResolver {
             .innerJoinAndSelect("question.op", "user")
             .where("user.id = :userId", { userId: req.user.id })
             .andWhere("course.id = :courseId", { courseId: course.id })
+            .andWhere("question.status NOT IN (:...ended)", {
+                ended: [QuestionStatus.CLOSED, QuestionStatus.ACCEPTED],
+            })
             .getMany();
         if (existingQueues.length > 0) {
             throw new Error("You are already on a queue of this course");
@@ -62,7 +65,7 @@ export class QuestionResolver {
     }
 
     @Mutation(() => Question)
-    async removeQuestion(
+    async updateQuestionStatus(
         @Arg("questionStatus", () => QuestionStatus)
         questionStatus: QuestionStatus,
         @Arg("questionId") questionId: string,
@@ -95,13 +98,15 @@ export class QuestionResolver {
             staffMembers.map((staff) => staff.id).includes(user.id) ||
             user.isAdmin
         ) {
-            question.status = questionStatus;
             if (questionStatus === QuestionStatus.CLAIMED) {
                 // Claim student
-                question.claimerId = user.id;
                 question.claimMessage = message || "";
                 question.claimTime = new Date();
-            } else if (questionStatus === QuestionStatus.ACCEPTED) {
+            } else if (
+                // Only accept once. Do not repeat.
+                questionStatus === QuestionStatus.ACCEPTED &&
+                question.status !== QuestionStatus.ACCEPTED
+            ) {
                 // Accept student
                 const userId = question.opId;
                 const courseId = (await (await queue.room).course).id;
@@ -112,6 +117,8 @@ export class QuestionResolver {
                 courseUserMeta.questionsAsked += 1;
                 await courseUserMeta.save();
             }
+            question.status = questionStatus;
+            question.claimerId = user.id;
         } else {
             if (
                 questionStatus !== QuestionStatus.CLOSED &&
