@@ -56,10 +56,16 @@ export const QuestionList: React.FC<Props> = ({
     return (
         <>
             <Divider />
-            <Text>
-                An average wait time of{" "}
-                <strong>{secondsToText(averageWaitTime)}</strong> for{" "}
-                <em>{questions.length}</em> student(s)
+            <Text verticalAlign="middle" py={3}>
+                {questions.length > 0 ? (
+                    <>
+                        An average wait time of{" "}
+                        <strong>{secondsToText(averageWaitTime)}</strong> for{" "}
+                        <em>{questions.length}</em> student(s)
+                    </>
+                ) : (
+                    "No students on queue"
+                )}
             </Text>
             <Divider />
             <Table>

@@ -9,7 +9,7 @@ import {
     useGetActiveRoomsQuery,
     useGetRoomByIdLazyQuery,
 } from "../generated/graphql";
-import { Flex } from "@chakra-ui/react";
+import { Flex, useMediaQuery } from "@chakra-ui/react";
 import { QuestionProps } from "../components/queue/Question";
 import { RoomSelector } from "../components/queue/RoomSelector";
 import { Map } from "immutable";
@@ -23,10 +23,11 @@ type CourseParam = {
 };
 
 export const CoursePageContainer: React.FC<Props> = () => {
-    useEffect(() => {
-        console.log("reload");
-    }, []);
+    const [isSmallerThan540] = useMediaQuery("(max-width: 540px)");
     const { courseCode } = useParams<CourseParam>();
+    useEffect(() => {
+        document.title = `${courseCode} Queue`;
+    }, [courseCode]);
     const [queueQuestions, setQueueQuestions] = useState<
         Map<string, QuestionProps[]>
     >(Map());
@@ -80,7 +81,12 @@ export const CoursePageContainer: React.FC<Props> = () => {
                     ]) || []
                 }
             />
-            <Flex wrap="wrap" mt={6}>
+            <Flex
+                wrap="wrap"
+                mt={6}
+                justifyContent="space-around"
+                direction={isSmallerThan540 ? "column" : "row"}
+            >
                 {roomData?.getRoomById.queues.map((queue, key) => (
                     <Queue
                         key={key}
@@ -92,6 +98,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                         actions={queue.actions}
                         sortType={queue.sortedBy}
                         questions={queueQuestions.get(queue.id) || []}
+                        queueCount={roomData?.getRoomById.queues.length || 1}
                     />
                 ))}
             </Flex>
