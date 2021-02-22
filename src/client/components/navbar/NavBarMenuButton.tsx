@@ -41,3 +41,5 @@ export const NavBarMenuButton: FC<Props> = forwardRef<HTMLDivElement, Props>(
         );
     }
 );
+
+NavBarMenuButton.displayName = "NavBarMenuButton";

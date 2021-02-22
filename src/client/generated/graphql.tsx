@@ -222,6 +222,7 @@ export type MutationUpdateRoomArgs = {
 
 export type QueueInput = {
   name: Scalars['String'];
+  shortDescription: Scalars['String'];
   examples: Array<Scalars['String']>;
   theme: QueueTheme;
   sortedBy: QueueSortType;
@@ -292,16 +293,20 @@ export type GetRoomByIdQuery = (
     & Pick<Room, 'id' | 'name'>
     & { queues: Array<(
       { __typename?: 'Queue' }
-      & Pick<Queue, 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme'>
+      & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy'>
       & { activeQuestions: Array<(
         { __typename?: 'Question' }
-        & Pick<Question, 'status' | 'createdTime'>
+        & Pick<Question, 'id' | 'status' | 'createdTime'>
         & { op: (
           { __typename?: 'User' }
           & Pick<User, 'name' | 'username' | 'email'>
           & { courseMetas: Array<(
             { __typename?: 'CourseUserMeta' }
             & Pick<CourseUserMeta, 'questionsAsked'>
+            & { course: (
+              { __typename?: 'Course' }
+              & Pick<Course, 'code'>
+            ) }
           )> }
         ), claimer?: Maybe<(
           { __typename?: 'User' }
@@ -393,17 +398,23 @@ export const GetRoomByIdDocument = gql`
     id
     name
     queues {
+      id
       name
       shortDescription
       examples
       actions
       theme
+      sortedBy
       activeQuestions {
+        id
         op {
           name
           username
           email
           courseMetas {
+            course {
+              code
+            }
             questionsAsked
           }
         }

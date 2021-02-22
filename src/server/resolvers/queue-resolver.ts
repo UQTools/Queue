@@ -21,6 +21,9 @@ class QueueInput {
     @Field()
     name: string;
 
+    @Field()
+    shortDescription: string;
+
     @Field(() => [String])
     examples: string[];
 
@@ -150,7 +153,9 @@ export class QueueResolver {
     @FieldResolver(() => [Question])
     async activeQuestions(@Root() queue: Queue): Promise<Question[]> {
         return (await queue.questions).filter(
-            (question) => question.status === QuestionStatus.OPEN
+            (question) =>
+                question.status === QuestionStatus.OPEN ||
+                question.status === QuestionStatus.CLAIMED
         );
     }
 
@@ -192,6 +197,7 @@ export class QueueResolver {
         }
         const {
             name,
+            shortDescription,
             examples,
             theme,
             sortedBy,
@@ -199,6 +205,7 @@ export class QueueResolver {
             clearAfterMidnight,
         } = queueInput;
         queue.name = name;
+        queue.shortDescription = shortDescription;
         queue.examples = examples;
         queue.theme = theme;
         queue.sortedBy = sortedBy;

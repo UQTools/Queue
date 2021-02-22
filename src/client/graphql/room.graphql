@@ -10,17 +10,23 @@ query GetRoomById($roomId: String!) {
         id
         name
         queues {
+            id
             name
             shortDescription
             examples
             actions
             theme
+            sortedBy
             activeQuestions {
+                id
                 op {
                     name
                     username
                     email
                     courseMetas {
+                        course {
+                            code
+                        }
                         questionsAsked
                     }
                 }

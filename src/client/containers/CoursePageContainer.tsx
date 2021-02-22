@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Container } from "../components/helpers/Container";
 import {
@@ -9,8 +9,12 @@ import {
     useGetActiveRoomsQuery,
     useGetRoomByIdLazyQuery,
 } from "../generated/graphql";
-import { Flex, FormLabel, HStack, Select } from "@chakra-ui/react";
-import { Queue } from "../components/Queue";
+import { Flex } from "@chakra-ui/react";
+import { QuestionProps } from "../components/queue/Question";
+import { RoomSelector } from "../components/queue/RoomSelector";
+import { Map } from "immutable";
+import { Queue } from "../components/queue/Queue";
+import parseISO from "date-fns/parseISO";
 
 type Props = {};
 
@@ -18,8 +22,14 @@ type CourseParam = {
     courseCode: string;
 };
 
-export const CoursePageContainer: React.FC<Props> = ({}) => {
+export const CoursePageContainer: React.FC<Props> = () => {
+    useEffect(() => {
+        console.log("reload");
+    }, []);
     const { courseCode } = useParams<CourseParam>();
+    const [queueQuestions, setQueueQuestions] = useState<
+        Map<string, QuestionProps[]>
+    >(Map());
     const { data: activeRoomsData } = useQueryWithError(
         useGetActiveRoomsQuery,
         {
@@ -30,34 +40,61 @@ export const CoursePageContainer: React.FC<Props> = ({}) => {
         useGetRoomByIdLazyQuery
     );
 
+    useEffect(() => {
+        if (!roomData) {
+            return;
+        }
+        roomData.getRoomById.queues.forEach((queue) => {
+            setQueueQuestions((prev) =>
+                prev.set(
+                    queue.id,
+                    queue.activeQuestions.map((question) => ({
+                        id: question.id,
+                        askerName: question.op.name,
+                        askedTime: parseISO(question.createdTime),
+                        questionCount: question.op.courseMetas.filter(
+                            (courseMeta) =>
+                                courseMeta.course.code === courseCode
+                        )[0].questionsAsked,
+                        status: question.status,
+                    }))
+                )
+            );
+        });
+    }, [roomData, courseCode]);
+
     return (
         <Container>
-            <Flex alignItems="center">
-                <FormLabel>Choose room:</FormLabel>
-                <Select
-                    onChange={(e) => {
-                        getRoomById({
-                            variables: {
-                                roomId: e.target.value,
-                            },
-                        });
-                    }}
-                    maxW="30%"
-                >
-                    {(activeRoomsData?.getActiveRooms || []).map(
-                        (room, key) => (
-                            <option key={key} value={room.id}>
-                                {room.name}
-                            </option>
-                        )
-                    )}
-                </Select>
-            </Flex>
-            <HStack spacing={6}>
+            <RoomSelector
+                onSelect={(roomId) => {
+                    getRoomById({
+                        variables: {
+                            roomId,
+                        },
+                    });
+                }}
+                rooms={
+                    activeRoomsData?.getActiveRooms.map((room) => [
+                        room.id,
+                        room.name,
+                    ]) || []
+                }
+            />
+            <Flex wrap="wrap" mt={6}>
                 {roomData?.getRoomById.queues.map((queue, key) => (
-                    <Queue {...queue} key={key}/>
+                    <Queue
+                        key={key}
+                        examples={queue.examples}
+                        id={queue.id}
+                        name={queue.name}
+                        shortDescription={queue.shortDescription}
+                        theme={queue.theme}
+                        actions={queue.actions}
+                        sortType={queue.sortedBy}
+                        questions={queueQuestions.get(queue.id) || []}
+                    />
                 ))}
-            </HStack>
+            </Flex>
         </Container>
     );
 };

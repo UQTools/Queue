@@ -30,6 +30,8 @@
     "rules": {
         "semi": ["warn", "always"],
         "quotes": ["warn", "double"],
-        "react/prop-types": 0
+        "react/prop-types": 0,
+        "no-unused-vars": "warn",
+        "no-unused-expressions": "warn"
     }
 }

@@ -20,10 +20,9 @@ export const HomePageContainer: React.FC<Props> = ({}) => {
             <Stack h="100%" justifyContent="center" alignItems="center">
                 <Text fontSize="10em">Q</Text>
                 <InputGroup maxW="50vh">
-                    <InputLeftElement
-                        pointerEvents="none"
-                        children={<SearchIcon color="gray.300" />}
-                    />
+                    <InputLeftElement pointerEvents="none">
+                        <SearchIcon color="gray.300" />
+                    </InputLeftElement>
                     <Input
                         placeholder="Enter your course code here:"
                         value={course}
