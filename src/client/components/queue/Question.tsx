@@ -11,6 +11,7 @@ export type QuestionProps = {
     askedTime: Date;
     questionCount: number;
     status: QuestionStatus;
+    claimerName?: string; // TODO: Remove "?"
 };
 
 type Props = QuestionProps & {

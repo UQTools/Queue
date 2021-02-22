@@ -40,7 +40,7 @@ export class Question extends BaseEntity {
     })
     claimer: Lazy<User>;
 
-    @Column()
+    @Column({ nullable: true })
     claimerId: string;
 
     @Field(() => Date)

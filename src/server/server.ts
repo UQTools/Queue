@@ -18,6 +18,7 @@ import { RoomResolver } from "./resolvers/room-resolver";
 import { scheduleJob } from "node-schedule";
 import { endOfDayRule, resetQuestionCount, resetQueues } from "./jobs/queue";
 import { UserResolver } from "./resolvers/user-resolver";
+import { QuestionResolver } from "./resolvers/question-resolver";
 
 const app: Express = express();
 const server = createServer(app);
@@ -49,6 +50,7 @@ const main = async () => {
                 QueueResolver,
                 CourseResolver,
                 RoomResolver,
+                QuestionResolver,
                 UserResolver,
             ],
             dateScalarMode: "isoDate",

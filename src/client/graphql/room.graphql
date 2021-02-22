@@ -21,22 +21,14 @@ query GetRoomById($roomId: String!) {
                 id
                 op {
                     name
-                    username
                     email
-                    courseMetas {
-                        course {
-                            code
-                        }
-                        questionsAsked
-                    }
                 }
                 status
                 createdTime
                 claimer {
                     name
-                    username
-                    email
                 }
+                questionsAsked
             }
         }
     }

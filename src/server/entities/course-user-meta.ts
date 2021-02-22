@@ -4,6 +4,7 @@ import {
     Entity,
     ManyToOne,
     PrimaryGeneratedColumn,
+    Unique,
 } from "typeorm";
 import { User } from "./user";
 import { Lazy } from "../types/query";
@@ -12,6 +13,7 @@ import { Field, Int, ObjectType } from "type-graphql";
 
 @ObjectType()
 @Entity()
+@Unique(["userId", "courseId"])
 export class CourseUserMeta extends BaseEntity {
     @Field()
     @PrimaryGeneratedColumn("uuid")

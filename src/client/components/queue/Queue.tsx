@@ -33,6 +33,7 @@ export type Props = {
     sortType: QueueSortType;
     questions: QuestionProps[];
     queueCount: number;
+    askQuestion: (queueId: string) => void;
 };
 
 export const Queue: React.FC<Props> = ({
@@ -45,6 +46,7 @@ export const Queue: React.FC<Props> = ({
     sortType,
     questions,
     queueCount,
+    askQuestion,
 }) => {
     const [isSmallerThan540] = useMediaQuery("(max-width: 540px)");
     const queueBgColour = useQueueBgColour(theme);
@@ -73,7 +75,14 @@ export const Queue: React.FC<Props> = ({
                 ))}
             </UnorderedList>
             <Center>
-                <Button colorScheme={noCase(theme)}>Request {name} help</Button>
+                <Button
+                    colorScheme={noCase(theme)}
+                    onClick={() => {
+                        askQuestion(id);
+                    }}
+                >
+                    Request {name} help
+                </Button>
             </Center>
             <QuestionList
                 sortType={sortType}

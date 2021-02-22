@@ -1,0 +1,17 @@
+mutation AskQuestion($queueId: String!) {
+    askQuestion(queueId: $queueId) {
+        id
+        status
+        op {
+            name
+        }
+        createdTime
+        claimer {
+            name
+        }
+        questionsAsked
+        queue {
+            id
+        }
+    }
+}

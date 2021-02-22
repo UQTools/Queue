@@ -104,6 +104,7 @@ export type Question = {
   claimTime?: Maybe<Scalars['DateTime']>;
   claimMessage?: Maybe<Scalars['String']>;
   queue: Queue;
+  questionsAsked: Scalars['Int'];
 };
 
 export enum QuestionStatus {
@@ -162,26 +163,14 @@ export type CourseUserMeta = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  askQuestion: Question;
-  removeQuestion: Question;
   createQueue: Queue;
   updateQueue: Queue;
   createCourse: Course;
   addStaff: Array<CourseStaff>;
   createRoom: Room;
   updateRoom: Room;
-};
-
-
-export type MutationAskQuestionArgs = {
-  queueId: Scalars['String'];
-};
-
-
-export type MutationRemoveQuestionArgs = {
-  message?: Maybe<Scalars['String']>;
-  questionId: Scalars['String'];
-  questionStatus: QuestionStatus;
+  askQuestion: Question;
+  removeQuestion: Question;
 };
 
 
@@ -218,6 +207,18 @@ export type MutationCreateRoomArgs = {
 export type MutationUpdateRoomArgs = {
   roomInput: RoomInput;
   roomId: Scalars['String'];
+};
+
+
+export type MutationAskQuestionArgs = {
+  queueId: Scalars['String'];
+};
+
+
+export type MutationRemoveQuestionArgs = {
+  message?: Maybe<Scalars['String']>;
+  questionId: Scalars['String'];
+  questionStatus: QuestionStatus;
 };
 
 export type QueueInput = {
@@ -268,6 +269,29 @@ export type MeQuery = (
   ) }
 );
 
+export type AskQuestionMutationVariables = Exact<{
+  queueId: Scalars['String'];
+}>;
+
+
+export type AskQuestionMutation = (
+  { __typename?: 'Mutation' }
+  & { askQuestion: (
+    { __typename?: 'Question' }
+    & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked'>
+    & { op: (
+      { __typename?: 'User' }
+      & Pick<User, 'name'>
+    ), claimer?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'name'>
+    )>, queue: (
+      { __typename?: 'Queue' }
+      & Pick<Queue, 'id'>
+    ) }
+  ) }
+);
+
 export type GetActiveRoomsQueryVariables = Exact<{
   courseCode: Scalars['String'];
 }>;
@@ -296,21 +320,13 @@ export type GetRoomByIdQuery = (
       & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy'>
       & { activeQuestions: Array<(
         { __typename?: 'Question' }
-        & Pick<Question, 'id' | 'status' | 'createdTime'>
+        & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked'>
         & { op: (
           { __typename?: 'User' }
-          & Pick<User, 'name' | 'username' | 'email'>
-          & { courseMetas: Array<(
-            { __typename?: 'CourseUserMeta' }
-            & Pick<CourseUserMeta, 'questionsAsked'>
-            & { course: (
-              { __typename?: 'Course' }
-              & Pick<Course, 'code'>
-            ) }
-          )> }
+          & Pick<User, 'name' | 'email'>
         ), claimer?: Maybe<(
           { __typename?: 'User' }
-          & Pick<User, 'name' | 'username' | 'email'>
+          & Pick<User, 'name'>
         )> }
       )> }
     )> }
@@ -358,6 +374,50 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const AskQuestionDocument = gql`
+    mutation AskQuestion($queueId: String!) {
+  askQuestion(queueId: $queueId) {
+    id
+    status
+    op {
+      name
+    }
+    createdTime
+    claimer {
+      name
+    }
+    questionsAsked
+    queue {
+      id
+    }
+  }
+}
+    `;
+export type AskQuestionMutationFn = Apollo.MutationFunction<AskQuestionMutation, AskQuestionMutationVariables>;
+
+/**
+ * __useAskQuestionMutation__
+ *
+ * To run a mutation, you first call `useAskQuestionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAskQuestionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [askQuestionMutation, { data, loading, error }] = useAskQuestionMutation({
+ *   variables: {
+ *      queueId: // value for 'queueId'
+ *   },
+ * });
+ */
+export function useAskQuestionMutation(baseOptions?: Apollo.MutationHookOptions<AskQuestionMutation, AskQuestionMutationVariables>) {
+        return Apollo.useMutation<AskQuestionMutation, AskQuestionMutationVariables>(AskQuestionDocument, baseOptions);
+      }
+export type AskQuestionMutationHookResult = ReturnType<typeof useAskQuestionMutation>;
+export type AskQuestionMutationResult = Apollo.MutationResult<AskQuestionMutation>;
+export type AskQuestionMutationOptions = Apollo.BaseMutationOptions<AskQuestionMutation, AskQuestionMutationVariables>;
 export const GetActiveRoomsDocument = gql`
     query GetActiveRooms($courseCode: String!) {
   getActiveRooms(courseCode: $courseCode) {
@@ -409,22 +469,14 @@ export const GetRoomByIdDocument = gql`
         id
         op {
           name
-          username
           email
-          courseMetas {
-            course {
-              code
-            }
-            questionsAsked
-          }
         }
         status
         createdTime
         claimer {
           name
-          username
-          email
         }
+        questionsAsked
       }
     }
   }

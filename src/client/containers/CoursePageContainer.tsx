@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Container } from "../components/helpers/Container";
 import {
     useLazyQueryWithError,
+    useMutationWithError,
     useQueryWithError,
 } from "../hooks/useApolloHooksWithError";
 import {
+    useAskQuestionMutation,
     useGetActiveRoomsQuery,
     useGetRoomByIdLazyQuery,
 } from "../generated/graphql";
@@ -29,7 +31,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
         document.title = `${courseCode} Queue`;
     }, [courseCode]);
     const [queueQuestions, setQueueQuestions] = useState<
-        Map<string, QuestionProps[]>
+        Map<string, { [key: string]: QuestionProps }>
     >(Map());
     const { data: activeRoomsData } = useQueryWithError(
         useGetActiveRoomsQuery,
@@ -40,6 +42,18 @@ export const CoursePageContainer: React.FC<Props> = () => {
     const [getRoomById, { data: roomData }] = useLazyQueryWithError(
         useGetRoomByIdLazyQuery
     );
+    const [
+        askQuestionMutation,
+        { data: askQuestionData },
+    ] = useMutationWithError(useAskQuestionMutation);
+    const askQuestion = useCallback(
+        (queueId: string) => {
+            askQuestionMutation({
+                variables: { queueId },
+            });
+        },
+        [askQuestionMutation]
+    );
 
     useEffect(() => {
         if (!roomData) {
@@ -49,20 +63,42 @@ export const CoursePageContainer: React.FC<Props> = () => {
             setQueueQuestions((prev) =>
                 prev.set(
                     queue.id,
-                    queue.activeQuestions.map((question) => ({
-                        id: question.id,
-                        askerName: question.op.name,
-                        askedTime: parseISO(question.createdTime),
-                        questionCount: question.op.courseMetas.filter(
-                            (courseMeta) =>
-                                courseMeta.course.code === courseCode
-                        )[0].questionsAsked,
-                        status: question.status,
-                    }))
+                    queue.activeQuestions.reduce(
+                        (prevValue, question) => ({
+                            ...prevValue,
+                            [question.id]: {
+                                id: question.id,
+                                askerName: question.op.name,
+                                askedTime: parseISO(question.createdTime),
+                                questionCount: question.questionsAsked,
+                                status: question.status,
+                            },
+                        }),
+                        {}
+                    )
                 )
             );
         });
     }, [roomData, courseCode]);
+
+    useEffect(() => {
+        if (!askQuestionData) {
+            return;
+        }
+        const question = askQuestionData.askQuestion;
+        setQueueQuestions((prev) =>
+            prev.set(question.queue.id, {
+                ...(prev.get(question.queue.id) || {}),
+                [question.id]: {
+                    id: question.id,
+                    askerName: question.op.name,
+                    askedTime: parseISO(question.createdTime),
+                    questionCount: question.questionsAsked,
+                    status: question.status,
+                },
+            })
+        );
+    }, [askQuestionData]);
 
     return (
         <Container>
@@ -97,8 +133,11 @@ export const CoursePageContainer: React.FC<Props> = () => {
                         theme={queue.theme}
                         actions={queue.actions}
                         sortType={queue.sortedBy}
-                        questions={queueQuestions.get(queue.id) || []}
+                        questions={Object.values(
+                            queueQuestions.get(queue.id) || {}
+                        )}
                         queueCount={roomData?.getRoomById.queues.length || 1}
+                        askQuestion={askQuestion}
                     />
                 ))}
             </Flex>
