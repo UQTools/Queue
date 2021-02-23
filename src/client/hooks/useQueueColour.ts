@@ -14,13 +14,13 @@ export const useQueueBgColour = (theme: QueueTheme) => {
             case QueueTheme.Yellow:
                 return { light: "yellow.200", dark: "yellow.700" };
             case QueueTheme.Green:
-                return { light: "green.300", dark: "green.600" };
+                return { light: "green.200", dark: "green.600" };
             case QueueTheme.Teal:
                 return { light: "teal.300", dark: "teal.600" };
             case QueueTheme.Blue:
                 return { light: "blue.200", dark: "blue.700" };
             case QueueTheme.Cyan:
-                return { light: "cyan.300", dark: "cyan.700" };
+                return { light: "cyan.200", dark: "cyan.700" };
             case QueueTheme.Purple:
                 return { light: "purple.200", dark: "purple.700" };
             case QueueTheme.Pink:
@@ -38,13 +38,13 @@ export const useQueueTextColour = (theme: QueueTheme) => {
             case QueueTheme.Red:
                 return { light: "red.800", dark: "red.200" };
             case QueueTheme.Orange:
-                return { light: "orange.700", dark: "orange.400" };
+                return { light: "orange.700", dark: "orange.300" };
             case QueueTheme.Yellow:
                 return { light: "yellow.700", dark: "yellow.300" };
             case QueueTheme.Green:
-                return { light: "green.700", dark: "green.400" };
+                return { light: "green.700", dark: "green.300" };
             case QueueTheme.Teal:
-                return { light: "teal.700", dark: "teal.400" };
+                return { light: "teal.700", dark: "teal.300" };
             case QueueTheme.Blue:
                 return { light: "blue.700", dark: "blue.300" };
             case QueueTheme.Cyan:

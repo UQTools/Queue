@@ -41,3 +41,16 @@ mutation UpdateQuestionStatus(
         }
     }
 }
+
+mutation UpdateQueue($queueId: String!, $queueInput: QueueInput!) {
+    updateQueue(queueId: $queueId, queueInput: $queueInput) {
+        id
+        name
+        shortDescription
+        examples
+        actions
+        theme
+        sortedBy
+        clearAfterMidnight
+    }
+}

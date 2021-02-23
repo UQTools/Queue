@@ -17,6 +17,7 @@ query GetRoomById($roomId: String!) {
             actions
             theme
             sortedBy
+            clearAfterMidnight
             activeQuestions {
                 id
                 op {

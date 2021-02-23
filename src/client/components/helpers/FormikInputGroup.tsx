@@ -58,7 +58,7 @@ export const FormikInputGroup: React.FC<Props> = ({
                             size="sm"
                             ml={1}
                             onClick={() => {
-                                removeAtIndex(values, index);
+                                setValues(removeAtIndex(values, index));
                             }}
                         />
                     </Flex>

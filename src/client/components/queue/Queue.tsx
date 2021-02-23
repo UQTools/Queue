@@ -33,6 +33,7 @@ export type QueueProps = {
     examples: string[];
     actions: QueueAction[];
     sortType: QueueSortType;
+    clearAfterMidnight: boolean;
 };
 
 export type Props = QueueProps & {
@@ -41,7 +42,7 @@ export type Props = QueueProps & {
     askQuestion: (queueId: string) => void;
     buttonsOnClick: (questionId: string, queueAction: QueueAction) => void;
     isStaff: boolean;
-    openEditQueueModal: (queueProps: QueueProps) => void;
+    openEditQueueModal: (queueId: string) => void;
 };
 
 export const Queue: React.FC<Props> = ({
@@ -84,15 +85,7 @@ export const Queue: React.FC<Props> = ({
                         variant="ghost"
                         colorScheme={noCase(theme)}
                         onClick={() => {
-                            openEditQueueModal({
-                                id,
-                                theme,
-                                name,
-                                shortDescription,
-                                examples,
-                                actions,
-                                sortType,
-                            });
+                            openEditQueueModal(id);
                         }}
                         position="absolute"
                         top={0}

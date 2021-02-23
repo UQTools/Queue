@@ -24,6 +24,7 @@ import {
     useGetRoomByIdLazyQuery,
     useQuestionChangeSubscription,
     useUpdateQuestionStatusMutation,
+    useUpdateQueueMutation,
 } from "../generated/graphql";
 import { Flex, Text, useDisclosure, useMediaQuery } from "@chakra-ui/react";
 import { QuestionProps } from "../components/queue/Question";
@@ -42,6 +43,17 @@ type CourseParam = {
     courseCode: string;
 };
 
+const placeholderQueue: QueueProps = {
+    id: "",
+    name: "",
+    theme: QueueTheme.Red,
+    shortDescription: "",
+    examples: [],
+    actions: [],
+    sortType: QueueSortType.QuestionsAndTime,
+    clearAfterMidnight: true,
+};
+
 export const CoursePageContainer: React.FC<Props> = () => {
     const [isSmallerThan540] = useMediaQuery("(max-width: 540px)");
     const {
@@ -54,15 +66,8 @@ export const CoursePageContainer: React.FC<Props> = () => {
         onOpen: openQueueModal,
         onClose: closeQueueModal,
     } = useDisclosure();
-    const [chosenQueue, setChosenQueue] = useState<QueueProps>({
-        id: "",
-        name: "",
-        theme: QueueTheme.Red,
-        shortDescription: "",
-        examples: [],
-        actions: [],
-        sortType: QueueSortType.QuestionsAndTime,
-    });
+    const [queues, setQueues] = useState<Map<string, QueueProps>>(Map());
+    const [chosenQueueId, setChosenQueueId] = useState("");
     const [claimMessage, setClaimMessage] = useState("");
     const [selectedQuestion, setSelectedQuestion] = useState("");
     const { courseCode } = useParams<CourseParam>();
@@ -85,6 +90,10 @@ export const CoursePageContainer: React.FC<Props> = () => {
             pollInterval: 30000,
         }
     );
+    const [
+        updateQueue,
+        { data: updateQueueData },
+    ] = useMutationWithError(useUpdateQueueMutation, { errorPolicy: "all" });
     const { data: questionChangeData } = useSubscriptionWithError(
         useQuestionChangeSubscription,
         {
@@ -124,8 +133,8 @@ export const CoursePageContainer: React.FC<Props> = () => {
         [updateQuestionMutation, selectedQuestion]
     );
     const editQueue = useCallback(
-        (queueProps: QueueProps) => {
-            setChosenQueue(queueProps);
+        (queueId: string) => {
+            setChosenQueueId(queueId);
             openQueueModal();
         },
         [openQueueModal]
@@ -198,6 +207,18 @@ export const CoursePageContainer: React.FC<Props> = () => {
                     )
                 )
             );
+            setQueues((prev) =>
+                prev.set(queue.id, {
+                    id: queue.id,
+                    name: queue.name,
+                    theme: queue.theme,
+                    shortDescription: queue.shortDescription,
+                    actions: queue.actions,
+                    sortType: queue.sortedBy,
+                    examples: queue.examples,
+                    clearAfterMidnight: queue.clearAfterMidnight,
+                })
+            );
         });
     }, [roomData, courseCode]);
 
@@ -266,6 +287,24 @@ export const CoursePageContainer: React.FC<Props> = () => {
         updateQueueQuestion(newQuestion);
     }, [updateQuestionData, updateQueueQuestion]);
 
+    useEffect(() => {
+        if (!updateQueueData) {
+            return;
+        }
+        const updatedQueue = updateQueueData.updateQueue;
+        setQueues((prev) =>
+            prev.set(updatedQueue.id, {
+                id: updatedQueue.id,
+                name: updatedQueue.name,
+                theme: updatedQueue.theme,
+                shortDescription: updatedQueue.shortDescription,
+                actions: updatedQueue.actions,
+                sortType: updatedQueue.sortedBy,
+                examples: updatedQueue.examples,
+                clearAfterMidnight: updatedQueue.clearAfterMidnight,
+            })
+        );
+    }, [updateQueueData]);
     return (
         <>
             <Container>
@@ -296,13 +335,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                     {roomData?.getRoomById.queues.map((queue, key) => (
                         <Queue
                             key={key}
-                            examples={queue.examples}
-                            id={queue.id}
-                            name={queue.name}
-                            shortDescription={queue.shortDescription}
-                            theme={queue.theme}
-                            actions={queue.actions}
-                            sortType={queue.sortedBy}
+                            {...(queues.get(queue.id) || placeholderQueue)}
                             questions={Object.values(
                                 queueQuestions.get(queue.id) || {}
                             )}
@@ -325,9 +358,33 @@ export const CoursePageContainer: React.FC<Props> = () => {
                 submit={claimQuestion}
             />
             <QueueModal
-                {...chosenQueue}
+                {...(queues.get(chosenQueueId) || placeholderQueue)}
                 close={closeQueueModal}
-                onSubmit={() => {}}
+                onSubmit={({
+                    id,
+                    name,
+                    shortDescription,
+                    actions,
+                    sortType,
+                    examples,
+                    clearAfterMidnight,
+                    theme,
+                }) => {
+                    updateQueue({
+                        variables: {
+                            queueId: id,
+                            queueInput: {
+                                name,
+                                shortDescription,
+                                actions,
+                                examples,
+                                clearAfterMidnight,
+                                sortedBy: sortType,
+                                theme,
+                            },
+                        },
+                    });
+                }}
                 isOpen={isQueueModalOpen}
             />
         </>

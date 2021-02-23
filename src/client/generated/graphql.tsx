@@ -350,6 +350,20 @@ export type UpdateQuestionStatusMutation = (
   ) }
 );
 
+export type UpdateQueueMutationVariables = Exact<{
+  queueId: Scalars['String'];
+  queueInput: QueueInput;
+}>;
+
+
+export type UpdateQueueMutation = (
+  { __typename?: 'Mutation' }
+  & { updateQueue: (
+    { __typename?: 'Queue' }
+    & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight'>
+  ) }
+);
+
 export type GetActiveRoomsQueryVariables = Exact<{
   courseCode: Scalars['String'];
 }>;
@@ -375,7 +389,7 @@ export type GetRoomByIdQuery = (
     & Pick<Room, 'id' | 'name'>
     & { queues: Array<(
       { __typename?: 'Queue' }
-      & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy'>
+      & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight'>
       & { activeQuestions: Array<(
         { __typename?: 'Question' }
         & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked'>
@@ -568,6 +582,46 @@ export function useUpdateQuestionStatusMutation(baseOptions?: Apollo.MutationHoo
 export type UpdateQuestionStatusMutationHookResult = ReturnType<typeof useUpdateQuestionStatusMutation>;
 export type UpdateQuestionStatusMutationResult = Apollo.MutationResult<UpdateQuestionStatusMutation>;
 export type UpdateQuestionStatusMutationOptions = Apollo.BaseMutationOptions<UpdateQuestionStatusMutation, UpdateQuestionStatusMutationVariables>;
+export const UpdateQueueDocument = gql`
+    mutation UpdateQueue($queueId: String!, $queueInput: QueueInput!) {
+  updateQueue(queueId: $queueId, queueInput: $queueInput) {
+    id
+    name
+    shortDescription
+    examples
+    actions
+    theme
+    sortedBy
+    clearAfterMidnight
+  }
+}
+    `;
+export type UpdateQueueMutationFn = Apollo.MutationFunction<UpdateQueueMutation, UpdateQueueMutationVariables>;
+
+/**
+ * __useUpdateQueueMutation__
+ *
+ * To run a mutation, you first call `useUpdateQueueMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateQueueMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateQueueMutation, { data, loading, error }] = useUpdateQueueMutation({
+ *   variables: {
+ *      queueId: // value for 'queueId'
+ *      queueInput: // value for 'queueInput'
+ *   },
+ * });
+ */
+export function useUpdateQueueMutation(baseOptions?: Apollo.MutationHookOptions<UpdateQueueMutation, UpdateQueueMutationVariables>) {
+        return Apollo.useMutation<UpdateQueueMutation, UpdateQueueMutationVariables>(UpdateQueueDocument, baseOptions);
+      }
+export type UpdateQueueMutationHookResult = ReturnType<typeof useUpdateQueueMutation>;
+export type UpdateQueueMutationResult = Apollo.MutationResult<UpdateQueueMutation>;
+export type UpdateQueueMutationOptions = Apollo.BaseMutationOptions<UpdateQueueMutation, UpdateQueueMutationVariables>;
 export const GetActiveRoomsDocument = gql`
     query GetActiveRooms($courseCode: String!) {
   getActiveRooms(courseCode: $courseCode) {
@@ -615,6 +669,7 @@ export const GetRoomByIdDocument = gql`
       actions
       theme
       sortedBy
+      clearAfterMidnight
       activeQuestions {
         id
         op {
