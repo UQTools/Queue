@@ -10,6 +10,7 @@ import {
 import {
     QuestionStatus,
     QueueAction,
+    UpdateQuestionStatusMutation,
     useAskQuestionMutation,
     useGetActiveRoomsQuery,
     useGetRoomByIdLazyQuery,
@@ -100,6 +101,38 @@ export const CoursePageContainer: React.FC<Props> = () => {
         [updateQuestionMutation, selectedQuestion]
     );
 
+    const updateQueueQuestion = useCallback(
+        (question: UpdateQuestionStatusMutation["updateQuestionStatus"]) => {
+            if (
+                [QuestionStatus.Closed, QuestionStatus.Accepted].includes(
+                    question.status
+                )
+            ) {
+                setQueueQuestions((prev) =>
+                    prev.set(
+                        question.queue.id,
+                        omit(prev.get(question.queue.id) || {}, question.id)
+                    )
+                );
+                return;
+            }
+            setQueueQuestions((prev) =>
+                prev.set(question.queue.id, {
+                    ...(prev.get(question.queue.id) || {}),
+                    [question.id]: {
+                        id: question.id,
+                        askerName: question.op.name,
+                        askedTime: parseISO(question.createdTime),
+                        questionCount: question.questionsAsked,
+                        status: question.status,
+                        claimerName: question.claimer?.name,
+                    },
+                })
+            );
+        },
+        []
+    );
+
     useEffect(() => {
         if (!roomData) {
             return;
@@ -131,18 +164,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
             return;
         }
         const updatedQuestion = questionChangeData.questionChanges;
-        setQueueQuestions((prev) =>
-            prev.set(updatedQuestion.queue.id, {
-                ...(prev.get(updatedQuestion.queue.id) || {}),
-                [updatedQuestion.id]: {
-                    id: updatedQuestion.id,
-                    askerName: updatedQuestion.op.name,
-                    askedTime: parseISO(updatedQuestion.createdTime),
-                    questionCount: updatedQuestion.questionsAsked,
-                    status: updatedQuestion.status,
-                },
-            })
-        );
+        updateQueueQuestion(updatedQuestion);
     }, [questionChangeData]);
 
     useEffect(() => {
@@ -199,33 +221,8 @@ export const CoursePageContainer: React.FC<Props> = () => {
             return;
         }
         const newQuestion = updateQuestionData.updateQuestionStatus;
-        if (
-            [QuestionStatus.Closed, QuestionStatus.Accepted].includes(
-                newQuestion.status
-            )
-        ) {
-            setQueueQuestions((prev) =>
-                prev.set(
-                    newQuestion.queue.id,
-                    omit(prev.get(newQuestion.queue.id) || {}, newQuestion.id)
-                )
-            );
-            return;
-        }
-        setQueueQuestions((prev) =>
-            prev.set(newQuestion.queue.id, {
-                ...(prev.get(newQuestion.queue.id) || {}),
-                [newQuestion.id]: {
-                    id: newQuestion.id,
-                    askerName: newQuestion.op.name,
-                    askedTime: parseISO(newQuestion.createdTime),
-                    questionCount: newQuestion.questionsAsked,
-                    status: newQuestion.status,
-                    claimerName: newQuestion.claimer?.name,
-                },
-            })
-        );
-    }, [updateQuestionData]);
+        updateQueueQuestion(newQuestion);
+    }, [updateQuestionData, updateQueueQuestion]);
 
     return (
         <>
