@@ -1,0 +1,17 @@
+subscription QuestionChange($roomId: String!) {
+    questionChanges(roomId: $roomId) {
+        id
+        status
+        op {
+            name
+        }
+        createdTime
+        claimer {
+            name
+        }
+        questionsAsked
+        queue {
+            id
+        }
+    }
+}

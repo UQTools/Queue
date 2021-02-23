@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "../entities";
+import { Server } from "socket.io";
 
 declare global {
     namespace Express {

@@ -4,13 +4,16 @@ import {
     FieldResolver,
     Int,
     Mutation,
+    Publisher,
+    PubSub,
     Resolver,
     Root,
+    Subscription,
 } from "type-graphql";
 import { CourseUserMeta, Question, Queue, User } from "../entities";
 import { MyContext } from "../types/context";
 import { getRepository } from "typeorm";
-import { QuestionStatus } from "../types/question";
+import { QuestionEvent, QuestionStatus } from "../types/question";
 import { permissionDeniedMsg } from "../../constants";
 
 @Resolver(() => Question)
@@ -18,7 +21,8 @@ export class QuestionResolver {
     @Mutation(() => Question)
     async askQuestion(
         @Arg("queueId") queueId: string,
-        @Ctx() { req }: MyContext
+        @Ctx() { req }: MyContext,
+        @PubSub(QuestionEvent.NEW_QUESTION) publish: Publisher<Question>
     ): Promise<Question> {
         let queue: Queue;
         try {
@@ -61,6 +65,7 @@ export class QuestionResolver {
                 questionsAsked: 0,
             }).save();
         }
+        publish(question);
         return question;
     }
 
@@ -71,7 +76,8 @@ export class QuestionResolver {
         @Arg("questionId") questionId: string,
         @Arg("message", () => String, { nullable: true })
         message: string | undefined,
-        @Ctx() { req }: MyContext
+        @Ctx() { req }: MyContext,
+        @PubSub(QuestionEvent.UPDATE_QUESTION) publish: Publisher<Question>
     ): Promise<Question> {
         if (questionStatus === QuestionStatus.OPEN) {
             throw new Error("You cannot reopen a closed question");
@@ -129,7 +135,9 @@ export class QuestionResolver {
             }
             question.status = QuestionStatus.CLOSED;
         }
-        return await question.save();
+        const newQuestion = await question.save();
+        publish(newQuestion);
+        return newQuestion;
     }
 
     @FieldResolver(() => Int)
@@ -140,7 +148,7 @@ export class QuestionResolver {
         const course = await (await (await question.queue).room).course;
         const existingMeta = await CourseUserMeta.findOne({
             courseId: course.id,
-            userId: req.user.id,
+            userId: question.opId,
         });
         if (existingMeta) {
             return existingMeta.questionsAsked;
@@ -151,5 +159,22 @@ export class QuestionResolver {
             questionsAsked: 0,
         }).save();
         return newMeta.questionsAsked;
+    }
+
+    @Subscription(() => Question, {
+        topics: [QuestionEvent.NEW_QUESTION, QuestionEvent.UPDATE_QUESTION],
+        filter: async ({
+            payload,
+            args,
+        }: {
+            payload: Question;
+            args: { roomId: string };
+        }) => args.roomId === (await payload.queue).roomId,
+    })
+    async questionChanges(
+        @Arg("roomId") roomId: string,
+        @Root() question: Question
+    ): Promise<Question> {
+        return question;
     }
 }

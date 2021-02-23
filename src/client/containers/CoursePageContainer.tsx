@@ -5,6 +5,7 @@ import {
     useLazyQueryWithError,
     useMutationWithError,
     useQueryWithError,
+    useSubscriptionWithError,
 } from "../hooks/useApolloHooksWithError";
 import {
     QuestionStatus,
@@ -12,6 +13,7 @@ import {
     useAskQuestionMutation,
     useGetActiveRoomsQuery,
     useGetRoomByIdLazyQuery,
+    useQuestionChangeSubscription,
     useUpdateQuestionStatusMutation,
 } from "../generated/graphql";
 import { Flex, Text, useDisclosure, useMediaQuery } from "@chakra-ui/react";
@@ -45,20 +47,38 @@ export const CoursePageContainer: React.FC<Props> = () => {
     const { data: activeRoomsData } = useQueryWithError(
         useGetActiveRoomsQuery,
         {
-            courseCode,
+            variables: {
+                courseCode,
+            },
+            errorPolicy: "all",
         }
     );
+    const [currentRoomId, setCurrentRoomId] = useState("");
     const [getRoomById, { data: roomData }] = useLazyQueryWithError(
-        useGetRoomByIdLazyQuery
+        useGetRoomByIdLazyQuery,
+        {
+            errorPolicy: "all",
+            pollInterval: 30000,
+        }
+    );
+    const { data: questionChangeData } = useSubscriptionWithError(
+        useQuestionChangeSubscription,
+        {
+            variables: {
+                roomId: roomData?.getRoomById.id || "",
+            },
+        }
     );
     const [
         askQuestionMutation,
         { data: askQuestionData },
-    ] = useMutationWithError(useAskQuestionMutation);
+    ] = useMutationWithError(useAskQuestionMutation, { errorPolicy: "all" });
     const [
         updateQuestionMutation,
         { data: updateQuestionData },
-    ] = useMutationWithError(useUpdateQuestionStatusMutation);
+    ] = useMutationWithError(useUpdateQuestionStatusMutation, {
+        errorPolicy: "all",
+    });
     const askQuestion = useCallback(
         (queueId: string) => {
             askQuestionMutation({
@@ -105,6 +125,25 @@ export const CoursePageContainer: React.FC<Props> = () => {
             );
         });
     }, [roomData, courseCode]);
+
+    useEffect(() => {
+        if (!questionChangeData) {
+            return;
+        }
+        const updatedQuestion = questionChangeData.questionChanges;
+        setQueueQuestions((prev) =>
+            prev.set(updatedQuestion.queue.id, {
+                ...(prev.get(updatedQuestion.queue.id) || {}),
+                [updatedQuestion.id]: {
+                    id: updatedQuestion.id,
+                    askerName: updatedQuestion.op.name,
+                    askedTime: parseISO(updatedQuestion.createdTime),
+                    questionCount: updatedQuestion.questionsAsked,
+                    status: updatedQuestion.status,
+                },
+            })
+        );
+    }, [questionChangeData]);
 
     useEffect(() => {
         document.title = `${courseCode} Queue`;

@@ -7971,7 +7971,7 @@ graphql-request@^3.3.0:
     extract-files "^9.0.0"
     form-data "^3.0.0"
 
-graphql-subscriptions@^1.0.0, graphql-subscriptions@^1.1.0:
+graphql-subscriptions@^1.0.0, graphql-subscriptions@^1.1.0, graphql-subscriptions@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/graphql-subscriptions/-/graphql-subscriptions-1.2.0.tgz#d82ff76e7504ac91acbbea15f36cd3904043937b"
   integrity sha512-uXvp729fztqwa7HFUFaAqKwNMwwOfsvu4HwOu7/35Cd44bNrMPCn97mNGN0ybuuZE36CPXBTaW/4U/xyOS4D9w==

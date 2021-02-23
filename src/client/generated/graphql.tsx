@@ -250,6 +250,16 @@ export type EventInput = {
   day: Scalars['Int'];
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  questionChanges: Question;
+};
+
+
+export type SubscriptionQuestionChangesArgs = {
+  roomId: Scalars['String'];
+};
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -266,6 +276,29 @@ export type MeQuery = (
         & Pick<Course, 'code'>
       ) }
     )> }
+  ) }
+);
+
+export type QuestionChangeSubscriptionVariables = Exact<{
+  roomId: Scalars['String'];
+}>;
+
+
+export type QuestionChangeSubscription = (
+  { __typename?: 'Subscription' }
+  & { questionChanges: (
+    { __typename?: 'Question' }
+    & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked'>
+    & { op: (
+      { __typename?: 'User' }
+      & Pick<User, 'name'>
+    ), claimer?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'name'>
+    )>, queue: (
+      { __typename?: 'Queue' }
+      & Pick<Queue, 'id'>
+    ) }
   ) }
 );
 
@@ -399,6 +432,47 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const QuestionChangeDocument = gql`
+    subscription QuestionChange($roomId: String!) {
+  questionChanges(roomId: $roomId) {
+    id
+    status
+    op {
+      name
+    }
+    createdTime
+    claimer {
+      name
+    }
+    questionsAsked
+    queue {
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useQuestionChangeSubscription__
+ *
+ * To run a query within a React component, call `useQuestionChangeSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useQuestionChangeSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useQuestionChangeSubscription({
+ *   variables: {
+ *      roomId: // value for 'roomId'
+ *   },
+ * });
+ */
+export function useQuestionChangeSubscription(baseOptions: Apollo.SubscriptionHookOptions<QuestionChangeSubscription, QuestionChangeSubscriptionVariables>) {
+        return Apollo.useSubscription<QuestionChangeSubscription, QuestionChangeSubscriptionVariables>(QuestionChangeDocument, baseOptions);
+      }
+export type QuestionChangeSubscriptionHookResult = ReturnType<typeof useQuestionChangeSubscription>;
+export type QuestionChangeSubscriptionResult = Apollo.SubscriptionResult<QuestionChangeSubscription>;
 export const AskQuestionDocument = gql`
     mutation AskQuestion($queueId: String!) {
   askQuestion(queueId: $queueId) {
