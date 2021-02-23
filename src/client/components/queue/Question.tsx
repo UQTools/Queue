@@ -16,6 +16,7 @@ export type QuestionProps = {
 };
 
 type Props = QuestionProps & {
+    isStaff: boolean;
     index: number;
     actions: QueueAction[];
     buttonsOnClick: (questionId: string, queueAction: QueueAction) => void;
@@ -30,6 +31,7 @@ export const Question: React.FC<Props> = ({
     questionCount,
     actions,
     buttonsOnClick,
+    isStaff,
 }) => {
     // TODO: Different colors for different status
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -41,7 +43,6 @@ export const Question: React.FC<Props> = ({
 
     useEffect(() => {
         // Call this for the first time
-        console.log("Updating time");
         updateTime();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [updateTime]);
@@ -55,18 +56,20 @@ export const Question: React.FC<Props> = ({
             <Td>{askerName}</Td>
             <Td isNumeric>{questionCount}</Td>
             <Td>{sentenceCase(elapsedTimeDisplay)} ago</Td>
-            <Td>
-                <HStack spacing={1}>
-                    {actions.map((action, key) => (
-                        <ActionButton
-                            action={action}
-                            key={key}
-                            claimed={status === QuestionStatus.Claimed}
-                            onClick={() => buttonsOnClick(id, action)}
-                        />
-                    ))}
-                </HStack>
-            </Td>
+            {isStaff && (
+                <Td>
+                    <HStack spacing={1}>
+                        {actions.map((action, key) => (
+                            <ActionButton
+                                action={action}
+                                key={key}
+                                claimed={status === QuestionStatus.Claimed}
+                                onClick={() => buttonsOnClick(id, action)}
+                            />
+                        ))}
+                    </HStack>
+                </Td>
+            )}
         </Tr>
     );
 };

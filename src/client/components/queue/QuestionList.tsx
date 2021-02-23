@@ -11,6 +11,7 @@ export type Props = {
     questions: QuestionProps[];
     actions: QueueAction[];
     buttonsOnClick: (questionId: string, queueAction: QueueAction) => void;
+    isStaff: boolean;
 };
 
 export const QuestionList: React.FC<Props> = ({
@@ -18,6 +19,7 @@ export const QuestionList: React.FC<Props> = ({
     sortType,
     actions,
     buttonsOnClick,
+    isStaff,
 }) => {
     const [currentInterval, setCurrentInterval] = useState<
         ReturnType<typeof setInterval>
@@ -45,7 +47,6 @@ export const QuestionList: React.FC<Props> = ({
                 differenceInSeconds(new Date(), question.askedTime)
             )
             .reduce((a, b) => a + b, 0);
-        console.log(totalWaitTime);
         setAverageWaitTime(totalWaitTime / questions.length);
         setCurrentInterval(setTimeout(updateAverageTime, 10000));
     }, [questions]);
@@ -81,6 +82,7 @@ export const QuestionList: React.FC<Props> = ({
                         <Th>Name</Th>
                         <Th isNumeric>Questions today</Th>
                         <Th>Elapsed time</Th>
+                        {isStaff && <Th />}
                     </Tr>
                 </Thead>
                 <Tbody>
@@ -91,6 +93,7 @@ export const QuestionList: React.FC<Props> = ({
                             actions={actions}
                             index={key + 1}
                             buttonsOnClick={buttonsOnClick}
+                            isStaff={isStaff}
                         />
                     ))}
                 </Tbody>

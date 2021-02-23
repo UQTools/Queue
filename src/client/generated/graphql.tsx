@@ -267,7 +267,7 @@ export type MeQuery = (
   { __typename?: 'Query' }
   & { me: (
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'name'>
+    & Pick<User, 'id' | 'username' | 'name' | 'isAdmin'>
     & { courseStaff: Array<(
       { __typename?: 'CourseStaff' }
       & Pick<CourseStaff, 'role'>
@@ -398,6 +398,7 @@ export const MeDocument = gql`
     id
     username
     name
+    isAdmin
     courseStaff {
       course {
         code

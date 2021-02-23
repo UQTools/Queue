@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
 import { useParams } from "react-router-dom";
 import { Container } from "../components/helpers/Container";
 import {
@@ -25,6 +31,7 @@ import { Queue } from "../components/queue/Queue";
 import parseISO from "date-fns/parseISO";
 import { ClaimModal } from "../components/queue/ClaimModal";
 import omit from "lodash/omit";
+import { UserContext } from "../utils/user";
 
 type Props = {};
 
@@ -54,7 +61,6 @@ export const CoursePageContainer: React.FC<Props> = () => {
             errorPolicy: "all",
         }
     );
-    const [currentRoomId, setCurrentRoomId] = useState("");
     const [getRoomById, { data: roomData }] = useLazyQueryWithError(
         useGetRoomByIdLazyQuery,
         {
@@ -100,6 +106,18 @@ export const CoursePageContainer: React.FC<Props> = () => {
         },
         [updateQuestionMutation, selectedQuestion]
     );
+    const user = useContext(UserContext);
+    const isStaff = useMemo(() => {
+        if (!user) {
+            return false;
+        }
+        if (user.isAdmin) {
+            return true;
+        }
+        return user.courseStaff.some(
+            (courseStaff) => courseStaff.course.code === courseCode
+        );
+    }, [user, courseCode]);
 
     const updateQueueQuestion = useCallback(
         (question: UpdateQuestionStatusMutation["updateQuestionStatus"]) => {
@@ -165,7 +183,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
         }
         const updatedQuestion = questionChangeData.questionChanges;
         updateQueueQuestion(updatedQuestion);
-    }, [questionChangeData]);
+    }, [questionChangeData, updateQueueQuestion]);
 
     useEffect(() => {
         document.title = `${courseCode} Queue`;
@@ -269,6 +287,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                             }
                             askQuestion={askQuestion}
                             buttonsOnClick={queueButtonAction}
+                            isStaff={isStaff}
                         />
                     ))}
                 </Flex>

@@ -3,6 +3,7 @@ query Me {
         id
         username
         name
+        isAdmin
         courseStaff {
             course {
                 code

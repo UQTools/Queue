@@ -109,7 +109,7 @@ export class QuestionResolver {
                 question.claimMessage = message || "";
                 question.claimTime = new Date();
             } else if (
-                // Only accept once. Do not repeat.
+                // Only accept once. Do not stack accept requests.
                 questionStatus === QuestionStatus.ACCEPTED &&
                 question.status !== QuestionStatus.ACCEPTED
             ) {
@@ -126,11 +126,7 @@ export class QuestionResolver {
             question.status = questionStatus;
             question.claimerId = user.id;
         } else {
-            if (
-                questionStatus !== QuestionStatus.CLOSED &&
-                op.id !== user.id &&
-                !user.isAdmin
-            ) {
+            if (questionStatus !== QuestionStatus.CLOSED || op.id !== user.id) {
                 throw new Error(permissionDeniedMsg);
             }
             question.status = QuestionStatus.CLOSED;

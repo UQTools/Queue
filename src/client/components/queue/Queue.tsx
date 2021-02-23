@@ -35,6 +35,7 @@ export type Props = {
     queueCount: number;
     askQuestion: (queueId: string) => void;
     buttonsOnClick: (questionId: string, queueAction: QueueAction) => void;
+    isStaff: boolean;
 };
 
 export const Queue: React.FC<Props> = ({
@@ -49,6 +50,7 @@ export const Queue: React.FC<Props> = ({
     queueCount,
     askQuestion,
     buttonsOnClick,
+    isStaff,
 }) => {
     const [isSmallerThan540] = useMediaQuery("(max-width: 540px)");
     const queueBgColour = useQueueBgColour(theme);
@@ -97,6 +99,7 @@ export const Queue: React.FC<Props> = ({
                 questions={questions}
                 actions={actions}
                 buttonsOnClick={buttonsOnClick}
+                isStaff={isStaff}
             />
         </Stack>
     );
