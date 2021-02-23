@@ -2,6 +2,7 @@ import {
     Box,
     Button,
     Center,
+    IconButton,
     ListItem,
     Stack,
     Text,
@@ -22,8 +23,9 @@ import {
 import { QuestionProps } from "./Question";
 import { QuestionList } from "./QuestionList";
 import { capitalCase, noCase } from "change-case";
+import { EditIcon } from "@chakra-ui/icons";
 
-export type Props = {
+export type QueueProps = {
     id: string;
     theme: QueueTheme;
     name: string;
@@ -31,11 +33,15 @@ export type Props = {
     examples: string[];
     actions: QueueAction[];
     sortType: QueueSortType;
+};
+
+export type Props = QueueProps & {
     questions: QuestionProps[];
     queueCount: number;
     askQuestion: (queueId: string) => void;
     buttonsOnClick: (questionId: string, queueAction: QueueAction) => void;
     isStaff: boolean;
+    openEditQueueModal: (queueProps: QueueProps) => void;
 };
 
 export const Queue: React.FC<Props> = ({
@@ -51,6 +57,7 @@ export const Queue: React.FC<Props> = ({
     askQuestion,
     buttonsOnClick,
     isStaff,
+    openEditQueueModal,
 }) => {
     const [isSmallerThan540] = useMediaQuery("(max-width: 540px)");
     const queueBgColour = useQueueBgColour(theme);
@@ -68,7 +75,31 @@ export const Queue: React.FC<Props> = ({
                 p={3}
                 b={1}
                 borderColor={queueTextColour}
+                position="relative"
             >
+                {isStaff && (
+                    <IconButton
+                        aria-label={`edit-queue-${id}`}
+                        icon={<EditIcon />}
+                        variant="ghost"
+                        colorScheme={noCase(theme)}
+                        onClick={() => {
+                            openEditQueueModal({
+                                id,
+                                theme,
+                                name,
+                                shortDescription,
+                                examples,
+                                actions,
+                                sortType,
+                            });
+                        }}
+                        position="absolute"
+                        top={0}
+                        right={0}
+                        isRound
+                    />
+                )}
                 <Stack alignItems="center">
                     <Text fontSize="4xl" color={queueTextColour}>
                         {name}

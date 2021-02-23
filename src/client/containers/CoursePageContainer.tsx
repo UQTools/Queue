@@ -16,6 +16,8 @@ import {
 import {
     QuestionStatus,
     QueueAction,
+    QueueSortType,
+    QueueTheme,
     UpdateQuestionStatusMutation,
     useAskQuestionMutation,
     useGetActiveRoomsQuery,
@@ -27,11 +29,12 @@ import { Flex, Text, useDisclosure, useMediaQuery } from "@chakra-ui/react";
 import { QuestionProps } from "../components/queue/Question";
 import { RoomSelector } from "../components/queue/RoomSelector";
 import { Map } from "immutable";
-import { Queue } from "../components/queue/Queue";
+import { Queue, QueueProps } from "../components/queue/Queue";
 import parseISO from "date-fns/parseISO";
 import { ClaimModal } from "../components/queue/ClaimModal";
 import omit from "lodash/omit";
 import { UserContext } from "../utils/user";
+import { QueueModal } from "../components/queue/QueueModal";
 
 type Props = {};
 
@@ -46,6 +49,20 @@ export const CoursePageContainer: React.FC<Props> = () => {
         onOpen: openClaimModal,
         onClose: closeClaimModal,
     } = useDisclosure();
+    const {
+        isOpen: isQueueModalOpen,
+        onOpen: openQueueModal,
+        onClose: closeQueueModal,
+    } = useDisclosure();
+    const [chosenQueue, setChosenQueue] = useState<QueueProps>({
+        id: "",
+        name: "",
+        theme: QueueTheme.Red,
+        shortDescription: "",
+        examples: [],
+        actions: [],
+        sortType: QueueSortType.QuestionsAndTime,
+    });
     const [claimMessage, setClaimMessage] = useState("");
     const [selectedQuestion, setSelectedQuestion] = useState("");
     const { courseCode } = useParams<CourseParam>();
@@ -105,6 +122,13 @@ export const CoursePageContainer: React.FC<Props> = () => {
             });
         },
         [updateQuestionMutation, selectedQuestion]
+    );
+    const editQueue = useCallback(
+        (queueProps: QueueProps) => {
+            setChosenQueue(queueProps);
+            openQueueModal();
+        },
+        [openQueueModal]
     );
     const user = useContext(UserContext);
     const isStaff = useMemo(() => {
@@ -288,6 +312,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                             askQuestion={askQuestion}
                             buttonsOnClick={queueButtonAction}
                             isStaff={isStaff}
+                            openEditQueueModal={editQueue}
                         />
                     ))}
                 </Flex>
@@ -298,6 +323,12 @@ export const CoursePageContainer: React.FC<Props> = () => {
                 setMessage={setClaimMessage}
                 message={claimMessage}
                 submit={claimQuestion}
+            />
+            <QueueModal
+                {...chosenQueue}
+                close={closeQueueModal}
+                onSubmit={() => {}}
+                isOpen={isQueueModalOpen}
             />
         </>
     );

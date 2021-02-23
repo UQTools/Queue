@@ -17,7 +17,7 @@ import { checkFieldValueInEnum } from "../utils/query";
 @Check(checkFieldValueInEnum(IsoDay, "day", true))
 export class WeeklyEvent extends BaseEntity {
     @Field()
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     id: number;
 
     @Field()
