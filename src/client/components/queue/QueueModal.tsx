@@ -13,7 +13,14 @@ import {
 import { Form, Formik } from "formik";
 import { FormikInput } from "../helpers/FormikInput";
 import { FormikCheckboxGroup } from "../helpers/FormikCheckboxGroup";
-import { QueueAction } from "../../generated/graphql";
+import {
+    QueueAction,
+    QueueSortType,
+    QueueTheme,
+} from "../../generated/graphql";
+import { FormikRadioGroup } from "../helpers/FormikRadioGroup";
+import { FormikSelect } from "../helpers/FormikSelect";
+import { FormikInputGroup } from "../helpers/FormikInputGroup";
 
 type Props = QueueProps & {
     close: () => void;
@@ -34,7 +41,12 @@ export const QueueModal: React.FC<Props> = ({
     examples,
 }) => {
     return (
-        <Modal isOpen={isOpen} onClose={close}>
+        <Modal
+            isOpen={isOpen}
+            onClose={close}
+            size="xl"
+            scrollBehavior="inside"
+        >
             <ModalOverlay />
             <Formik
                 initialValues={{
@@ -59,17 +71,54 @@ export const QueueModal: React.FC<Props> = ({
                                     QueueAction.Accept,
                                     QueueAction.Remove,
                                     QueueAction.Claim,
-                                    QueueAction.Remove,
+                                    QueueAction.Email,
                                 ]}
                                 name="actions"
+                                direction="row"
+                            />
+                            <FormikRadioGroup
+                                name="theme"
+                                values={[
+                                    QueueTheme.Red,
+                                    QueueTheme.Orange,
+                                    QueueTheme.Yellow,
+                                    QueueTheme.Green,
+                                    QueueTheme.Cyan,
+                                    QueueTheme.Teal,
+                                    QueueTheme.Blue,
+                                    QueueTheme.Purple,
+                                    QueueTheme.Pink,
+                                    QueueTheme.Gray,
+                                ]}
+                                stackDirection="column"
+                            />
+                            <FormikInput name="shortDescription" />
+                            <FormikSelect
+                                name="sortType"
+                                options={[
+                                    QueueSortType.Time,
+                                    QueueSortType.Questions,
+                                    QueueSortType.QuestionsAndTime,
+                                ]}
+                            />
+                            <FormikInputGroup
+                                name="examples"
+                                label="Question Examples"
                             />
                         </ModalBody>
 
                         <ModalFooter>
-                            <Button colorScheme="blue" mr={3} onClick={close}>
-                                Close
+                            <Button variant="ghost" onClick={close}>
+                                Cancel
                             </Button>
-                            <Button variant="ghost">Secondary Action</Button>
+                            <Button
+                                colorScheme="blue"
+                                mr={3}
+                                type="submit"
+                                onClick={close}
+                            >
+                                Save
+                            </Button>
                         </ModalFooter>
                     </ModalContent>
                 </Form>

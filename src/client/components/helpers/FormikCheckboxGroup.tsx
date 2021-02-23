@@ -1,4 +1,10 @@
-import { Checkbox, FormControl, FormLabel, Stack } from "@chakra-ui/react";
+import {
+    Checkbox,
+    FormControl,
+    FormLabel,
+    Stack,
+    StackProps,
+} from "@chakra-ui/react";
 import React from "react";
 import { useField } from "formik";
 import { capitalCase } from "change-case";
@@ -7,12 +13,14 @@ type Props<T extends number | string> = {
     values: T[];
     name: string;
     transformValue?: (value: T) => string;
+    direction?: StackProps["direction"];
 };
 
 export const FormikCheckboxGroup = <T extends number | string>({
     values,
     name,
     transformValue,
+    direction,
 }: Props<T>) => {
     const [
         ,
@@ -22,7 +30,7 @@ export const FormikCheckboxGroup = <T extends number | string>({
     return (
         <FormControl mt={3}>
             <FormLabel>{capitalCase(name)}</FormLabel>
-            <Stack spacing={2}>
+            <Stack spacing={2} direction={direction}>
                 {values.map((value, key) => (
                     <Checkbox
                         value={value}

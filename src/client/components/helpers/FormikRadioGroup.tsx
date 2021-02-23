@@ -7,7 +7,7 @@ type Props = {
     name: string;
     values: string[];
     label?: string;
-    transformValue?: (value: string) => string;
+    formatValue?: (value: string) => string;
     stackDirection?: "row" | "column";
 };
 
@@ -15,7 +15,7 @@ export const FormikRadioGroup: React.FC<Props> = ({
     name,
     values,
     label,
-    transformValue,
+    formatValue,
     stackDirection = "row",
 }) => {
     const [, { value }, { setValue }] = useField(name);
@@ -34,7 +34,7 @@ export const FormikRadioGroup: React.FC<Props> = ({
                         key={key}
                         id={`formik-radio-${name}-${key}`}
                     >
-                        {transformValue?.(radioValue) ||
+                        {formatValue?.(radioValue) ||
                             capitalCase(radioValue)}
                     </Radio>
                 ))}
