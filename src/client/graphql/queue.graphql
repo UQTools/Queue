@@ -54,3 +54,15 @@ mutation UpdateQueue($queueId: String!, $queueInput: QueueInput!) {
         clearAfterMidnight
     }
 }
+ mutation CreateQueue($roomId: String!, $queueInput: QueueInput!) {
+     createQueue(roomId: $roomId, queueInput: $queueInput) {
+         id
+         name
+         shortDescription
+         examples
+         actions
+         theme
+         sortedBy
+         clearAfterMidnight
+     }
+ }

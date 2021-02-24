@@ -20,13 +20,21 @@ import {
     QueueTheme,
     UpdateQuestionStatusMutation,
     useAskQuestionMutation,
+    useCreateQueueMutation,
     useGetActiveRoomsQuery,
     useGetRoomByIdLazyQuery,
     useQuestionChangeSubscription,
     useUpdateQuestionStatusMutation,
     useUpdateQueueMutation,
 } from "../generated/graphql";
-import { Flex, Text, useDisclosure, useMediaQuery } from "@chakra-ui/react";
+import {
+    Button,
+    Flex,
+    Spacer,
+    Text,
+    useDisclosure,
+    useMediaQuery,
+} from "@chakra-ui/react";
 import { QuestionProps } from "../components/queue/Question";
 import { RoomSelector } from "../components/queue/RoomSelector";
 import { Map } from "immutable";
@@ -67,7 +75,10 @@ export const CoursePageContainer: React.FC<Props> = () => {
         onClose: closeQueueModal,
     } = useDisclosure();
     const [queues, setQueues] = useState<Map<string, QueueProps>>(Map());
+    const [addingNewQueue, setAddingNewQueue] = useState(false);
     const [chosenQueueId, setChosenQueueId] = useState("");
+    const [chosenRoomId, setChosenRoomId] = useState("default");
+    const [displayedQueues, setDisplayedQueues] = useState<string[]>([]);
     const [claimMessage, setClaimMessage] = useState("");
     const [selectedQuestion, setSelectedQuestion] = useState("");
     const { courseCode } = useParams<CourseParam>();
@@ -110,6 +121,12 @@ export const CoursePageContainer: React.FC<Props> = () => {
         updateQuestionMutation,
         { data: updateQuestionData },
     ] = useMutationWithError(useUpdateQuestionStatusMutation, {
+        errorPolicy: "all",
+    });
+    const [
+        createQueueMutation,
+        { data: createQueueData },
+    ] = useMutationWithError(useCreateQueueMutation, {
         errorPolicy: "all",
     });
     const askQuestion = useCallback(
@@ -219,6 +236,9 @@ export const CoursePageContainer: React.FC<Props> = () => {
                     clearAfterMidnight: queue.clearAfterMidnight,
                 })
             );
+            setDisplayedQueues(
+                roomData.getRoomById.queues.map((queue) => queue.id)
+            );
         });
     }, [roomData, courseCode]);
 
@@ -286,6 +306,25 @@ export const CoursePageContainer: React.FC<Props> = () => {
         const newQuestion = updateQuestionData.updateQuestionStatus;
         updateQueueQuestion(newQuestion);
     }, [updateQuestionData, updateQueueQuestion]);
+    useEffect(() => {
+        if (!createQueueData) {
+            return;
+        }
+        const newQueue = createQueueData.createQueue;
+        setQueues((prev) =>
+            prev.set(newQueue.id, {
+                id: newQueue.id,
+                name: newQueue.name,
+                theme: newQueue.theme,
+                shortDescription: newQueue.shortDescription,
+                actions: newQueue.actions,
+                sortType: newQueue.sortedBy,
+                examples: newQueue.examples,
+                clearAfterMidnight: newQueue.clearAfterMidnight,
+            })
+        );
+        setDisplayedQueues((prev) => [...prev, newQueue.id]);
+    }, [createQueueData]);
 
     useEffect(() => {
         if (!updateQueueData) {
@@ -311,33 +350,51 @@ export const CoursePageContainer: React.FC<Props> = () => {
                 <Text fontSize="3xl" mb={3}>
                     {courseCode}
                 </Text>
-                <RoomSelector
-                    onSelect={(roomId) => {
-                        getRoomById({
-                            variables: {
-                                roomId,
-                            },
-                        });
-                    }}
-                    rooms={
-                        activeRoomsData?.getActiveRooms.map((room) => [
-                            room.id,
-                            room.name,
-                        ]) || []
-                    }
-                />
+                <Flex alignItems="center">
+                    <RoomSelector
+                        selected={chosenRoomId}
+                        onSelect={(roomId) => {
+                            getRoomById({
+                                variables: {
+                                    roomId,
+                                },
+                            });
+                            setChosenRoomId(roomId);
+                        }}
+                        rooms={
+                            activeRoomsData?.getActiveRooms.map((room) => [
+                                room.id,
+                                room.name,
+                            ]) || []
+                        }
+                    />
+                    <Spacer />
+                    {chosenRoomId !== "default" && (
+                        <Button
+                            onClick={() => {
+                                setAddingNewQueue(true);
+                                openQueueModal();
+                            }}
+                            colorScheme="green"
+                            ml="auto"
+                            mt={3}
+                        >
+                            Add new queue
+                        </Button>
+                    )}
+                </Flex>
                 <Flex
                     wrap="wrap"
                     mt={6}
                     justifyContent="space-around"
                     direction={isSmallerThan540 ? "column" : "row"}
                 >
-                    {roomData?.getRoomById.queues.map((queue, key) => (
+                    {displayedQueues.map((queueId, key) => (
                         <Queue
                             key={key}
-                            {...(queues.get(queue.id) || placeholderQueue)}
+                            {...(queues.get(queueId) || placeholderQueue)}
                             questions={Object.values(
-                                queueQuestions.get(queue.id) || {}
+                                queueQuestions.get(queueId) || {}
                             )}
                             queueCount={
                                 roomData?.getRoomById.queues.length || 1
@@ -358,7 +415,9 @@ export const CoursePageContainer: React.FC<Props> = () => {
                 submit={claimQuestion}
             />
             <QueueModal
-                {...(queues.get(chosenQueueId) || placeholderQueue)}
+                {...(addingNewQueue
+                    ? placeholderQueue
+                    : queues.get(chosenQueueId) || placeholderQueue)}
                 close={closeQueueModal}
                 onSubmit={({
                     id,
@@ -370,22 +429,41 @@ export const CoursePageContainer: React.FC<Props> = () => {
                     clearAfterMidnight,
                     theme,
                 }) => {
-                    updateQueue({
-                        variables: {
-                            queueId: id,
-                            queueInput: {
-                                name,
-                                shortDescription,
-                                actions,
-                                examples,
-                                clearAfterMidnight,
-                                sortedBy: sortType,
-                                theme,
+                    if (addingNewQueue) {
+                        createQueueMutation({
+                            variables: {
+                                roomId: chosenRoomId,
+                                queueInput: {
+                                    name,
+                                    shortDescription,
+                                    examples,
+                                    theme,
+                                    sortedBy: sortType,
+                                    clearAfterMidnight,
+                                    actions,
+                                },
                             },
-                        },
-                    });
+                        });
+                        setAddingNewQueue(false);
+                    } else {
+                        updateQueue({
+                            variables: {
+                                queueId: id,
+                                queueInput: {
+                                    name,
+                                    shortDescription,
+                                    actions,
+                                    examples,
+                                    clearAfterMidnight,
+                                    sortedBy: sortType,
+                                    theme,
+                                },
+                            },
+                        });
+                    }
                 }}
                 isOpen={isQueueModalOpen}
+                header="Edit Queue"
             />
         </>
     );

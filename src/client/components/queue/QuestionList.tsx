@@ -1,4 +1,13 @@
-import { Divider, Table, Tbody, Text, Th, Thead, Tr } from "@chakra-ui/react";
+import {
+    Box,
+    Divider,
+    Table,
+    Tbody,
+    Text,
+    Th,
+    Thead,
+    Tr,
+} from "@chakra-ui/react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { QueueAction, QueueSortType } from "../../generated/graphql";
 import { Question, QuestionProps } from "./Question";
@@ -75,29 +84,31 @@ export const QuestionList: React.FC<Props> = ({
                 )}
             </Text>
             <Divider />
-            <Table>
-                <Thead>
-                    <Tr>
-                        <Th>#</Th>
-                        <Th>Name</Th>
-                        <Th isNumeric>Questions today</Th>
-                        <Th>Elapsed time</Th>
-                        {isStaff && <Th />}
-                    </Tr>
-                </Thead>
-                <Tbody>
-                    {sortedQuestions.map((question, key) => (
-                        <Question
-                            {...question}
-                            key={key}
-                            actions={actions}
-                            index={key + 1}
-                            buttonsOnClick={buttonsOnClick}
-                            isStaff={isStaff}
-                        />
-                    ))}
-                </Tbody>
-            </Table>
+            <Box w="100%" overflowX="auto">
+                <Table>
+                    <Thead>
+                        <Tr>
+                            <Th>#</Th>
+                            <Th>Name</Th>
+                            <Th isNumeric>Questions today</Th>
+                            <Th>Elapsed time</Th>
+                            {isStaff && <Th />}
+                        </Tr>
+                    </Thead>
+                    <Tbody>
+                        {sortedQuestions.map((question, key) => (
+                            <Question
+                                {...question}
+                                key={key}
+                                actions={actions}
+                                index={key + 1}
+                                buttonsOnClick={buttonsOnClick}
+                                isStaff={isStaff}
+                            />
+                        ))}
+                    </Tbody>
+                </Table>
+            </Box>
         </>
     );
 };

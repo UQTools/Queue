@@ -2,8 +2,6 @@ import React from "react";
 import { QueueProps } from "./Queue";
 import {
     Button,
-    FormControl,
-    FormLabel,
     Modal,
     ModalBody,
     ModalCloseButton,
@@ -26,6 +24,7 @@ import { FormikInputGroup } from "../helpers/FormikInputGroup";
 import { FormikCheckbox } from "../helpers/FormikCheckbox";
 
 type Props = QueueProps & {
+    header: string;
     close: () => void;
     isOpen: boolean;
     onSubmit: (queue: QueueProps) => void;
@@ -43,6 +42,7 @@ export const QueueModal: React.FC<Props> = ({
     sortType,
     examples,
     clearAfterMidnight,
+    header,
 }) => {
     return (
         <Modal
@@ -67,7 +67,7 @@ export const QueueModal: React.FC<Props> = ({
             >
                 <Form>
                     <ModalContent>
-                        <ModalHeader>Edit Queue</ModalHeader>
+                        <ModalHeader>{header}</ModalHeader>
                         <ModalCloseButton />
                         <ModalBody>
                             <FormikInput name="name" />

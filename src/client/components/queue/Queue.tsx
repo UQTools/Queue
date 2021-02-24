@@ -65,11 +65,7 @@ export const Queue: React.FC<Props> = ({
     const queueTextColour = useQueueTextColour(theme);
     const descriptionColour = useColorModeValue("gray.600", "gray.300");
     return (
-        <Stack
-            spacing={2}
-            w={isSmallerThan540 ? "90%" : `${100 / queueCount - 5}%`}
-            minW="400px"
-        >
+        <Stack spacing={2} w={isSmallerThan540 ? "90%" : "45%"} mt={4}>
             <Box
                 bg={queueBgColour}
                 borderRadius={5}

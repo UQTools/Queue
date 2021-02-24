@@ -17,6 +17,7 @@ import React, { useContext } from "react";
 import { UserContext } from "../utils/user";
 import { BsPersonFill } from "react-icons/all";
 import { NavBarMenuButton } from "./navbar/NavBarMenuButton";
+import { Link } from "react-router-dom";
 
 type Props = {};
 
@@ -29,9 +30,11 @@ export const NavBar: React.FunctionComponent<Props> = () => {
             <Box w="100%" bgColor={bgColor}>
                 <Flex w="80%" mx="auto" h={14} alignItems="center">
                     <Box>
-                        <Heading size="md" fontWeight="normal">
-                            Q
-                        </Heading>
+                        <Link to="/">
+                            <Heading size="md" fontWeight="normal">
+                                Q
+                            </Heading>
+                        </Link>
                     </Box>
                     <Spacer />
                     <Menu>
