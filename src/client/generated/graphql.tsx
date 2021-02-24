@@ -273,7 +273,15 @@ export type MeQuery = (
       & Pick<CourseStaff, 'role'>
       & { course: (
         { __typename?: 'Course' }
-        & Pick<Course, 'code'>
+        & Pick<Course, 'id' | 'code' | 'title'>
+        & { rooms: Array<(
+          { __typename?: 'Room' }
+          & Pick<Room, 'id' | 'name' | 'capacity' | 'enforceCapacity' | 'manuallyDisabled'>
+          & { activeTimes: Array<(
+            { __typename?: 'WeeklyEvent' }
+            & Pick<WeeklyEvent, 'startTime' | 'endTime' | 'day'>
+          )> }
+        )> }
       ) }
     )> }
   ) }
@@ -415,7 +423,21 @@ export const MeDocument = gql`
     isAdmin
     courseStaff {
       course {
+        id
         code
+        title
+        rooms {
+          id
+          name
+          capacity
+          enforceCapacity
+          manuallyDisabled
+          activeTimes {
+            startTime
+            endTime
+            day
+          }
+        }
       }
       role
     }

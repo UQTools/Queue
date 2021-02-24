@@ -9,7 +9,7 @@ import {
 import { Lazy } from "../types/query";
 import { Room } from "./room";
 import { Field, Int, ObjectType } from "type-graphql";
-import { IsoDay } from "../types/day";
+import { IsoDay } from "../../types/day";
 import { checkFieldValueInEnum } from "../utils/query";
 
 @ObjectType()

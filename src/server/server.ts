@@ -66,6 +66,9 @@ const main = async () => {
             ],
             dateScalarMode: "isoDate",
         }),
+        subscriptions: {
+            path: "/subscriptions",
+        },
         context: ({ req, res }): MyContext => ({ req, res }),
     });
 

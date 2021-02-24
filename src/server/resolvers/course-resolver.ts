@@ -1,4 +1,12 @@
-import { Arg, Ctx, Field, InputType, Mutation, Resolver } from "type-graphql";
+import {
+    Arg,
+    Ctx,
+    Field,
+    InputType,
+    Mutation,
+    Query,
+    Resolver,
+} from "type-graphql";
 import { Course, User } from "../entities";
 import { MyContext } from "../types/context";
 import { permissionDeniedMsg, redacted } from "../../constants";

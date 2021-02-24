@@ -59,6 +59,9 @@ export class RoomResolver {
         const rooms = await course.rooms;
         const today = new Date();
         return await asyncFilter(rooms, async (room) => {
+            if (room.manuallyDisabled) {
+                return false;
+            }
             const events = await room.activeTimes;
             return events.some((event) => {
                 const currentDay = getIsoDay(today);

@@ -48,6 +48,19 @@ export class QuestionResolver {
         if (existingQueues.length > 0) {
             throw new Error("You are already on a queue of this course");
         }
+        const room = await queue.room;
+        if (room.enforceCapacity) {
+            const existingQuestions = await (await room.queues).reduce<
+                Promise<Question[]>
+            >(async (prev, current) => {
+                const prevValue = await prev;
+                const questions = await current.questions;
+                return [...prevValue, ...questions];
+            }, Promise.resolve([]));
+            if (existingQuestions.length >= room.capacity) {
+                throw new Error("This room is already full");
+            }
+        }
         const question = await Question.create({
             opId: req.user.id,
             queueId: queue.id,

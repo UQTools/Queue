@@ -6,7 +6,21 @@ query Me {
         isAdmin
         courseStaff {
             course {
+                id
                 code
+                title
+                rooms {
+                    id
+                    name
+                    capacity
+                    enforceCapacity
+                    manuallyDisabled
+                    activeTimes {
+                        startTime
+                        endTime
+                        day
+                    }
+                }
             }
             role
         }
