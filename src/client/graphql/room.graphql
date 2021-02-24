@@ -34,3 +34,32 @@ query GetRoomById($roomId: String!) {
         }
     }
 }
+
+mutation UpdateRoom($roomId: String!, $roomInput: RoomInput!) {
+    updateRoom(roomId: $roomId, roomInput: $roomInput) {
+        id
+        name
+        capacity
+        enforceCapacity
+        manuallyDisabled
+        activeTimes {
+            startTime
+            endTime
+            day
+        }    }
+}
+
+mutation AddRoom($courseId: String!, $roomInput: RoomInput!) {
+    createRoom(courseId: $courseId, roomInput: $roomInput) {
+        id
+        name
+        capacity
+        enforceCapacity
+        manuallyDisabled
+        activeTimes {
+            startTime
+            endTime
+            day
+        }
+    }
+}

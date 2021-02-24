@@ -47,6 +47,7 @@ export const FormikActiveTimeInput: React.FC<Props> = ({ name, label }) => {
                                 )
                             }
                             size="sm"
+                            id={`active-time-select-${index}`}
                         >
                             {[
                                 IsoDay.MON,
@@ -75,6 +76,7 @@ export const FormikActiveTimeInput: React.FC<Props> = ({ name, label }) => {
                             size="sm"
                             min={0}
                             max={value.endTime - 1}
+                            id={`active-time-start-${index}`}
                         >
                             <NumberInputField />
                             <NumberInputStepper>
@@ -95,6 +97,7 @@ export const FormikActiveTimeInput: React.FC<Props> = ({ name, label }) => {
                             size="sm"
                             min={value.startTime + 1}
                             max={24}
+                            id={`active-time-end-${index}`}
                         >
                             <NumberInputField />
                             <NumberInputStepper>

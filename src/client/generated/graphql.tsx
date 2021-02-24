@@ -427,6 +427,42 @@ export type GetRoomByIdQuery = (
   ) }
 );
 
+export type UpdateRoomMutationVariables = Exact<{
+  roomId: Scalars['String'];
+  roomInput: RoomInput;
+}>;
+
+
+export type UpdateRoomMutation = (
+  { __typename?: 'Mutation' }
+  & { updateRoom: (
+    { __typename?: 'Room' }
+    & Pick<Room, 'id' | 'name' | 'capacity' | 'enforceCapacity' | 'manuallyDisabled'>
+    & { activeTimes: Array<(
+      { __typename?: 'WeeklyEvent' }
+      & Pick<WeeklyEvent, 'startTime' | 'endTime' | 'day'>
+    )> }
+  ) }
+);
+
+export type AddRoomMutationVariables = Exact<{
+  courseId: Scalars['String'];
+  roomInput: RoomInput;
+}>;
+
+
+export type AddRoomMutation = (
+  { __typename?: 'Mutation' }
+  & { createRoom: (
+    { __typename?: 'Room' }
+    & Pick<Room, 'id' | 'name' | 'capacity' | 'enforceCapacity' | 'manuallyDisabled'>
+    & { activeTimes: Array<(
+      { __typename?: 'WeeklyEvent' }
+      & Pick<WeeklyEvent, 'startTime' | 'endTime' | 'day'>
+    )> }
+  ) }
+);
+
 
 export const MeDocument = gql`
     query Me {
@@ -789,3 +825,87 @@ export function useGetRoomByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type GetRoomByIdQueryHookResult = ReturnType<typeof useGetRoomByIdQuery>;
 export type GetRoomByIdLazyQueryHookResult = ReturnType<typeof useGetRoomByIdLazyQuery>;
 export type GetRoomByIdQueryResult = Apollo.QueryResult<GetRoomByIdQuery, GetRoomByIdQueryVariables>;
+export const UpdateRoomDocument = gql`
+    mutation UpdateRoom($roomId: String!, $roomInput: RoomInput!) {
+  updateRoom(roomId: $roomId, roomInput: $roomInput) {
+    id
+    name
+    capacity
+    enforceCapacity
+    manuallyDisabled
+    activeTimes {
+      startTime
+      endTime
+      day
+    }
+  }
+}
+    `;
+export type UpdateRoomMutationFn = Apollo.MutationFunction<UpdateRoomMutation, UpdateRoomMutationVariables>;
+
+/**
+ * __useUpdateRoomMutation__
+ *
+ * To run a mutation, you first call `useUpdateRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateRoomMutation, { data, loading, error }] = useUpdateRoomMutation({
+ *   variables: {
+ *      roomId: // value for 'roomId'
+ *      roomInput: // value for 'roomInput'
+ *   },
+ * });
+ */
+export function useUpdateRoomMutation(baseOptions?: Apollo.MutationHookOptions<UpdateRoomMutation, UpdateRoomMutationVariables>) {
+        return Apollo.useMutation<UpdateRoomMutation, UpdateRoomMutationVariables>(UpdateRoomDocument, baseOptions);
+      }
+export type UpdateRoomMutationHookResult = ReturnType<typeof useUpdateRoomMutation>;
+export type UpdateRoomMutationResult = Apollo.MutationResult<UpdateRoomMutation>;
+export type UpdateRoomMutationOptions = Apollo.BaseMutationOptions<UpdateRoomMutation, UpdateRoomMutationVariables>;
+export const AddRoomDocument = gql`
+    mutation AddRoom($courseId: String!, $roomInput: RoomInput!) {
+  createRoom(courseId: $courseId, roomInput: $roomInput) {
+    id
+    name
+    capacity
+    enforceCapacity
+    manuallyDisabled
+    activeTimes {
+      startTime
+      endTime
+      day
+    }
+  }
+}
+    `;
+export type AddRoomMutationFn = Apollo.MutationFunction<AddRoomMutation, AddRoomMutationVariables>;
+
+/**
+ * __useAddRoomMutation__
+ *
+ * To run a mutation, you first call `useAddRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addRoomMutation, { data, loading, error }] = useAddRoomMutation({
+ *   variables: {
+ *      courseId: // value for 'courseId'
+ *      roomInput: // value for 'roomInput'
+ *   },
+ * });
+ */
+export function useAddRoomMutation(baseOptions?: Apollo.MutationHookOptions<AddRoomMutation, AddRoomMutationVariables>) {
+        return Apollo.useMutation<AddRoomMutation, AddRoomMutationVariables>(AddRoomDocument, baseOptions);
+      }
+export type AddRoomMutationHookResult = ReturnType<typeof useAddRoomMutation>;
+export type AddRoomMutationResult = Apollo.MutationResult<AddRoomMutation>;
+export type AddRoomMutationOptions = Apollo.BaseMutationOptions<AddRoomMutation, AddRoomMutationVariables>;
