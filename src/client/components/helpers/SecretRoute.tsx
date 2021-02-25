@@ -11,9 +11,9 @@ export const SecretRoute: React.FC<Props> = ({
     allowedRoles = [StaffRole.Staff, StaffRole.Coordinator],
     ...props
 }) => {
-    const user = useContext(UserContext);
-    if (!user) {
-        return <Redirect to="/permission-denied" />;
+    const user = useContext(UserContext)!;
+    if (user.isAdmin) {
+        return <Route {...props} />;
     }
     if (user.courseStaff.length === 0) {
         return <Redirect to="/permission-denied" />;

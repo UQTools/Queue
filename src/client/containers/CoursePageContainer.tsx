@@ -384,7 +384,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                         }
                     />
                     <Spacer />
-                    {chosenRoomId !== "default" && (
+                    {isStaff && chosenRoomId !== "default" && (
                         <Button
                             onClick={() => {
                                 setAddingNewQueue(true);
