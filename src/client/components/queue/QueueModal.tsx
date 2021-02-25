@@ -28,6 +28,7 @@ type Props = Omit<QueueProps, "createdAt"> & {
     close: () => void;
     isOpen: boolean;
     onSubmit: (queue: Omit<QueueProps, "createdAt">) => void;
+    onRemove?: (queueId: string) => void;
 };
 
 export const QueueModal: React.FC<Props> = ({
@@ -44,6 +45,7 @@ export const QueueModal: React.FC<Props> = ({
     clearAfterMidnight,
     header,
     showEnrolledSession,
+    onRemove,
 }) => {
     return (
         <Modal
@@ -127,12 +129,23 @@ export const QueueModal: React.FC<Props> = ({
                                 Cancel
                             </Button>
                             <Button
+                                mr={3}
                                 colorScheme="blue"
                                 type="submit"
                                 onClick={close}
                             >
                                 Save
                             </Button>
+                            {onRemove && (
+                                <Button
+                                    colorScheme="red"
+                                    onClick={() => {
+                                        onRemove(id);
+                                    }}
+                                >
+                                    Remove
+                                </Button>
+                            )}
                         </ModalFooter>
                     </ModalContent>
                 </Form>

@@ -56,7 +56,10 @@ export class Question extends BaseEntity {
     claimMessage: string;
 
     @Field(() => Queue)
-    @ManyToOne(() => Queue, (queue) => queue.questions, { lazy: true })
+    @ManyToOne(() => Queue, (queue) => queue.questions, {
+        lazy: true,
+        onDelete: "CASCADE",
+    })
     queue: Lazy<Queue>;
 
     @Column()

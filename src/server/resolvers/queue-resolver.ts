@@ -108,4 +108,24 @@ export class QueueResolver {
         queue.showEnrolledSession = showEnrolledSession;
         return await queue.save();
     }
+
+    @Mutation(() => String)
+    async removeQueue(
+        @Arg("queueId") queueId: string,
+        @Ctx() { req }: MyContext
+    ): Promise<string> {
+        let queue: Queue;
+        try {
+            queue = await Queue.findOneOrFail(queueId);
+        } catch (e) {
+            throw new Error("Cannot find queue");
+        }
+        const room = await queue.room;
+        if (!req.user.isAdmin) {
+            await getCourseStaff(room.courseId, req.user.id);
+        }
+        const removedId = queue.id;
+        await Queue.remove(queue);
+        return removedId;
+    }
 }

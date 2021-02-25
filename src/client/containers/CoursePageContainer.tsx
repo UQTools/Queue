@@ -25,6 +25,7 @@ import {
     useGetActiveRoomsQuery,
     useGetRoomByIdLazyQuery,
     useQuestionChangeSubscription,
+    useRemoveQueueMutation,
     useUpdateQuestionStatusMutation,
     useUpdateQueueMutation,
 } from "../generated/graphql";
@@ -137,6 +138,10 @@ export const CoursePageContainer: React.FC<Props> = () => {
     ] = useMutationWithError(useCreateQueueMutation, {
         errorPolicy: "all",
     });
+    const [
+        removeQueueMutation,
+        { data: removeQueueData },
+    ] = useMutationWithError(useRemoveQueueMutation, { errorPolicy: "all" });
     useEffect(() => {
         if (!activeRoomsError) {
             return;
@@ -166,6 +171,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
     const editQueue = useCallback(
         (queueId: string) => {
             setChosenQueueId(queueId);
+            setAddingNewQueue(false);
             openQueueModal();
         },
         [openQueueModal]
@@ -306,6 +312,16 @@ export const CoursePageContainer: React.FC<Props> = () => {
         const question = askQuestionData.askQuestion;
         updateQueueQuestion(question);
     }, [askQuestionData, updateQuestionData, updateQueueQuestion]);
+    useEffect(() => {
+        if (!removeQueueData) {
+            return;
+        }
+        const removedId = removeQueueData.removeQueue;
+        setDisplayedQueues((prev) =>
+            prev.filter((queueId) => queueId !== removedId)
+        );
+        setQueues((prev) => prev.remove(removedId));
+    }, [removeQueueData]);
 
     const queueButtonAction = useCallback(
         (question: QuestionProps, questionAction: QueueAction) => {
@@ -500,6 +516,18 @@ export const CoursePageContainer: React.FC<Props> = () => {
                 }}
                 isOpen={isQueueModalOpen}
                 header={addingNewQueue ? "Add a new Queue" : "Edit Queue"}
+                onRemove={
+                    addingNewQueue
+                        ? undefined
+                        : async (queueId) => {
+                              await removeQueueMutation({
+                                  variables: {
+                                      queueId,
+                                  },
+                              });
+                              closeQueueModal();
+                          }
+                }
             />
         </>
     );
