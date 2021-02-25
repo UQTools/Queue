@@ -19,7 +19,7 @@ export const HomePageContainer: React.FC<Props> = () => {
         <Box h="90vh">
             <Stack h="100%" justifyContent="center" alignItems="center">
                 <Text fontSize="10em">Q</Text>
-                <InputGroup maxW="50vh">
+                <InputGroup maxW="30vw" size="lg">
                     <InputLeftElement pointerEvents="none">
                         <SearchIcon color="gray.300" />
                     </InputLeftElement>
