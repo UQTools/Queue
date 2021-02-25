@@ -162,7 +162,9 @@ export const CourseStaffPageContainer: React.FC<Props> = () => {
                         onChange={(e) => setCourseId(e.target.value)}
                         value={courseId}
                     >
-                        <option value="" disabled>Choose a value</option>
+                        <option value="" disabled>
+                            Choose a value
+                        </option>
                         {availCourses.map(([courseId, courseCode], key) => (
                             <option key={key} value={courseId}>
                                 {courseCode}
