@@ -18,7 +18,7 @@ export class CourseUserMetaResolver {
         enrolledSession: UserEnrolledSessionInput[],
         @Ctx() { req }: MyContext
     ): Promise<boolean> {
-        console.log(req.user);
+        console.log(req.user, enrolledSession, courseCode);
         return true;
     }
 }
