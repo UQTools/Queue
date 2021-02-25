@@ -52,7 +52,16 @@ export class RoomResolver {
     ): Promise<Room[]> {
         let course: Course;
         try {
-            course = await Course.findOneOrFail({ code: courseCode });
+            course = await Course.findOneOrFail({
+                where: [
+                    {
+                        code: courseCode,
+                    },
+                    {
+                        alias: courseCode,
+                    },
+                ],
+            });
         } catch (e) {
             throw new Error("Cannot find course");
         }

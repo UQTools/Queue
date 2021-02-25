@@ -22,6 +22,10 @@ export class Course extends BaseEntity {
     @Column({ unique: true })
     code: string;
 
+    @Field({ nullable: true })
+    @Column({ unique: true, nullable: true })
+    alias: string;
+
     @Field()
     @Column()
     title: string;
