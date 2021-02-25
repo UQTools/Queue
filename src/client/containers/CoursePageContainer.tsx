@@ -47,6 +47,7 @@ import omit from "lodash/omit";
 import { UserContext } from "../utils/user";
 import { QueueModal } from "../components/queue/QueueModal";
 import { generateMailto, pushNotification } from "../utils/queue";
+import sortBy from "lodash/sortBy";
 
 type Props = {};
 
@@ -64,6 +65,7 @@ const placeholderQueue: QueueProps = {
     sortType: QueueSortType.QuestionsAndTime,
     clearAfterMidnight: true,
     showEnrolledSession: false,
+    createdAt: new Date(),
 };
 
 export const CoursePageContainer: React.FC<Props> = () => {
@@ -175,6 +177,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                     examples: queue.examples,
                     clearAfterMidnight: queue.clearAfterMidnight,
                     showEnrolledSession: queue.showEnrolledSession,
+                    createdAt: parseISO(queue.createdAt),
                 })
             );
         },
@@ -404,7 +407,9 @@ export const CoursePageContainer: React.FC<Props> = () => {
                     justifyContent="space-around"
                     direction={isSmallerThan540 ? "column" : "row"}
                 >
-                    {displayedQueues.map((queueId, key) => (
+                    {sortBy(displayedQueues, (queueId) => {
+                        return queues.get(queueId)?.createdAt || new Date();
+                    }).map((queueId, key) => (
                         <Queue
                             key={key}
                             {...(queues.get(queueId) || placeholderQueue)}

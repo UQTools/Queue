@@ -54,7 +54,7 @@ export const Question: React.FC<Props> = ({
     useEffect(() => {
         // Call this for the first time
         updateTime();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // TODO: Clean up timeout
     }, [updateTime]);
     const elapsedTimeDisplay = useMemo(() => {
         return secondsToText(elapsedSeconds);

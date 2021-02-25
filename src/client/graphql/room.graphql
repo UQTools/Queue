@@ -35,6 +35,7 @@ query GetRoomById($roomId: String!) {
                 questionsAsked
                 enrolledIn
             }
+            createdAt
         }
     }
 }

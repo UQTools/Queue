@@ -58,6 +58,7 @@ export type Queue = {
   id: Scalars['String'];
   name: Scalars['String'];
   shortDescription: Scalars['String'];
+  createdAt: Scalars['DateTime'];
   examples: Array<Scalars['String']>;
   theme: QueueTheme;
   sortedBy: QueueSortType;
@@ -68,6 +69,7 @@ export type Queue = {
   showEnrolledSession: Scalars['Boolean'];
   activeQuestions: Array<Question>;
 };
+
 
 export enum QueueTheme {
   Gray = 'GRAY',
@@ -161,7 +163,6 @@ export type CourseUserMeta = {
   questionsAsked: Scalars['Int'];
   enrolledSession?: Maybe<Scalars['String']>;
 };
-
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -371,7 +372,7 @@ export type UpdateQueueMutation = (
   { __typename?: 'Mutation' }
   & { updateQueue: (
     { __typename?: 'Queue' }
-    & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight' | 'showEnrolledSession'>
+    & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight' | 'showEnrolledSession' | 'createdAt'>
   ) }
 );
 
@@ -385,7 +386,7 @@ export type CreateQueueMutation = (
   { __typename?: 'Mutation' }
   & { createQueue: (
     { __typename?: 'Queue' }
-    & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight' | 'showEnrolledSession'>
+    & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight' | 'showEnrolledSession' | 'createdAt'>
   ) }
 );
 
@@ -414,7 +415,7 @@ export type GetRoomByIdQuery = (
     & Pick<Room, 'id' | 'name'>
     & { queues: Array<(
       { __typename?: 'Queue' }
-      & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight' | 'showEnrolledSession'>
+      & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight' | 'showEnrolledSession' | 'createdAt'>
       & { activeQuestions: Array<(
         { __typename?: 'Question' }
         & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked' | 'enrolledIn'>
@@ -682,6 +683,7 @@ export const UpdateQueueDocument = gql`
     sortedBy
     clearAfterMidnight
     showEnrolledSession
+    createdAt
   }
 }
     `;
@@ -723,6 +725,7 @@ export const CreateQueueDocument = gql`
     sortedBy
     clearAfterMidnight
     showEnrolledSession
+    createdAt
   }
 }
     `;
@@ -817,6 +820,7 @@ export const GetRoomByIdDocument = gql`
         questionsAsked
         enrolledIn
       }
+      createdAt
     }
   }
 }

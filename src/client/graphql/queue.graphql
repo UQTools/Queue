@@ -10,6 +10,7 @@ mutation UpdateQueue($queueId: String!, $queueInput: QueueInput!) {
         sortedBy
         clearAfterMidnight
         showEnrolledSession
+        createdAt
     }
 }
  mutation CreateQueue($roomId: String!, $queueInput: QueueInput!) {
@@ -23,5 +24,6 @@ mutation UpdateQueue($queueId: String!, $queueInput: QueueInput!) {
          sortedBy
          clearAfterMidnight
          showEnrolledSession
+         createdAt
      }
  }

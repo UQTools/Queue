@@ -23,11 +23,11 @@ import { FormikSelect } from "../helpers/FormikSelect";
 import { FormikInputGroup } from "../helpers/FormikInputGroup";
 import { FormikCheckbox } from "../helpers/FormikCheckbox";
 
-type Props = QueueProps & {
+type Props = Omit<QueueProps, "createdAt"> & {
     header: string;
     close: () => void;
     isOpen: boolean;
-    onSubmit: (queue: QueueProps) => void;
+    onSubmit: (queue: Omit<QueueProps, "createdAt">) => void;
 };
 
 export const QueueModal: React.FC<Props> = ({

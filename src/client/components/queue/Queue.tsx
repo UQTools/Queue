@@ -35,6 +35,7 @@ export type QueueProps = {
     sortType: QueueSortType;
     clearAfterMidnight: boolean;
     showEnrolledSession: boolean;
+    createdAt: Date;
 };
 
 export type Props = QueueProps & {
