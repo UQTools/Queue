@@ -257,6 +257,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                                 status: question.status,
                                 askerEmail: question.op.email,
                                 enrolledSession: question.enrolledIn,
+                                claimer: question.claimer,
                             },
                         }),
                         {}
@@ -498,7 +499,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                     }
                 }}
                 isOpen={isQueueModalOpen}
-                header="Edit Queue"
+                header={addingNewQueue ? "Add a new Queue" : "Edit Queue"}
             />
         </>
     );

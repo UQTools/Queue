@@ -1,10 +1,17 @@
-import { HStack, Td, Tr, useColorModeValue } from "@chakra-ui/react";
+import {
+    Box,
+    HStack,
+    Td,
+    Tooltip,
+    Tr,
+    useColorModeValue,
+} from "@chakra-ui/react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { QuestionStatus, QueueAction } from "../../generated/graphql";
 import { differenceInSeconds } from "date-fns";
 import { ActionButton } from "./ActionButton";
 import { secondsToText } from "../../utils/queue";
-import { sentenceCase } from "change-case";
+import { capitalCase, sentenceCase } from "change-case";
 
 export type QuestionProps = {
     id: string;
@@ -59,6 +66,19 @@ export const Question: React.FC<Props> = ({
         return secondsToText(elapsedSeconds);
     }, [elapsedSeconds]);
     const claimedColour = useColorModeValue("pink.100", "pink.700");
+    const buttonHelpText = useCallback(
+        (action: QueueAction) => {
+            if (
+                action === QueueAction.Claim &&
+                status === QuestionStatus.Claimed
+            ) {
+                return `Claimed by ${claimer?.name}`;
+            } else {
+                return capitalCase(action);
+            }
+        },
+        [status, claimer]
+    );
     return (
         <Tr bg={status === QuestionStatus.Claimed ? claimedColour : undefined}>
             <Td>{index}</Td>
@@ -70,26 +90,35 @@ export const Question: React.FC<Props> = ({
                 <Td>
                     <HStack spacing={1}>
                         {actions.map((action, key) => (
-                            <ActionButton
-                                action={action}
+                            <Tooltip
+                                label={buttonHelpText(action)}
+                                aria-label={`tooltip-button-${key}-${id}`}
                                 key={key}
-                                claimed={status === QuestionStatus.Claimed}
-                                onClick={() =>
-                                    buttonsOnClick(
-                                        {
-                                            id,
-                                            askerName,
-                                            askerEmail,
-                                            askedTime,
-                                            questionCount,
-                                            status,
-                                            enrolledSession,
-                                            claimer,
-                                        },
-                                        action
-                                    )
-                                }
-                            />
+                            >
+                                <Box>
+                                    <ActionButton
+                                        action={action}
+                                        claimed={
+                                            status === QuestionStatus.Claimed
+                                        }
+                                        onClick={() =>
+                                            buttonsOnClick(
+                                                {
+                                                    id,
+                                                    askerName,
+                                                    askerEmail,
+                                                    askedTime,
+                                                    questionCount,
+                                                    status,
+                                                    enrolledSession,
+                                                    claimer,
+                                                },
+                                                action
+                                            )
+                                        }
+                                    />
+                                </Box>
+                            </Tooltip>
                         ))}
                     </HStack>
                 </Td>

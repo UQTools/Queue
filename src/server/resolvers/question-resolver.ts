@@ -15,6 +15,7 @@ import { MyContext } from "../types/context";
 import { getRepository } from "typeorm";
 import { QuestionEvent, QuestionStatus } from "../types/question";
 import { permissionDeniedMsg } from "../../constants";
+import { getActiveRooms } from "../utils/rooms";
 
 @Resolver(() => Question)
 export class QuestionResolver {
@@ -33,6 +34,7 @@ export class QuestionResolver {
         // Disallow joining multiple queues of same course
         const course = await (await queue.room).course;
         // TODO: Check if student is enrolled in course
+        const rooms = await getActiveRooms(await course.rooms);
         const existingQueues = await getRepository(Queue)
             .createQueryBuilder("queue")
             .innerJoinAndSelect("queue.room", "room")
@@ -41,12 +43,19 @@ export class QuestionResolver {
             .innerJoinAndSelect("question.op", "user")
             .where("user.id = :userId", { userId: req.user.id })
             .andWhere("course.id = :courseId", { courseId: course.id })
+            .andWhere("room.id IN (:...roomIds)", {
+                roomIds: rooms.map((room) => room.id),
+            })
             .andWhere("question.status NOT IN (:...ended)", {
                 ended: [QuestionStatus.CLOSED, QuestionStatus.ACCEPTED],
             })
             .getMany();
         if (existingQueues.length > 0) {
-            throw new Error("You are already on a queue of this course");
+            const exampleQueue = existingQueues[0];
+            const exampleRoom = await exampleQueue.room;
+            throw new Error(
+                `You are already on the queue "${exampleQueue.name}" in room ${exampleRoom.name} of ${course.code}`
+            );
         }
         const room = await queue.room;
         if (room.enforceCapacity) {
