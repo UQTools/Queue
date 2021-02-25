@@ -13,11 +13,10 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { __prod__ } from "../constants";
 
-const hostname =
-    __prod__
-        ? window.location.hostname +
-          (window.location.port ? ":" + window.location.port : "")
-        : "localhost:5000";
+const hostname = __prod__
+    ? window.location.hostname +
+      (window.location.port ? ":" + window.location.port : "")
+    : "localhost:5000";
 
 const httpLink = new HttpLink({
     uri: `http${__prod__ ? "s" : ""}://${hostname}/graphql`,
