@@ -99,15 +99,19 @@ export class QuestionResolver {
         @Ctx() { req }: MyContext,
         @PubSub(QuestionEvent.UPDATE_QUESTION) publish: Publisher<Question>
     ): Promise<Question> {
-        if (questionStatus === QuestionStatus.OPEN) {
-            throw new Error("You cannot reopen a closed question");
-        }
         const user = req.user;
         let question: Question;
         try {
             question = await Question.findOneOrFail({ id: questionId });
         } catch (e) {
             throw new Error("Cannot find question");
+        }
+        if (
+            questionStatus === QuestionStatus.OPEN &&
+            (question.status === QuestionStatus.CLOSED ||
+                question.status === QuestionStatus.ACCEPTED)
+        ) {
+            throw new Error("You cannot reopen a closed question");
         }
         const queue = await question.queue;
         const op = await question.op;

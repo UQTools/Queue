@@ -170,7 +170,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
         },
         [openQueueModal]
     );
-    const user = useContext(UserContext);
+    const user = useContext(UserContext)!;
     const updateQueues = useCallback(
         (queue: UpdateQueueMutation["updateQueue"]) => {
             setQueues((prev) =>
@@ -277,7 +277,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
         const updatedQuestion = questionChangeData.questionChanges;
         updateQueueQuestion(updatedQuestion);
         if (
-            updatedQuestion.op.username === user?.username &&
+            updatedQuestion.op.username === user.username &&
             updatedQuestion.status === QuestionStatus.Claimed
         ) {
             pushNotification(
@@ -292,7 +292,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                 isClosable: true,
             });
         }
-    }, [questionChangeData, updateQueueQuestion, user?.username, toast]);
+    }, [questionChangeData, updateQueueQuestion, user.username, toast]);
 
     useEffect(() => {
         document.title = `${courseCode} Queue`;
@@ -323,8 +323,20 @@ export const CoursePageContainer: React.FC<Props> = () => {
                     },
                 });
             } else if (questionAction === QueueAction.Claim) {
-                setSelectedQuestion(question.id);
-                openClaimModal();
+                if (question.status === QuestionStatus.Open) {
+                    setSelectedQuestion(question.id);
+                    openClaimModal();
+                } else if (
+                    question.status === QuestionStatus.Claimed &&
+                    question.claimer?.username === user.username
+                ) {
+                    updateQuestionMutation({
+                        variables: {
+                            questionStatus: QuestionStatus.Open,
+                            questionId: question.id,
+                        },
+                    });
+                }
             } else if (questionAction === QueueAction.Email) {
                 document.location.href = generateMailto(
                     question.askerEmail,
@@ -334,7 +346,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                 );
             }
         },
-        [updateQuestionMutation, openClaimModal, courseCode, user?.name]
+        [updateQuestionMutation, openClaimModal, courseCode, user.name]
     );
     useEffect(() => {
         if (!updateQuestionData) {
