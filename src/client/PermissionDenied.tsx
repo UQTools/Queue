@@ -1,17 +1,18 @@
 import React from "react";
-import { Box, Center, Text } from "@chakra-ui/react";
+import { Center, Text } from "@chakra-ui/react";
+import { Container } from "./components/helpers/Container";
 
 type Props = {};
 
-export const PermissionDenied: React.FC<Props> = ({}) => {
+export const PermissionDenied: React.FC<Props> = () => {
     return (
-        <Box h="90vh" w="100%">
+        <Container>
             <Center>
-                <Text size="6xl" color="tomato">
+                <Text fontSize="6xl" color="tomato">
                     Oopsie, it seems like you don&apos;t have permission to
                     visit this page
                 </Text>
             </Center>
-        </Box>
+        </Container>
     );
 };

@@ -5,31 +5,31 @@ export class Migration1614021571211 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
-            `ALTER TABLE "question" DROP CONSTRAINT "FK_6381748e499c8913003dc2adaa9"`
+            "ALTER TABLE \"question\" DROP CONSTRAINT \"FK_6381748e499c8913003dc2adaa9\""
         );
         await queryRunner.query(
-            `ALTER TABLE "question" ALTER COLUMN "claimerId" DROP NOT NULL`
+            "ALTER TABLE \"question\" ALTER COLUMN \"claimerId\" DROP NOT NULL"
         );
         await queryRunner.query(
-            `COMMENT ON COLUMN "question"."claimerId" IS NULL`
+            "COMMENT ON COLUMN \"question\".\"claimerId\" IS NULL"
         );
         await queryRunner.query(
-            `ALTER TABLE "question" ADD CONSTRAINT "FK_6381748e499c8913003dc2adaa9" FOREIGN KEY ("claimerId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`
+            "ALTER TABLE \"question\" ADD CONSTRAINT \"FK_6381748e499c8913003dc2adaa9\" FOREIGN KEY (\"claimerId\") REFERENCES \"user\"(\"id\") ON DELETE NO ACTION ON UPDATE NO ACTION"
         );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
-            `ALTER TABLE "question" DROP CONSTRAINT "FK_6381748e499c8913003dc2adaa9"`
+            "ALTER TABLE \"question\" DROP CONSTRAINT \"FK_6381748e499c8913003dc2adaa9\""
         );
         await queryRunner.query(
-            `COMMENT ON COLUMN "question"."claimerId" IS NULL`
+            "COMMENT ON COLUMN \"question\".\"claimerId\" IS NULL"
         );
         await queryRunner.query(
-            `ALTER TABLE "question" ALTER COLUMN "claimerId" SET NOT NULL`
+            "ALTER TABLE \"question\" ALTER COLUMN \"claimerId\" SET NOT NULL"
         );
         await queryRunner.query(
-            `ALTER TABLE "question" ADD CONSTRAINT "FK_6381748e499c8913003dc2adaa9" FOREIGN KEY ("claimerId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`
+            "ALTER TABLE \"question\" ADD CONSTRAINT \"FK_6381748e499c8913003dc2adaa9\" FOREIGN KEY (\"claimerId\") REFERENCES \"user\"(\"id\") ON DELETE NO ACTION ON UPDATE NO ACTION"
         );
     }
 }

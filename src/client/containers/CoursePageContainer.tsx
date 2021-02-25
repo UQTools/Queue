@@ -292,22 +292,8 @@ export const CoursePageContainer: React.FC<Props> = () => {
             return;
         }
         const question = askQuestionData.askQuestion;
-        setQueueQuestions((prev) =>
-            prev.set(question.queue.id, {
-                ...(prev.get(question.queue.id) || {}),
-                [question.id]: {
-                    id: question.id,
-                    askerName: question.op.name,
-                    askerEmail: question.op.email,
-                    askedTime: parseISO(question.createdTime),
-                    questionCount: question.questionsAsked,
-                    status: question.status,
-                    claimer: question.claimer,
-                    enrolledSession: question.enrolledIn,
-                },
-            })
-        );
-    }, [askQuestionData]);
+        updateQueueQuestion(question);
+    }, [askQuestionData, updateQuestionData]);
 
     const queueButtonAction = useCallback(
         (question: QuestionProps, questionAction: QueueAction) => {

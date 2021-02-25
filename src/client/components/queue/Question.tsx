@@ -43,23 +43,22 @@ export const Question: React.FC<Props> = ({
     askerEmail,
     claimer,
 }) => {
-    // TODO: Different colors for different status
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
     // Continuously update the time every 10 seconds
-    const updateTime = useCallback(() => {
+    const updateTime: () => ReturnType<typeof setTimeout> = useCallback(() => {
         setElapsedSeconds(differenceInSeconds(new Date(), askedTime));
-        setTimeout(updateTime, 10000);
+        return setTimeout(updateTime, 10000);
     }, [askedTime]);
 
     useEffect(() => {
         // Call this for the first time
-        updateTime();
-        // TODO: Clean up timeout
+        const timeout = updateTime();
+        return () => clearInterval(timeout);
     }, [updateTime]);
     const elapsedTimeDisplay = useMemo(() => {
         return secondsToText(elapsedSeconds);
     }, [elapsedSeconds]);
-    const claimedColour = useColorModeValue("pink.200", "pink.700");
+    const claimedColour = useColorModeValue("pink.100", "pink.700");
     return (
         <Tr bg={status === QuestionStatus.Claimed ? claimedColour : undefined}>
             <Td>{index}</Td>

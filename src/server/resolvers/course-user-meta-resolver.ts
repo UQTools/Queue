@@ -1,12 +1,4 @@
-import {
-    Arg,
-    Ctx,
-    Field,
-    InputType,
-    Mutation,
-    Query,
-    Resolver,
-} from "type-graphql";
+import { Arg, Ctx, Field, InputType, Mutation, Resolver } from "type-graphql";
 import { MyContext } from "../types/context";
 
 @InputType()
@@ -20,12 +12,13 @@ class UserEnrolledSessionInput {
 @Resolver()
 export class CourseUserMetaResolver {
     @Mutation(() => Boolean)
-    async addEnrolledEnrolledSessions(
+    async addStudentEnrolledSessions(
         @Arg("courseCode") courseCode: string,
         @Arg("userEnrolledSessions", () => [UserEnrolledSessionInput])
         enrolledSession: UserEnrolledSessionInput[],
         @Ctx() { req }: MyContext
     ): Promise<boolean> {
+        console.log(req.user);
         return true;
     }
 }

@@ -196,7 +196,7 @@ export class QuestionResolver {
         }) => args.roomId === (await payload.queue).roomId,
     })
     async questionChanges(
-        @Arg("roomId") roomId: string,
+        @Arg("roomId") _: string,
         @Root() question: Question
     ): Promise<Question> {
         return question;

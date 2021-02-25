@@ -1,7 +1,6 @@
 import "./config";
 import express, { Express, Response } from "express";
 import { createServer } from "http";
-import { Server } from "socket.io";
 import asyncHandler from "express-async-handler";
 
 import cors from "cors";
@@ -19,7 +18,6 @@ import { scheduleJob } from "node-schedule";
 import { endOfDayRule, resetQuestionCount, resetQueues } from "./jobs/queue";
 import { UserResolver } from "./resolvers/user-resolver";
 import { QuestionResolver } from "./resolvers/question-resolver";
-import { QueueEvent } from "../events";
 
 const app: Express = express();
 const server = createServer(app);

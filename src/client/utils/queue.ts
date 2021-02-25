@@ -16,7 +16,7 @@ export const generateMailto = (
     studentName: string,
     claimerName: string
 ) => {
-    return `mailto:${recipient}?subject=%5B${courseCode}%20Queue%5D%%20Queue%20question%20help&body=Hi%20${studentName}%2C%0D%0A%0D%0AYou're%20next%20in%20the%20${courseCode}%20queue.%20You've%20been%20invited%20to%20this%20zoom%20meeting%20%3Cinsert-zoom-link%3E.%20Please%20join%20the%20meeting%20to%20get%20help%20from%20your%20tutor.%0D%0A%0D%0ARegards%2C%0D%0A${claimerName}`;
+    return `mailto:${recipient}?subject=%5B${courseCode}%20Queue%5D%20Queue%20question%20help&body=Hi%20${studentName}%2C%0D%0A%0D%0AYou're%20next%20in%20the%20${courseCode}%20queue.%20You've%20been%20invited%20to%20this%20zoom%20meeting%20%3Cinsert-zoom-link%3E.%20Please%20join%20the%20meeting%20to%20get%20help%20from%20your%20tutor.%0D%0A%0D%0ARegards%2C%0D%0A${claimerName}`;
 };
 
 export const pushNotification = (title: string, body: string) => {
