@@ -7,7 +7,6 @@ import {
     QueryHookOptions,
     QueryResult,
     QueryTuple,
-    SubscriptionResult,
 } from "@apollo/client";
 import { useContext, useEffect, useMemo } from "react";
 import { ErrorContext } from "../utils/errors";

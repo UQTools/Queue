@@ -13,7 +13,6 @@ import {
     NumberInputStepper,
     Select,
     Stack,
-    StackProps,
 } from "@chakra-ui/react";
 import { capitalCase } from "change-case";
 import { removeAtIndex, updateElementAtIndex } from "../../utils/array";

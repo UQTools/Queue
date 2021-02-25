@@ -1,4 +1,8 @@
-mutation AddCourseStaff($courseId: String!, $usernames: [String!]!, $role: StaffRole!) {
+mutation AddCourseStaff(
+    $courseId: String!
+    $usernames: [String!]!
+    $role: StaffRole!
+) {
     addStaff(courseId: $courseId, usernames: $usernames, role: $role) {
         id
         user {

@@ -1,4 +1,3 @@
-
 mutation UpdateQueue($queueId: String!, $queueInput: QueueInput!) {
     updateQueue(queueId: $queueId, queueInput: $queueInput) {
         id
@@ -13,17 +12,17 @@ mutation UpdateQueue($queueId: String!, $queueInput: QueueInput!) {
         createdAt
     }
 }
- mutation CreateQueue($roomId: String!, $queueInput: QueueInput!) {
-     createQueue(roomId: $roomId, queueInput: $queueInput) {
-         id
-         name
-         shortDescription
-         examples
-         actions
-         theme
-         sortedBy
-         clearAfterMidnight
-         showEnrolledSession
-         createdAt
-     }
- }
+mutation CreateQueue($roomId: String!, $queueInput: QueueInput!) {
+    createQueue(roomId: $roomId, queueInput: $queueInput) {
+        id
+        name
+        shortDescription
+        examples
+        actions
+        theme
+        sortedBy
+        clearAfterMidnight
+        showEnrolledSession
+        createdAt
+    }
+}

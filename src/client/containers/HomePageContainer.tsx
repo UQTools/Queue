@@ -12,7 +12,7 @@ import { useHistory } from "react-router-dom";
 
 type Props = {};
 
-export const HomePageContainer: React.FC<Props> = ({}) => {
+export const HomePageContainer: React.FC<Props> = () => {
     const history = useHistory();
     const [course, setCourse] = useState("");
     return (

@@ -34,8 +34,7 @@ export const FormikRadioGroup: React.FC<Props> = ({
                         key={key}
                         id={`formik-radio-${name}-${key}`}
                     >
-                        {formatValue?.(radioValue) ||
-                            capitalCase(radioValue)}
+                        {formatValue?.(radioValue) || capitalCase(radioValue)}
                     </Radio>
                 ))}
             </Stack>

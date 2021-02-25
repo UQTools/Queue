@@ -300,7 +300,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
         }
         const question = askQuestionData.askQuestion;
         updateQueueQuestion(question);
-    }, [askQuestionData, updateQuestionData]);
+    }, [askQuestionData, updateQuestionData, updateQueueQuestion]);
 
     const queueButtonAction = useCallback(
         (question: QuestionProps, questionAction: QueueAction) => {

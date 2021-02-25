@@ -51,7 +51,8 @@ mutation UpdateRoom($roomId: String!, $roomInput: RoomInput!) {
             startTime
             endTime
             day
-        }    }
+        }
+    }
 }
 
 mutation AddRoom($courseId: String!, $roomInput: RoomInput!) {
