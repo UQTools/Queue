@@ -34,13 +34,13 @@ export type QueueProps = {
     actions: QueueAction[];
     sortType: QueueSortType;
     clearAfterMidnight: boolean;
+    showEnrolledSession: boolean;
 };
 
 export type Props = QueueProps & {
     questions: QuestionProps[];
-    queueCount: number;
     askQuestion: (queueId: string) => void;
-    buttonsOnClick: (questionId: string, queueAction: QueueAction) => void;
+    buttonsOnClick: (question: QuestionProps, queueAction: QueueAction) => void;
     isStaff: boolean;
     openEditQueueModal: (queueId: string) => void;
 };
@@ -54,18 +54,18 @@ export const Queue: React.FC<Props> = ({
     actions,
     sortType,
     questions,
-    queueCount,
     askQuestion,
     buttonsOnClick,
     isStaff,
     openEditQueueModal,
+    showEnrolledSession,
 }) => {
     const [isSmallerThan540] = useMediaQuery("(max-width: 540px)");
     const queueBgColour = useQueueBgColour(theme);
     const queueTextColour = useQueueTextColour(theme);
     const descriptionColour = useColorModeValue("gray.600", "gray.300");
     return (
-        <Stack spacing={2} w={isSmallerThan540 ? "90%" : "45%"} mt={4}>
+        <Stack spacing={2} w={isSmallerThan540 ? "90%" : "47%"} mt={4}>
             <Box
                 bg={queueBgColour}
                 borderRadius={5}
@@ -120,6 +120,7 @@ export const Queue: React.FC<Props> = ({
                 actions={actions}
                 buttonsOnClick={buttonsOnClick}
                 isStaff={isStaff}
+                showEnrolledSession={showEnrolledSession}
             />
         </Stack>
     );

@@ -55,7 +55,14 @@ export class QuestionResolver {
             >(async (prev, current) => {
                 const prevValue = await prev;
                 const questions = await current.questions;
-                return [...prevValue, ...questions];
+                return [
+                    ...prevValue,
+                    ...questions.filter(
+                        (question) =>
+                            question.status !== QuestionStatus.ACCEPTED &&
+                            question.status !== QuestionStatus.CLOSED
+                    ),
+                ];
             }, Promise.resolve([]));
             if (existingQuestions.length >= room.capacity) {
                 throw new Error("This room is already full");

@@ -43,6 +43,7 @@ export const QueueModal: React.FC<Props> = ({
     examples,
     clearAfterMidnight,
     header,
+    showEnrolledSession,
 }) => {
     return (
         <Modal
@@ -62,6 +63,7 @@ export const QueueModal: React.FC<Props> = ({
                     sortType,
                     examples,
                     clearAfterMidnight,
+                    showEnrolledSession,
                 }}
                 onSubmit={onSubmit}
             >
@@ -113,6 +115,10 @@ export const QueueModal: React.FC<Props> = ({
                             <FormikCheckbox
                                 name="clearAfterMidnight"
                                 label="Clear after Midnight?"
+                            />
+                            <FormikCheckbox
+                                name="showEnrolledSession"
+                                label="Show Student's Enrolled Session?"
                             />
                         </ModalBody>
 

@@ -36,6 +36,9 @@ class QueueInput {
 
     @Field()
     clearAfterMidnight: boolean;
+
+    @Field()
+    showEnrolledSession: boolean;
 }
 
 @Resolver(() => Queue)
@@ -93,6 +96,7 @@ export class QueueResolver {
             sortedBy,
             actions,
             clearAfterMidnight,
+            showEnrolledSession,
         } = queueInput;
         queue.name = name;
         queue.shortDescription = shortDescription;
@@ -101,6 +105,7 @@ export class QueueResolver {
         queue.sortedBy = sortedBy;
         queue.actions = actions;
         queue.clearAfterMidnight = clearAfterMidnight;
+        queue.showEnrolledSession = showEnrolledSession;
         return await queue.save();
     }
 }

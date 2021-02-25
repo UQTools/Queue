@@ -19,8 +19,9 @@ export type Props = {
     sortType: QueueSortType;
     questions: QuestionProps[];
     actions: QueueAction[];
-    buttonsOnClick: (questionId: string, queueAction: QueueAction) => void;
+    buttonsOnClick: (question: QuestionProps, queueAction: QueueAction) => void;
     isStaff: boolean;
+    showEnrolledSession: boolean;
 };
 
 export const QuestionList: React.FC<Props> = ({
@@ -29,6 +30,7 @@ export const QuestionList: React.FC<Props> = ({
     actions,
     buttonsOnClick,
     isStaff,
+    showEnrolledSession,
 }) => {
     const [currentInterval, setCurrentInterval] = useState<
         ReturnType<typeof setInterval>
@@ -92,6 +94,7 @@ export const QuestionList: React.FC<Props> = ({
                             <Th>Name</Th>
                             <Th isNumeric>Questions today</Th>
                             <Th>Elapsed time</Th>
+                            {showEnrolledSession && <Th>Enrolled in</Th>}
                             {isStaff && <Th />}
                         </Tr>
                     </Thead>
@@ -104,6 +107,7 @@ export const QuestionList: React.FC<Props> = ({
                                 index={key + 1}
                                 buttonsOnClick={buttonsOnClick}
                                 isStaff={isStaff}
+                                showEnrolledSession={showEnrolledSession}
                             />
                         ))}
                     </Tbody>

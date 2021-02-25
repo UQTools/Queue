@@ -9,17 +9,23 @@ import { sentenceCase } from "change-case";
 export type QuestionProps = {
     id: string;
     askerName: string;
+    askerEmail: string;
     askedTime: Date;
     questionCount: number;
     status: QuestionStatus;
-    claimerName?: string;
+    enrolledSession: string | null | undefined;
+    claimer?: null | {
+        name: string;
+        username: string;
+    };
 };
 
 type Props = QuestionProps & {
     isStaff: boolean;
     index: number;
     actions: QueueAction[];
-    buttonsOnClick: (questionId: string, queueAction: QueueAction) => void;
+    buttonsOnClick: (question: QuestionProps, queueAction: QueueAction) => void;
+    showEnrolledSession: boolean;
 };
 
 export const Question: React.FC<Props> = ({
@@ -32,6 +38,10 @@ export const Question: React.FC<Props> = ({
     actions,
     buttonsOnClick,
     isStaff,
+    showEnrolledSession,
+    enrolledSession,
+    askerEmail,
+    claimer,
 }) => {
     // TODO: Different colors for different status
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -56,6 +66,7 @@ export const Question: React.FC<Props> = ({
             <Td>{askerName}</Td>
             <Td isNumeric>{questionCount}</Td>
             <Td>{sentenceCase(elapsedTimeDisplay)} ago</Td>
+            {showEnrolledSession && <Td>{enrolledSession || "None"}</Td>}
             {isStaff && (
                 <Td>
                     <HStack spacing={1}>
@@ -64,7 +75,21 @@ export const Question: React.FC<Props> = ({
                                 action={action}
                                 key={key}
                                 claimed={status === QuestionStatus.Claimed}
-                                onClick={() => buttonsOnClick(id, action)}
+                                onClick={() =>
+                                    buttonsOnClick(
+                                        {
+                                            id,
+                                            askerName,
+                                            askerEmail,
+                                            askedTime,
+                                            questionCount,
+                                            status,
+                                            enrolledSession,
+                                            claimer,
+                                        },
+                                        action
+                                    )
+                                }
                             />
                         ))}
                     </HStack>

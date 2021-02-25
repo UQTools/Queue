@@ -18,18 +18,22 @@ query GetRoomById($roomId: String!) {
             theme
             sortedBy
             clearAfterMidnight
+            showEnrolledSession
             activeQuestions {
                 id
                 op {
                     name
                     email
+                    username
                 }
                 status
                 createdTime
                 claimer {
+                    username
                     name
                 }
                 questionsAsked
+                enrolledIn
             }
         }
     }

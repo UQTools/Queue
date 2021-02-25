@@ -65,6 +65,7 @@ export type Queue = {
   room: Room;
   questions: Array<Question>;
   clearAfterMidnight: Scalars['Boolean'];
+  showEnrolledSession: Scalars['Boolean'];
   activeQuestions: Array<Question>;
 };
 
@@ -105,6 +106,7 @@ export type Question = {
   claimMessage?: Maybe<Scalars['String']>;
   queue: Queue;
   questionsAsked: Scalars['Int'];
+  enrolledIn?: Maybe<Scalars['String']>;
 };
 
 export enum QuestionStatus {
@@ -229,6 +231,7 @@ export type QueueInput = {
   sortedBy: QueueSortType;
   actions: Array<QueueAction>;
   clearAfterMidnight: Scalars['Boolean'];
+  showEnrolledSession: Scalars['Boolean'];
 };
 
 export type CourseInput = {
@@ -296,13 +299,13 @@ export type QuestionChangeSubscription = (
   { __typename?: 'Subscription' }
   & { questionChanges: (
     { __typename?: 'Question' }
-    & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked'>
+    & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked' | 'enrolledIn' | 'claimMessage'>
     & { op: (
       { __typename?: 'User' }
-      & Pick<User, 'name'>
+      & Pick<User, 'email' | 'name' | 'username'>
     ), claimer?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'name'>
+      & Pick<User, 'username' | 'name'>
     )>, queue: (
       { __typename?: 'Queue' }
       & Pick<Queue, 'id'>
@@ -319,13 +322,13 @@ export type AskQuestionMutation = (
   { __typename?: 'Mutation' }
   & { askQuestion: (
     { __typename?: 'Question' }
-    & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked'>
+    & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked' | 'enrolledIn'>
     & { op: (
       { __typename?: 'User' }
-      & Pick<User, 'name'>
+      & Pick<User, 'email' | 'name' | 'username'>
     ), claimer?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'name'>
+      & Pick<User, 'username' | 'name'>
     )>, queue: (
       { __typename?: 'Queue' }
       & Pick<Queue, 'id'>
@@ -344,13 +347,13 @@ export type UpdateQuestionStatusMutation = (
   { __typename?: 'Mutation' }
   & { updateQuestionStatus: (
     { __typename?: 'Question' }
-    & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked'>
+    & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked' | 'enrolledIn'>
     & { op: (
       { __typename?: 'User' }
-      & Pick<User, 'name'>
+      & Pick<User, 'name' | 'email' | 'username'>
     ), claimer?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'name'>
+      & Pick<User, 'username' | 'name'>
     )>, queue: (
       { __typename?: 'Queue' }
       & Pick<Queue, 'id'>
@@ -368,7 +371,7 @@ export type UpdateQueueMutation = (
   { __typename?: 'Mutation' }
   & { updateQueue: (
     { __typename?: 'Queue' }
-    & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight'>
+    & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight' | 'showEnrolledSession'>
   ) }
 );
 
@@ -382,7 +385,7 @@ export type CreateQueueMutation = (
   { __typename?: 'Mutation' }
   & { createQueue: (
     { __typename?: 'Queue' }
-    & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight'>
+    & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight' | 'showEnrolledSession'>
   ) }
 );
 
@@ -411,16 +414,16 @@ export type GetRoomByIdQuery = (
     & Pick<Room, 'id' | 'name'>
     & { queues: Array<(
       { __typename?: 'Queue' }
-      & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight'>
+      & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight' | 'showEnrolledSession'>
       & { activeQuestions: Array<(
         { __typename?: 'Question' }
-        & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked'>
+        & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked' | 'enrolledIn'>
         & { op: (
           { __typename?: 'User' }
-          & Pick<User, 'name' | 'email'>
+          & Pick<User, 'name' | 'email' | 'username'>
         ), claimer?: Maybe<(
           { __typename?: 'User' }
-          & Pick<User, 'name'>
+          & Pick<User, 'username' | 'name'>
         )> }
       )> }
     )> }
@@ -525,16 +528,21 @@ export const QuestionChangeDocument = gql`
     id
     status
     op {
+      email
       name
+      username
     }
     createdTime
     claimer {
+      username
       name
     }
     questionsAsked
     queue {
       id
     }
+    enrolledIn
+    claimMessage
   }
 }
     `;
@@ -566,16 +574,20 @@ export const AskQuestionDocument = gql`
     id
     status
     op {
+      email
       name
+      username
     }
     createdTime
     claimer {
+      username
       name
     }
     questionsAsked
     queue {
       id
     }
+    enrolledIn
   }
 }
     `;
@@ -615,15 +627,19 @@ export const UpdateQuestionStatusDocument = gql`
     status
     op {
       name
+      email
+      username
     }
     createdTime
     claimer {
+      username
       name
     }
     questionsAsked
     queue {
       id
     }
+    enrolledIn
   }
 }
     `;
@@ -665,6 +681,7 @@ export const UpdateQueueDocument = gql`
     theme
     sortedBy
     clearAfterMidnight
+    showEnrolledSession
   }
 }
     `;
@@ -705,6 +722,7 @@ export const CreateQueueDocument = gql`
     theme
     sortedBy
     clearAfterMidnight
+    showEnrolledSession
   }
 }
     `;
@@ -782,18 +800,22 @@ export const GetRoomByIdDocument = gql`
       theme
       sortedBy
       clearAfterMidnight
+      showEnrolledSession
       activeQuestions {
         id
         op {
           name
           email
+          username
         }
         status
         createdTime
         claimer {
+          username
           name
         }
         questionsAsked
+        enrolledIn
       }
     }
   }

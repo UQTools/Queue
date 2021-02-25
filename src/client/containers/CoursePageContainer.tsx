@@ -19,6 +19,7 @@ import {
     QueueSortType,
     QueueTheme,
     UpdateQuestionStatusMutation,
+    UpdateQueueMutation,
     useAskQuestionMutation,
     useCreateQueueMutation,
     useGetActiveRoomsQuery,
@@ -34,6 +35,7 @@ import {
     Text,
     useDisclosure,
     useMediaQuery,
+    useToast,
 } from "@chakra-ui/react";
 import { QuestionProps } from "../components/queue/Question";
 import { RoomSelector } from "../components/queue/RoomSelector";
@@ -44,6 +46,7 @@ import { ClaimModal } from "../components/queue/ClaimModal";
 import omit from "lodash/omit";
 import { UserContext } from "../utils/user";
 import { QueueModal } from "../components/queue/QueueModal";
+import { generateMailto, pushNotification } from "../utils/queue";
 
 type Props = {};
 
@@ -60,6 +63,7 @@ const placeholderQueue: QueueProps = {
     actions: [],
     sortType: QueueSortType.QuestionsAndTime,
     clearAfterMidnight: true,
+    showEnrolledSession: false,
 };
 
 export const CoursePageContainer: React.FC<Props> = () => {
@@ -85,6 +89,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
     const [queueQuestions, setQueueQuestions] = useState<
         Map<string, { [key: string]: QuestionProps }>
     >(Map());
+    const toast = useToast();
     const { data: activeRoomsData } = useQueryWithError(
         useGetActiveRoomsQuery,
         {
@@ -157,6 +162,24 @@ export const CoursePageContainer: React.FC<Props> = () => {
         [openQueueModal]
     );
     const user = useContext(UserContext);
+    const updateQueues = useCallback(
+        (queue: UpdateQueueMutation["updateQueue"]) => {
+            setQueues((prev) =>
+                prev.set(queue.id, {
+                    id: queue.id,
+                    name: queue.name,
+                    theme: queue.theme,
+                    shortDescription: queue.shortDescription,
+                    actions: queue.actions,
+                    sortType: queue.sortedBy,
+                    examples: queue.examples,
+                    clearAfterMidnight: queue.clearAfterMidnight,
+                    showEnrolledSession: queue.showEnrolledSession,
+                })
+            );
+        },
+        []
+    );
     const isStaff = useMemo(() => {
         if (!user) {
             return false;
@@ -190,10 +213,12 @@ export const CoursePageContainer: React.FC<Props> = () => {
                     [question.id]: {
                         id: question.id,
                         askerName: question.op.name,
+                        askerEmail: question.op.email,
                         askedTime: parseISO(question.createdTime),
                         questionCount: question.questionsAsked,
                         status: question.status,
-                        claimerName: question.claimer?.name,
+                        claimer: question.claimer,
+                        enrolledSession: question.enrolledIn,
                     },
                 })
             );
@@ -224,23 +249,12 @@ export const CoursePageContainer: React.FC<Props> = () => {
                     )
                 )
             );
-            setQueues((prev) =>
-                prev.set(queue.id, {
-                    id: queue.id,
-                    name: queue.name,
-                    theme: queue.theme,
-                    shortDescription: queue.shortDescription,
-                    actions: queue.actions,
-                    sortType: queue.sortedBy,
-                    examples: queue.examples,
-                    clearAfterMidnight: queue.clearAfterMidnight,
-                })
-            );
+            updateQueues(queue);
             setDisplayedQueues(
                 roomData.getRoomById.queues.map((queue) => queue.id)
             );
         });
-    }, [roomData, courseCode]);
+    }, [roomData, courseCode, updateQueues]);
 
     useEffect(() => {
         if (!questionChangeData) {
@@ -248,7 +262,23 @@ export const CoursePageContainer: React.FC<Props> = () => {
         }
         const updatedQuestion = questionChangeData.questionChanges;
         updateQueueQuestion(updatedQuestion);
-    }, [questionChangeData, updateQueueQuestion]);
+        if (
+            updatedQuestion.op.username === user?.username &&
+            updatedQuestion.status === QuestionStatus.Claimed
+        ) {
+            pushNotification(
+                "Question Claimed",
+                updatedQuestion.claimMessage || "Your question has been claimed"
+            );
+            toast({
+                title: "Question Claimed",
+                description: updatedQuestion.claimMessage,
+                status: "success",
+                duration: null,
+                isClosable: true,
+            });
+        }
+    }, [questionChangeData, updateQueueQuestion, user?.username, toast]);
 
     useEffect(() => {
         document.title = `${courseCode} Queue`;
@@ -265,39 +295,46 @@ export const CoursePageContainer: React.FC<Props> = () => {
                 [question.id]: {
                     id: question.id,
                     askerName: question.op.name,
+                    askerEmail: question.op.email,
                     askedTime: parseISO(question.createdTime),
                     questionCount: question.questionsAsked,
                     status: question.status,
-                    claimerName: question.claimer?.name,
+                    claimer: question.claimer,
+                    enrolledSession: question.enrolledIn,
                 },
             })
         );
     }, [askQuestionData]);
 
     const queueButtonAction = useCallback(
-        (questionId: string, questionAction: QueueAction) => {
+        (question: QuestionProps, questionAction: QueueAction) => {
             if (questionAction === QueueAction.Accept) {
                 updateQuestionMutation({
                     variables: {
                         questionStatus: QuestionStatus.Accepted,
-                        questionId,
+                        questionId: question.id,
                     },
                 });
             } else if (questionAction === QueueAction.Remove) {
                 updateQuestionMutation({
                     variables: {
                         questionStatus: QuestionStatus.Closed,
-                        questionId,
+                        questionId: question.id,
                     },
                 });
             } else if (questionAction === QueueAction.Claim) {
-                setSelectedQuestion(questionId);
+                setSelectedQuestion(question.id);
                 openClaimModal();
             } else if (questionAction === QueueAction.Email) {
-                // TODO
+                document.location.href = generateMailto(
+                    question.askerEmail,
+                    courseCode,
+                    question.askerName,
+                    user?.name || ` ${courseCode} Tutor team`
+                );
             }
         },
-        [updateQuestionMutation, openClaimModal]
+        [updateQuestionMutation, openClaimModal, courseCode, user?.name]
     );
     useEffect(() => {
         if (!updateQuestionData) {
@@ -311,39 +348,17 @@ export const CoursePageContainer: React.FC<Props> = () => {
             return;
         }
         const newQueue = createQueueData.createQueue;
-        setQueues((prev) =>
-            prev.set(newQueue.id, {
-                id: newQueue.id,
-                name: newQueue.name,
-                theme: newQueue.theme,
-                shortDescription: newQueue.shortDescription,
-                actions: newQueue.actions,
-                sortType: newQueue.sortedBy,
-                examples: newQueue.examples,
-                clearAfterMidnight: newQueue.clearAfterMidnight,
-            })
-        );
+        updateQueues(newQueue);
         setDisplayedQueues((prev) => [...prev, newQueue.id]);
-    }, [createQueueData]);
+    }, [createQueueData, updateQueues]);
 
     useEffect(() => {
         if (!updateQueueData) {
             return;
         }
         const updatedQueue = updateQueueData.updateQueue;
-        setQueues((prev) =>
-            prev.set(updatedQueue.id, {
-                id: updatedQueue.id,
-                name: updatedQueue.name,
-                theme: updatedQueue.theme,
-                shortDescription: updatedQueue.shortDescription,
-                actions: updatedQueue.actions,
-                sortType: updatedQueue.sortedBy,
-                examples: updatedQueue.examples,
-                clearAfterMidnight: updatedQueue.clearAfterMidnight,
-            })
-        );
-    }, [updateQueueData]);
+        updateQueues(updatedQueue);
+    }, [updateQueueData, updateQueues]);
     return (
         <>
             <Container>
@@ -396,9 +411,6 @@ export const CoursePageContainer: React.FC<Props> = () => {
                             questions={Object.values(
                                 queueQuestions.get(queueId) || {}
                             )}
-                            queueCount={
-                                roomData?.getRoomById.queues.length || 1
-                            }
                             askQuestion={askQuestion}
                             buttonsOnClick={queueButtonAction}
                             isStaff={isStaff}
@@ -428,6 +440,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                     examples,
                     clearAfterMidnight,
                     theme,
+                    showEnrolledSession,
                 }) => {
                     if (addingNewQueue) {
                         createQueueMutation({
@@ -441,6 +454,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                                     sortedBy: sortType,
                                     clearAfterMidnight,
                                     actions,
+                                    showEnrolledSession,
                                 },
                             },
                         });
@@ -457,6 +471,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                                     clearAfterMidnight,
                                     sortedBy: sortType,
                                     theme,
+                                    showEnrolledSession,
                                 },
                             },
                         });

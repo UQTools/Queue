@@ -1,10 +1,11 @@
 import { ApolloError } from "@apollo/client";
 import { useToast } from "@chakra-ui/react";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useMeQuery } from "./generated/graphql";
 import { ErrorContext } from "./utils/errors";
 import { UserContext } from "./utils/user";
 import { Loadable } from "./components/helpers/Loadable";
+import { requestNotification } from "./utils/queue";
 
 type Props = {};
 
@@ -24,6 +25,9 @@ export const ContextWrapper: React.FC<Props> = ({ children }) => {
         },
         [toast]
     );
+    useEffect(() => {
+        requestNotification();
+    }, []);
     return (
         <Loadable isLoading={!data}>
             <UserContext.Provider value={data?.me}>

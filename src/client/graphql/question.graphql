@@ -3,15 +3,71 @@ subscription QuestionChange($roomId: String!) {
         id
         status
         op {
+            email
             name
+            username
         }
         createdTime
         claimer {
+            username
             name
         }
         questionsAsked
         queue {
             id
         }
+        enrolledIn
+        claimMessage
+    }
+}
+mutation AskQuestion($queueId: String!) {
+    askQuestion(queueId: $queueId) {
+        id
+        status
+        op {
+            email
+            name
+            username
+        }
+        createdTime
+        claimer {
+            username
+            name
+        }
+        questionsAsked
+        queue {
+            id
+        }
+        enrolledIn
+    }
+}
+
+mutation UpdateQuestionStatus(
+    $questionStatus: QuestionStatus!
+    $questionId: String!
+    $message: String
+) {
+    updateQuestionStatus(
+        questionStatus: $questionStatus
+        questionId: $questionId
+        message: $message
+    ) {
+        id
+        status
+        op {
+            name
+            email
+            username
+        }
+        createdTime
+        claimer {
+            username
+            name
+        }
+        questionsAsked
+        queue {
+            id
+        }
+        enrolledIn
     }
 }
