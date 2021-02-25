@@ -244,7 +244,9 @@ export const CoursePageContainer: React.FC<Props> = () => {
             setQueueQuestions((prev) =>
                 prev.set(
                     queue.id,
-                    queue.activeQuestions.reduce(
+                    queue.activeQuestions.reduce<{
+                        [key: string]: QuestionProps;
+                    }>(
                         (prevValue, question) => ({
                             ...prevValue,
                             [question.id]: {
@@ -253,6 +255,8 @@ export const CoursePageContainer: React.FC<Props> = () => {
                                 askedTime: parseISO(question.createdTime),
                                 questionCount: question.questionsAsked,
                                 status: question.status,
+                                askerEmail: question.op.email,
+                                enrolledSession: question.enrolledIn,
                             },
                         }),
                         {}
