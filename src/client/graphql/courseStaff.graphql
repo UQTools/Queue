@@ -1,0 +1,25 @@
+mutation AddCourseStaff($courseId: String!, $usernames: [String!]!, $role: StaffRole!) {
+    addStaff(courseId: $courseId, usernames: $usernames, role: $role) {
+        id
+        user {
+            username
+            name
+        }
+        role
+    }
+}
+
+mutation RemoveCourseStaff($courseStaffId: String!) {
+    removeStaff(courseStaffId: $courseStaffId)
+}
+
+query GetCourseStaff($courseId: String!) {
+    getCourseStaff(courseId: $courseId) {
+        id
+        user {
+            username
+            name
+        }
+        role
+    }
+}

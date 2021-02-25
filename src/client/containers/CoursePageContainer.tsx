@@ -5,7 +5,7 @@ import React, {
     useMemo,
     useState,
 } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { Container } from "../components/helpers/Container";
 import {
     useLazyQueryWithError,
@@ -88,19 +88,20 @@ export const CoursePageContainer: React.FC<Props> = () => {
     const [claimMessage, setClaimMessage] = useState("");
     const [selectedQuestion, setSelectedQuestion] = useState("");
     const { courseCode } = useParams<CourseParam>();
+    const history = useHistory();
     const [queueQuestions, setQueueQuestions] = useState<
         Map<string, { [key: string]: QuestionProps }>
     >(Map());
     const toast = useToast();
-    const { data: activeRoomsData } = useQueryWithError(
-        useGetActiveRoomsQuery,
-        {
-            variables: {
-                courseCode,
-            },
-            errorPolicy: "all",
-        }
-    );
+    const {
+        data: activeRoomsData,
+        error: activeRoomsError,
+    } = useQueryWithError(useGetActiveRoomsQuery, {
+        variables: {
+            courseCode,
+        },
+        errorPolicy: "all",
+    });
     const [getRoomById, { data: roomData }] = useLazyQueryWithError(
         useGetRoomByIdLazyQuery,
         {
@@ -136,6 +137,12 @@ export const CoursePageContainer: React.FC<Props> = () => {
     ] = useMutationWithError(useCreateQueueMutation, {
         errorPolicy: "all",
     });
+    useEffect(() => {
+        if (!activeRoomsError) {
+            return;
+        }
+        history.push("/");
+    }, [activeRoomsError, history]);
     const askQuestion = useCallback(
         (queueId: string) => {
             askQuestionMutation({

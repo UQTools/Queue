@@ -1,5 +1,5 @@
-import { gql } from "@apollo/client";
-import * as Apollo from "@apollo/client";
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
@@ -16,176 +16,184 @@ export type Scalars = {
 };
 
 export type Query = {
-  __typename?: "Query";
+  __typename?: 'Query';
+  getCourses: Array<Course>;
   getActiveRooms: Array<Room>;
   getRoomById: Room;
   me: User;
+  getCourseStaff: Array<CourseStaff>;
 };
 
 
 export type QueryGetActiveRoomsArgs = {
-  courseCode: Scalars["String"];
+  courseCode: Scalars['String'];
 };
 
 
 export type QueryGetRoomByIdArgs = {
-  roomId: Scalars["String"];
-};
-
-export type Room = {
-  __typename?: "Room";
-  id: Scalars["String"];
-  name: Scalars["String"];
-  capacity: Scalars["Int"];
-  enforceCapacity: Scalars["Boolean"];
-  manuallyDisabled: Scalars["Boolean"];
-  activeTimes: Array<WeeklyEvent>;
-  queues: Array<Queue>;
-  course: Course;
-};
-
-export type WeeklyEvent = {
-  __typename?: "WeeklyEvent";
-  id: Scalars["Float"];
-  startTime: Scalars["Float"];
-  endTime: Scalars["Float"];
-  day: Scalars["Int"];
-  room: Room;
-};
-
-export type Queue = {
-  __typename?: "Queue";
-  id: Scalars["String"];
-  name: Scalars["String"];
-  shortDescription: Scalars["String"];
-  createdAt: Scalars["DateTime"];
-  examples: Array<Scalars["String"]>;
-  theme: QueueTheme;
-  sortedBy: QueueSortType;
-  actions: Array<QueueAction>;
-  room: Room;
-  questions: Array<Question>;
-  clearAfterMidnight: Scalars["Boolean"];
-  showEnrolledSession: Scalars["Boolean"];
-  activeQuestions: Array<Question>;
+  roomId: Scalars['String'];
 };
 
 
-export enum QueueTheme {
-  Gray = "GRAY",
-  Red = "RED",
-  Orange = "ORANGE",
-  Yellow = "YELLOW",
-  Green = "GREEN",
-  Teal = "TEAL",
-  Blue = "BLUE",
-  Cyan = "CYAN",
-  Purple = "PURPLE",
-  Pink = "PINK"
-}
-
-export enum QueueSortType {
-  Time = "TIME",
-  Questions = "QUESTIONS",
-  QuestionsAndTime = "QUESTIONS_AND_TIME"
-}
-
-export enum QueueAction {
-  Claim = "CLAIM",
-  Accept = "ACCEPT",
-  Remove = "REMOVE",
-  Email = "EMAIL"
-}
-
-export type Question = {
-  __typename?: "Question";
-  id: Scalars["String"];
-  status: QuestionStatus;
-  op: User;
-  claimer?: Maybe<User>;
-  createdTime: Scalars["DateTime"];
-  claimTime?: Maybe<Scalars["DateTime"]>;
-  claimMessage?: Maybe<Scalars["String"]>;
-  queue: Queue;
-  questionsAsked: Scalars["Int"];
-  enrolledIn?: Maybe<Scalars["String"]>;
+export type QueryGetCourseStaffArgs = {
+  courseId: Scalars['String'];
 };
 
-export enum QuestionStatus {
-  Open = "OPEN",
-  Claimed = "CLAIMED",
-  Closed = "CLOSED",
-  Accepted = "ACCEPTED"
-}
-
-export type User = {
-  __typename?: "User";
-  id: Scalars["String"];
-  username: Scalars["String"];
-  name: Scalars["String"];
-  email: Scalars["String"];
-  isOnline: Scalars["Boolean"];
-  isAdmin: Scalars["Boolean"];
+export type Course = {
+  __typename?: 'Course';
+  id: Scalars['String'];
+  code: Scalars['String'];
+  title: Scalars['String'];
   courseStaff: Array<CourseStaff>;
-  questions: Array<Question>;
-  claimedQuestions: Array<Question>;
-  courseMetas: Array<CourseUserMeta>;
+  userMetas: Array<CourseUserMeta>;
+  rooms: Array<Room>;
 };
 
 export type CourseStaff = {
-  __typename?: "CourseStaff";
-  id: Scalars["String"];
+  __typename?: 'CourseStaff';
+  id: Scalars['String'];
   role: StaffRole;
   user: User;
   course: Course;
 };
 
 export enum StaffRole {
-  Staff = "STAFF",
-  Coordinator = "COORDINATOR"
+  Staff = 'STAFF',
+  Coordinator = 'COORDINATOR'
 }
 
-export type Course = {
-  __typename?: "Course";
-  id: Scalars["String"];
-  code: Scalars["String"];
-  title: Scalars["String"];
+export type User = {
+  __typename?: 'User';
+  id: Scalars['String'];
+  username: Scalars['String'];
+  name: Scalars['String'];
+  email: Scalars['String'];
+  isOnline: Scalars['Boolean'];
+  isAdmin: Scalars['Boolean'];
   courseStaff: Array<CourseStaff>;
-  userMetas: Array<CourseUserMeta>;
-  rooms: Array<Room>;
+  questions: Array<Question>;
+  claimedQuestions: Array<Question>;
+  courseMetas: Array<CourseUserMeta>;
+};
+
+export type Question = {
+  __typename?: 'Question';
+  id: Scalars['String'];
+  status: QuestionStatus;
+  op: User;
+  claimer?: Maybe<User>;
+  createdTime: Scalars['DateTime'];
+  claimTime?: Maybe<Scalars['DateTime']>;
+  claimMessage?: Maybe<Scalars['String']>;
+  queue: Queue;
+  questionsAsked: Scalars['Int'];
+  enrolledIn?: Maybe<Scalars['String']>;
+};
+
+export enum QuestionStatus {
+  Open = 'OPEN',
+  Claimed = 'CLAIMED',
+  Closed = 'CLOSED',
+  Accepted = 'ACCEPTED'
+}
+
+
+export type Queue = {
+  __typename?: 'Queue';
+  id: Scalars['String'];
+  name: Scalars['String'];
+  shortDescription: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  examples: Array<Scalars['String']>;
+  theme: QueueTheme;
+  sortedBy: QueueSortType;
+  actions: Array<QueueAction>;
+  room: Room;
+  questions: Array<Question>;
+  clearAfterMidnight: Scalars['Boolean'];
+  showEnrolledSession: Scalars['Boolean'];
+  activeQuestions: Array<Question>;
+};
+
+export enum QueueTheme {
+  Gray = 'GRAY',
+  Red = 'RED',
+  Orange = 'ORANGE',
+  Yellow = 'YELLOW',
+  Green = 'GREEN',
+  Teal = 'TEAL',
+  Blue = 'BLUE',
+  Cyan = 'CYAN',
+  Purple = 'PURPLE',
+  Pink = 'PINK'
+}
+
+export enum QueueSortType {
+  Time = 'TIME',
+  Questions = 'QUESTIONS',
+  QuestionsAndTime = 'QUESTIONS_AND_TIME'
+}
+
+export enum QueueAction {
+  Claim = 'CLAIM',
+  Accept = 'ACCEPT',
+  Remove = 'REMOVE',
+  Email = 'EMAIL'
+}
+
+export type Room = {
+  __typename?: 'Room';
+  id: Scalars['String'];
+  name: Scalars['String'];
+  capacity: Scalars['Int'];
+  enforceCapacity: Scalars['Boolean'];
+  manuallyDisabled: Scalars['Boolean'];
+  activeTimes: Array<WeeklyEvent>;
+  queues: Array<Queue>;
+  course: Course;
+};
+
+export type WeeklyEvent = {
+  __typename?: 'WeeklyEvent';
+  id: Scalars['Float'];
+  startTime: Scalars['Float'];
+  endTime: Scalars['Float'];
+  day: Scalars['Int'];
+  room: Room;
 };
 
 export type CourseUserMeta = {
-  __typename?: "CourseUserMeta";
-  id: Scalars["String"];
+  __typename?: 'CourseUserMeta';
+  id: Scalars['String'];
   user: User;
   course: Course;
-  questionsAsked: Scalars["Int"];
-  enrolledSession?: Maybe<Scalars["String"]>;
+  questionsAsked: Scalars['Int'];
+  enrolledSession?: Maybe<Scalars['String']>;
 };
 
 export type Mutation = {
-  __typename?: "Mutation";
+  __typename?: 'Mutation';
   createQueue: Queue;
   updateQueue: Queue;
   createCourse: Course;
-  addStaff: Array<CourseStaff>;
   createRoom: Room;
   updateRoom: Room;
   askQuestion: Question;
   updateQuestionStatus: Question;
+  addStaff: Array<CourseStaff>;
+  removeStaff: Scalars['String'];
 };
 
 
 export type MutationCreateQueueArgs = {
   queueInput: QueueInput;
-  roomId: Scalars["String"];
+  roomId: Scalars['String'];
 };
 
 
 export type MutationUpdateQueueArgs = {
   queueInput: QueueInput;
-  queueId: Scalars["String"];
+  queueId: Scalars['String'];
 };
 
 
@@ -194,96 +202,158 @@ export type MutationCreateCourseArgs = {
 };
 
 
-export type MutationAddStaffArgs = {
-  role: StaffRole;
-  usernames: Array<Scalars["String"]>;
-  courseId: Scalars["String"];
-};
-
-
 export type MutationCreateRoomArgs = {
   roomInput: RoomInput;
-  courseId: Scalars["String"];
+  courseId: Scalars['String'];
 };
 
 
 export type MutationUpdateRoomArgs = {
   roomInput: RoomInput;
-  roomId: Scalars["String"];
+  roomId: Scalars['String'];
 };
 
 
 export type MutationAskQuestionArgs = {
-  queueId: Scalars["String"];
+  queueId: Scalars['String'];
 };
 
 
 export type MutationUpdateQuestionStatusArgs = {
-  message?: Maybe<Scalars["String"]>;
-  questionId: Scalars["String"];
+  message?: Maybe<Scalars['String']>;
+  questionId: Scalars['String'];
   questionStatus: QuestionStatus;
 };
 
+
+export type MutationAddStaffArgs = {
+  role: StaffRole;
+  usernames: Array<Scalars['String']>;
+  courseId: Scalars['String'];
+};
+
+
+export type MutationRemoveStaffArgs = {
+  courseStaffId: Scalars['String'];
+};
+
 export type QueueInput = {
-  name: Scalars["String"];
-  shortDescription: Scalars["String"];
-  examples: Array<Scalars["String"]>;
+  name: Scalars['String'];
+  shortDescription: Scalars['String'];
+  examples: Array<Scalars['String']>;
   theme: QueueTheme;
   sortedBy: QueueSortType;
   actions: Array<QueueAction>;
-  clearAfterMidnight: Scalars["Boolean"];
-  showEnrolledSession: Scalars["Boolean"];
+  clearAfterMidnight: Scalars['Boolean'];
+  showEnrolledSession: Scalars['Boolean'];
 };
 
 export type CourseInput = {
-  code: Scalars["String"];
-  title: Scalars["String"];
+  code: Scalars['String'];
+  title: Scalars['String'];
 };
 
 export type RoomInput = {
-  name: Scalars["String"];
-  capacity: Scalars["Int"];
-  enforceCapacity: Scalars["Boolean"];
-  manuallyDisabled: Scalars["Boolean"];
+  name: Scalars['String'];
+  capacity: Scalars['Int'];
+  enforceCapacity: Scalars['Boolean'];
+  manuallyDisabled: Scalars['Boolean'];
   activeTimes: Array<EventInput>;
 };
 
 export type EventInput = {
-  startTime: Scalars["Float"];
-  endTime: Scalars["Float"];
-  day: Scalars["Int"];
+  startTime: Scalars['Float'];
+  endTime: Scalars['Float'];
+  day: Scalars['Int'];
 };
 
 export type Subscription = {
-  __typename?: "Subscription";
+  __typename?: 'Subscription';
   questionChanges: Question;
 };
 
 
 export type SubscriptionQuestionChangesArgs = {
-  roomId: Scalars["String"];
+  roomId: Scalars['String'];
 };
+
+export type GetCoursesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCoursesQuery = (
+  { __typename?: 'Query' }
+  & { getCourses: Array<(
+    { __typename?: 'Course' }
+    & Pick<Course, 'code' | 'id' | 'title'>
+  )> }
+);
+
+export type AddCourseStaffMutationVariables = Exact<{
+  courseId: Scalars['String'];
+  usernames: Array<Scalars['String']> | Scalars['String'];
+  role: StaffRole;
+}>;
+
+
+export type AddCourseStaffMutation = (
+  { __typename?: 'Mutation' }
+  & { addStaff: Array<(
+    { __typename?: 'CourseStaff' }
+    & Pick<CourseStaff, 'id' | 'role'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'username' | 'name'>
+    ) }
+  )> }
+);
+
+export type RemoveCourseStaffMutationVariables = Exact<{
+  courseStaffId: Scalars['String'];
+}>;
+
+
+export type RemoveCourseStaffMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'removeStaff'>
+);
+
+export type GetCourseStaffQueryVariables = Exact<{
+  courseId: Scalars['String'];
+}>;
+
+
+export type GetCourseStaffQuery = (
+  { __typename?: 'Query' }
+  & { getCourseStaff: Array<(
+    { __typename?: 'CourseStaff' }
+    & Pick<CourseStaff, 'id' | 'role'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'username' | 'name'>
+    ) }
+  )> }
+);
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MeQuery = (
-  { __typename?: "Query" }
+  { __typename?: 'Query' }
   & { me: (
-    { __typename?: "User" }
-    & Pick<User, "id" | "username" | "name" | "isAdmin">
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'name' | 'isAdmin'>
     & { courseStaff: Array<(
-      { __typename?: "CourseStaff" }
-      & Pick<CourseStaff, "role">
+      { __typename?: 'CourseStaff' }
+      & Pick<CourseStaff, 'role'>
       & { course: (
-        { __typename?: "Course" }
-        & Pick<Course, "id" | "code" | "title">
+        { __typename?: 'Course' }
+        & Pick<Course, 'id' | 'code' | 'title'>
         & { rooms: Array<(
-          { __typename?: "Room" }
-          & Pick<Room, "id" | "name" | "capacity" | "enforceCapacity" | "manuallyDisabled">
+          { __typename?: 'Room' }
+          & Pick<Room, 'id' | 'name' | 'capacity' | 'enforceCapacity' | 'manuallyDisabled'>
           & { activeTimes: Array<(
-            { __typename?: "WeeklyEvent" }
-            & Pick<WeeklyEvent, "startTime" | "endTime" | "day">
+            { __typename?: 'WeeklyEvent' }
+            & Pick<WeeklyEvent, 'startTime' | 'endTime' | 'day'>
           )> }
         )> }
       ) }
@@ -292,139 +362,139 @@ export type MeQuery = (
 );
 
 export type QuestionChangeSubscriptionVariables = Exact<{
-  roomId: Scalars["String"];
+  roomId: Scalars['String'];
 }>;
 
 
 export type QuestionChangeSubscription = (
-  { __typename?: "Subscription" }
+  { __typename?: 'Subscription' }
   & { questionChanges: (
-    { __typename?: "Question" }
-    & Pick<Question, "id" | "status" | "createdTime" | "questionsAsked" | "enrolledIn" | "claimMessage">
+    { __typename?: 'Question' }
+    & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked' | 'enrolledIn' | 'claimMessage'>
     & { op: (
-      { __typename?: "User" }
-      & Pick<User, "email" | "name" | "username">
+      { __typename?: 'User' }
+      & Pick<User, 'email' | 'name' | 'username'>
     ), claimer?: Maybe<(
-      { __typename?: "User" }
-      & Pick<User, "username" | "name">
+      { __typename?: 'User' }
+      & Pick<User, 'username' | 'name'>
     )>, queue: (
-      { __typename?: "Queue" }
-      & Pick<Queue, "id">
+      { __typename?: 'Queue' }
+      & Pick<Queue, 'id'>
     ) }
   ) }
 );
 
 export type AskQuestionMutationVariables = Exact<{
-  queueId: Scalars["String"];
+  queueId: Scalars['String'];
 }>;
 
 
 export type AskQuestionMutation = (
-  { __typename?: "Mutation" }
+  { __typename?: 'Mutation' }
   & { askQuestion: (
-    { __typename?: "Question" }
-    & Pick<Question, "id" | "status" | "createdTime" | "questionsAsked" | "enrolledIn">
+    { __typename?: 'Question' }
+    & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked' | 'enrolledIn'>
     & { op: (
-      { __typename?: "User" }
-      & Pick<User, "email" | "name" | "username">
+      { __typename?: 'User' }
+      & Pick<User, 'email' | 'name' | 'username'>
     ), claimer?: Maybe<(
-      { __typename?: "User" }
-      & Pick<User, "username" | "name">
+      { __typename?: 'User' }
+      & Pick<User, 'username' | 'name'>
     )>, queue: (
-      { __typename?: "Queue" }
-      & Pick<Queue, "id">
+      { __typename?: 'Queue' }
+      & Pick<Queue, 'id'>
     ) }
   ) }
 );
 
 export type UpdateQuestionStatusMutationVariables = Exact<{
   questionStatus: QuestionStatus;
-  questionId: Scalars["String"];
-  message?: Maybe<Scalars["String"]>;
+  questionId: Scalars['String'];
+  message?: Maybe<Scalars['String']>;
 }>;
 
 
 export type UpdateQuestionStatusMutation = (
-  { __typename?: "Mutation" }
+  { __typename?: 'Mutation' }
   & { updateQuestionStatus: (
-    { __typename?: "Question" }
-    & Pick<Question, "id" | "status" | "createdTime" | "questionsAsked" | "enrolledIn">
+    { __typename?: 'Question' }
+    & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked' | 'enrolledIn'>
     & { op: (
-      { __typename?: "User" }
-      & Pick<User, "name" | "email" | "username">
+      { __typename?: 'User' }
+      & Pick<User, 'name' | 'email' | 'username'>
     ), claimer?: Maybe<(
-      { __typename?: "User" }
-      & Pick<User, "username" | "name">
+      { __typename?: 'User' }
+      & Pick<User, 'username' | 'name'>
     )>, queue: (
-      { __typename?: "Queue" }
-      & Pick<Queue, "id">
+      { __typename?: 'Queue' }
+      & Pick<Queue, 'id'>
     ) }
   ) }
 );
 
 export type UpdateQueueMutationVariables = Exact<{
-  queueId: Scalars["String"];
+  queueId: Scalars['String'];
   queueInput: QueueInput;
 }>;
 
 
 export type UpdateQueueMutation = (
-  { __typename?: "Mutation" }
+  { __typename?: 'Mutation' }
   & { updateQueue: (
-    { __typename?: "Queue" }
-    & Pick<Queue, "id" | "name" | "shortDescription" | "examples" | "actions" | "theme" | "sortedBy" | "clearAfterMidnight" | "showEnrolledSession" | "createdAt">
+    { __typename?: 'Queue' }
+    & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight' | 'showEnrolledSession' | 'createdAt'>
   ) }
 );
 
 export type CreateQueueMutationVariables = Exact<{
-  roomId: Scalars["String"];
+  roomId: Scalars['String'];
   queueInput: QueueInput;
 }>;
 
 
 export type CreateQueueMutation = (
-  { __typename?: "Mutation" }
+  { __typename?: 'Mutation' }
   & { createQueue: (
-    { __typename?: "Queue" }
-    & Pick<Queue, "id" | "name" | "shortDescription" | "examples" | "actions" | "theme" | "sortedBy" | "clearAfterMidnight" | "showEnrolledSession" | "createdAt">
+    { __typename?: 'Queue' }
+    & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight' | 'showEnrolledSession' | 'createdAt'>
   ) }
 );
 
 export type GetActiveRoomsQueryVariables = Exact<{
-  courseCode: Scalars["String"];
+  courseCode: Scalars['String'];
 }>;
 
 
 export type GetActiveRoomsQuery = (
-  { __typename?: "Query" }
+  { __typename?: 'Query' }
   & { getActiveRooms: Array<(
-    { __typename?: "Room" }
-    & Pick<Room, "id" | "name">
+    { __typename?: 'Room' }
+    & Pick<Room, 'id' | 'name'>
   )> }
 );
 
 export type GetRoomByIdQueryVariables = Exact<{
-  roomId: Scalars["String"];
+  roomId: Scalars['String'];
 }>;
 
 
 export type GetRoomByIdQuery = (
-  { __typename?: "Query" }
+  { __typename?: 'Query' }
   & { getRoomById: (
-    { __typename?: "Room" }
-    & Pick<Room, "id" | "name">
+    { __typename?: 'Room' }
+    & Pick<Room, 'id' | 'name'>
     & { queues: Array<(
-      { __typename?: "Queue" }
-      & Pick<Queue, "id" | "name" | "shortDescription" | "examples" | "actions" | "theme" | "sortedBy" | "clearAfterMidnight" | "showEnrolledSession" | "createdAt">
+      { __typename?: 'Queue' }
+      & Pick<Queue, 'id' | 'name' | 'shortDescription' | 'examples' | 'actions' | 'theme' | 'sortedBy' | 'clearAfterMidnight' | 'showEnrolledSession' | 'createdAt'>
       & { activeQuestions: Array<(
-        { __typename?: "Question" }
-        & Pick<Question, "id" | "status" | "createdTime" | "questionsAsked" | "enrolledIn">
+        { __typename?: 'Question' }
+        & Pick<Question, 'id' | 'status' | 'createdTime' | 'questionsAsked' | 'enrolledIn'>
         & { op: (
-          { __typename?: "User" }
-          & Pick<User, "name" | "email" | "username">
+          { __typename?: 'User' }
+          & Pick<User, 'name' | 'email' | 'username'>
         ), claimer?: Maybe<(
-          { __typename?: "User" }
-          & Pick<User, "username" | "name">
+          { __typename?: 'User' }
+          & Pick<User, 'username' | 'name'>
         )> }
       )> }
     )> }
@@ -432,42 +502,183 @@ export type GetRoomByIdQuery = (
 );
 
 export type UpdateRoomMutationVariables = Exact<{
-  roomId: Scalars["String"];
+  roomId: Scalars['String'];
   roomInput: RoomInput;
 }>;
 
 
 export type UpdateRoomMutation = (
-  { __typename?: "Mutation" }
+  { __typename?: 'Mutation' }
   & { updateRoom: (
-    { __typename?: "Room" }
-    & Pick<Room, "id" | "name" | "capacity" | "enforceCapacity" | "manuallyDisabled">
+    { __typename?: 'Room' }
+    & Pick<Room, 'id' | 'name' | 'capacity' | 'enforceCapacity' | 'manuallyDisabled'>
     & { activeTimes: Array<(
-      { __typename?: "WeeklyEvent" }
-      & Pick<WeeklyEvent, "startTime" | "endTime" | "day">
+      { __typename?: 'WeeklyEvent' }
+      & Pick<WeeklyEvent, 'startTime' | 'endTime' | 'day'>
     )> }
   ) }
 );
 
 export type AddRoomMutationVariables = Exact<{
-  courseId: Scalars["String"];
+  courseId: Scalars['String'];
   roomInput: RoomInput;
 }>;
 
 
 export type AddRoomMutation = (
-  { __typename?: "Mutation" }
+  { __typename?: 'Mutation' }
   & { createRoom: (
-    { __typename?: "Room" }
-    & Pick<Room, "id" | "name" | "capacity" | "enforceCapacity" | "manuallyDisabled">
+    { __typename?: 'Room' }
+    & Pick<Room, 'id' | 'name' | 'capacity' | 'enforceCapacity' | 'manuallyDisabled'>
     & { activeTimes: Array<(
-      { __typename?: "WeeklyEvent" }
-      & Pick<WeeklyEvent, "startTime" | "endTime" | "day">
+      { __typename?: 'WeeklyEvent' }
+      & Pick<WeeklyEvent, 'startTime' | 'endTime' | 'day'>
     )> }
   ) }
 );
 
 
+export const GetCoursesDocument = gql`
+    query GetCourses {
+  getCourses {
+    code
+    id
+    title
+  }
+}
+    `;
+
+/**
+ * __useGetCoursesQuery__
+ *
+ * To run a query within a React component, call `useGetCoursesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCoursesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCoursesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetCoursesQuery(baseOptions?: Apollo.QueryHookOptions<GetCoursesQuery, GetCoursesQueryVariables>) {
+        return Apollo.useQuery<GetCoursesQuery, GetCoursesQueryVariables>(GetCoursesDocument, baseOptions);
+      }
+export function useGetCoursesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCoursesQuery, GetCoursesQueryVariables>) {
+          return Apollo.useLazyQuery<GetCoursesQuery, GetCoursesQueryVariables>(GetCoursesDocument, baseOptions);
+        }
+export type GetCoursesQueryHookResult = ReturnType<typeof useGetCoursesQuery>;
+export type GetCoursesLazyQueryHookResult = ReturnType<typeof useGetCoursesLazyQuery>;
+export type GetCoursesQueryResult = Apollo.QueryResult<GetCoursesQuery, GetCoursesQueryVariables>;
+export const AddCourseStaffDocument = gql`
+    mutation AddCourseStaff($courseId: String!, $usernames: [String!]!, $role: StaffRole!) {
+  addStaff(courseId: $courseId, usernames: $usernames, role: $role) {
+    id
+    user {
+      username
+      name
+    }
+    role
+  }
+}
+    `;
+export type AddCourseStaffMutationFn = Apollo.MutationFunction<AddCourseStaffMutation, AddCourseStaffMutationVariables>;
+
+/**
+ * __useAddCourseStaffMutation__
+ *
+ * To run a mutation, you first call `useAddCourseStaffMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddCourseStaffMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addCourseStaffMutation, { data, loading, error }] = useAddCourseStaffMutation({
+ *   variables: {
+ *      courseId: // value for 'courseId'
+ *      usernames: // value for 'usernames'
+ *      role: // value for 'role'
+ *   },
+ * });
+ */
+export function useAddCourseStaffMutation(baseOptions?: Apollo.MutationHookOptions<AddCourseStaffMutation, AddCourseStaffMutationVariables>) {
+        return Apollo.useMutation<AddCourseStaffMutation, AddCourseStaffMutationVariables>(AddCourseStaffDocument, baseOptions);
+      }
+export type AddCourseStaffMutationHookResult = ReturnType<typeof useAddCourseStaffMutation>;
+export type AddCourseStaffMutationResult = Apollo.MutationResult<AddCourseStaffMutation>;
+export type AddCourseStaffMutationOptions = Apollo.BaseMutationOptions<AddCourseStaffMutation, AddCourseStaffMutationVariables>;
+export const RemoveCourseStaffDocument = gql`
+    mutation RemoveCourseStaff($courseStaffId: String!) {
+  removeStaff(courseStaffId: $courseStaffId)
+}
+    `;
+export type RemoveCourseStaffMutationFn = Apollo.MutationFunction<RemoveCourseStaffMutation, RemoveCourseStaffMutationVariables>;
+
+/**
+ * __useRemoveCourseStaffMutation__
+ *
+ * To run a mutation, you first call `useRemoveCourseStaffMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveCourseStaffMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeCourseStaffMutation, { data, loading, error }] = useRemoveCourseStaffMutation({
+ *   variables: {
+ *      courseStaffId: // value for 'courseStaffId'
+ *   },
+ * });
+ */
+export function useRemoveCourseStaffMutation(baseOptions?: Apollo.MutationHookOptions<RemoveCourseStaffMutation, RemoveCourseStaffMutationVariables>) {
+        return Apollo.useMutation<RemoveCourseStaffMutation, RemoveCourseStaffMutationVariables>(RemoveCourseStaffDocument, baseOptions);
+      }
+export type RemoveCourseStaffMutationHookResult = ReturnType<typeof useRemoveCourseStaffMutation>;
+export type RemoveCourseStaffMutationResult = Apollo.MutationResult<RemoveCourseStaffMutation>;
+export type RemoveCourseStaffMutationOptions = Apollo.BaseMutationOptions<RemoveCourseStaffMutation, RemoveCourseStaffMutationVariables>;
+export const GetCourseStaffDocument = gql`
+    query GetCourseStaff($courseId: String!) {
+  getCourseStaff(courseId: $courseId) {
+    id
+    user {
+      username
+      name
+    }
+    role
+  }
+}
+    `;
+
+/**
+ * __useGetCourseStaffQuery__
+ *
+ * To run a query within a React component, call `useGetCourseStaffQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCourseStaffQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCourseStaffQuery({
+ *   variables: {
+ *      courseId: // value for 'courseId'
+ *   },
+ * });
+ */
+export function useGetCourseStaffQuery(baseOptions: Apollo.QueryHookOptions<GetCourseStaffQuery, GetCourseStaffQueryVariables>) {
+        return Apollo.useQuery<GetCourseStaffQuery, GetCourseStaffQueryVariables>(GetCourseStaffDocument, baseOptions);
+      }
+export function useGetCourseStaffLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCourseStaffQuery, GetCourseStaffQueryVariables>) {
+          return Apollo.useLazyQuery<GetCourseStaffQuery, GetCourseStaffQueryVariables>(GetCourseStaffDocument, baseOptions);
+        }
+export type GetCourseStaffQueryHookResult = ReturnType<typeof useGetCourseStaffQuery>;
+export type GetCourseStaffLazyQueryHookResult = ReturnType<typeof useGetCourseStaffLazyQuery>;
+export type GetCourseStaffQueryResult = Apollo.QueryResult<GetCourseStaffQuery, GetCourseStaffQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {

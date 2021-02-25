@@ -17,7 +17,8 @@ import React, { useContext } from "react";
 import { UserContext } from "../utils/user";
 import { BsPersonFill } from "react-icons/all";
 import { NavBarMenuButton } from "./navbar/NavBarMenuButton";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import { StaffRole } from "../generated/graphql";
 
 type Props = {};
 
@@ -30,13 +31,41 @@ export const NavBar: React.FunctionComponent<Props> = () => {
             <Box w="100%" bgColor={bgColor}>
                 <Flex w="80%" mx="auto" h={14} alignItems="center">
                     <Box>
-                        <Link to="/">
+                        <RouterLink to="/">
                             <Heading size="md" fontWeight="normal">
                                 Q
                             </Heading>
-                        </Link>
+                        </RouterLink>
                     </Box>
                     <Spacer />
+                    {user && (user.isAdmin || user.courseStaff.length > 0) && (
+                        <Menu>
+                            <MenuButton
+                                as={NavBarMenuButton}
+                                rightIcon={<ChevronDownIcon />}
+                                style={{ cursor: "pointer" }}
+                            >
+                                Tools
+                            </MenuButton>
+                            <MenuList style={{ margin: 0 }}>
+                                <MenuItem>
+                                    <RouterLink to="/rooms">Rooms</RouterLink>
+                                </MenuItem>
+                                {(user.isAdmin ||
+                                    user.courseStaff.filter(
+                                        (courseStaff) =>
+                                            courseStaff.role ===
+                                            StaffRole.Coordinator
+                                    ).length > 0) && (
+                                    <MenuItem>
+                                        <RouterLink to="/course-staff">
+                                            Course Staff
+                                        </RouterLink>
+                                    </MenuItem>
+                                )}
+                            </MenuList>
+                        </Menu>
+                    )}
                     <Menu>
                         <MenuButton
                             as={NavBarMenuButton}

@@ -18,23 +18,10 @@ import { scheduleJob } from "node-schedule";
 import { endOfDayRule, resetQuestionCount, resetQueues } from "./jobs/queue";
 import { UserResolver } from "./resolvers/user-resolver";
 import { QuestionResolver } from "./resolvers/question-resolver";
+import { CourseStaffResolver } from "./resolvers/course-staff-resolver";
 
 const app: Express = express();
 const server = createServer(app);
-// export const io: Server = new Server(server, {
-//     serveClient: false,
-//     upgradeTimeout: 30000,
-// });
-//
-// io.on("connection", (socket) => {
-//     console.log("client connected");
-//     socket.on(QueueEvent.JOIN_ROOM, (roomId: string) => {
-//         socket.join(roomId);
-//     });
-//     socket.on(QueueEvent.LEAVE_ROOM, (roomId: string) => {
-//         socket.leave(roomId);
-//     });
-// });
 const port = process.env.PORT || 5000;
 
 const main = async () => {
@@ -58,6 +45,7 @@ const main = async () => {
             resolvers: [
                 QueueResolver,
                 CourseResolver,
+                CourseStaffResolver,
                 RoomResolver,
                 QuestionResolver,
                 UserResolver,

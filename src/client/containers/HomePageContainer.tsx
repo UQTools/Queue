@@ -31,7 +31,7 @@ export const HomePageContainer: React.FC<Props> = ({}) => {
                         }}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
-                                history.push(`/${course}`);
+                                history.push(`/${course.toUpperCase()}`);
                             }
                         }}
                     />

@@ -3,6 +3,7 @@ import { Field, FieldInputProps, FieldProps } from "formik";
 import {
     FormControl,
     FormErrorMessage,
+    FormHelperText,
     FormLabel,
     Input,
     InputProps,
@@ -14,6 +15,7 @@ type Props = {
     id?: string;
     label?: string;
     type?: string;
+    helperText?: string;
 } & Omit<InputProps, keyof FieldInputProps<any> | "type">;
 
 export const FormikInput: React.FC<Props> = ({
@@ -21,6 +23,7 @@ export const FormikInput: React.FC<Props> = ({
     id,
     label,
     type = "text",
+    helperText,
     ...props
 }) => {
     return (
@@ -35,6 +38,9 @@ export const FormikInput: React.FC<Props> = ({
                     <Input {...props} {...field} type={type} />
                     {meta.touched && meta.error && (
                         <FormErrorMessage>{meta.error}</FormErrorMessage>
+                    )}
+                    {helperText && (
+                        <FormHelperText>{helperText}</FormHelperText>
                     )}
                 </FormControl>
             )}

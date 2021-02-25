@@ -1,0 +1,7 @@
+query GetCourses {
+    getCourses {
+        code
+        id
+        title
+    }
+}
