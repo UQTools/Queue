@@ -346,7 +346,13 @@ export const CoursePageContainer: React.FC<Props> = () => {
                 );
             }
         },
-        [updateQuestionMutation, openClaimModal, courseCode, user.name]
+        [
+            updateQuestionMutation,
+            openClaimModal,
+            courseCode,
+            user.name,
+            user.username,
+        ]
     );
     useEffect(() => {
         if (!updateQuestionData) {
