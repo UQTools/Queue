@@ -5,13 +5,13 @@ export class Migration1613839789906 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
-            'ALTER TABLE "queue" ADD "shortDescription" character varying NOT NULL'
+            "ALTER TABLE \"queue\" ADD \"shortDescription\" character varying NOT NULL"
         );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
-            'ALTER TABLE "queue" DROP COLUMN "shortDescription"'
+            "ALTER TABLE \"queue\" DROP COLUMN \"shortDescription\""
         );
     }
 }

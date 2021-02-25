@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import "./config";
 import express, { Express, Response } from "express";
 import { createServer } from "http";

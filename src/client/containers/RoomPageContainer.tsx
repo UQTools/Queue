@@ -39,7 +39,7 @@ const placeholderRoom: RoomInput = {
     activeTimes: [],
 };
 
-export const RoomPageContainer: React.FC<Props> = ({}) => {
+export const RoomPageContainer: React.FC<Props> = () => {
     const user = useContext(UserContext)!;
     const [chosenRoom, setChosenRoom] = useState("");
     const [chosenCourse, setChosenCourse] = useState("");

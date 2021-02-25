@@ -42,6 +42,7 @@
     "react-icons": "^3.0.0",
     "react-refresh": "^0.8.3",
     "react-router-dom": "^5.2.0",
+    "reflect-metadata": "^0.1.13",
     "resolve": "1.18.1",
     "semver": "7.3.2",
     "socket.io": "^3.1.1",
