@@ -2,6 +2,7 @@ import {
     BaseEntity,
     Check,
     Column,
+    CreateDateColumn,
     Entity,
     ManyToOne,
     OneToMany,
@@ -30,6 +31,10 @@ export class Queue extends BaseEntity {
     @Field()
     @Column()
     shortDescription: string;
+
+    @Field(() => Date)
+    @CreateDateColumn()
+    createdAt: Date;
 
     @Field(() => [String])
     @Column("varchar", { array: true, default: () => "array[]::varchar[]" })
