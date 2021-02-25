@@ -68,4 +68,8 @@ export class Queue extends BaseEntity {
     @Field()
     @Column({ default: false })
     clearAfterMidnight: boolean;
+
+    @Field()
+    @Column({ default: false })
+    showEnrolledSession: boolean;
 }

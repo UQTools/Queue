@@ -170,6 +170,14 @@ export class QuestionResolver {
         return newMeta.questionsAsked;
     }
 
+    @FieldResolver(() => String, { nullable: true })
+    async enrolledIn(@Root() question: Question): Promise<string | undefined> {
+        const courseId = (await (await question.queue).room).courseId;
+        const userId = question.opId;
+        return (await CourseUserMeta.findOne({ courseId, userId }))
+            ?.enrolledSession;
+    }
+
     @Subscription(() => Question, {
         topics: [QuestionEvent.NEW_QUESTION, QuestionEvent.UPDATE_QUESTION],
         filter: async ({
