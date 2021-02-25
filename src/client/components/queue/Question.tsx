@@ -47,7 +47,7 @@ export const Question: React.FC<Props> = ({
     // Continuously update the time every 10 seconds
     const updateTime: () => ReturnType<typeof setTimeout> = useCallback(() => {
         setElapsedSeconds(differenceInSeconds(new Date(), askedTime));
-        return setTimeout(updateTime, 10000);
+        return setTimeout(updateTime, 5000);
     }, [askedTime]);
 
     useEffect(() => {
