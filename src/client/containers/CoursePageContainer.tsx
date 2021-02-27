@@ -49,6 +49,7 @@ import { UserContext } from "../utils/user";
 import { QueueModal } from "../components/queue/QueueModal";
 import { generateMailto, pushNotification } from "../utils/queue";
 import sortBy from "lodash/sortBy";
+import { redacted } from "../../constants";
 
 type Props = {};
 
@@ -228,8 +229,14 @@ export const CoursePageContainer: React.FC<Props> = () => {
                     ...(prev.get(question.queue.id) || {}),
                     [question.id]: {
                         id: question.id,
-                        askerName: question.op.name,
-                        askerEmail: question.op.email,
+                        askerName:
+                            question.op.name === redacted
+                                ? question.op.username
+                                : question.op.name,
+                        askerEmail:
+                            question.op.email === redacted
+                                ? `${question.op.username}@student.uq.edu.au`
+                                : question.op.email,
                         askedTime: parseISO(question.createdTime),
                         questionCount: question.questionsAsked,
                         status: question.status,
@@ -257,11 +264,17 @@ export const CoursePageContainer: React.FC<Props> = () => {
                             ...prevValue,
                             [question.id]: {
                                 id: question.id,
-                                askerName: question.op.name,
+                                askerName:
+                                    question.op.name === redacted
+                                        ? question.op.username
+                                        : question.op.name,
                                 askedTime: parseISO(question.createdTime),
                                 questionCount: question.questionsAsked,
                                 status: question.status,
-                                askerEmail: question.op.email,
+                                askerEmail:
+                                    question.op.email === redacted
+                                        ? `${question.op.username}@student.uq.edu.au`
+                                        : question.op.email,
                                 enrolledSession: question.enrolledIn,
                                 claimer: question.claimer,
                             },
