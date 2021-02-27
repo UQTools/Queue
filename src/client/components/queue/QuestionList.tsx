@@ -47,7 +47,7 @@ export const QuestionList: React.FC<Props> = ({
                 return sortBy(questions, (question) => {
                     const elapsedTime =
                         new Date().getTime() - question.askedTime.getTime();
-                    return elapsedTime * question.questionCount;
+                    return -elapsedTime / (question.questionCount + 1);
                 });
         }
     }, [questions, sortType]);

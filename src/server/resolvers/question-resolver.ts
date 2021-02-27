@@ -123,7 +123,7 @@ export class QuestionResolver {
             throw new Error("You cannot reopen a closed question");
         }
         const queue = await question.queue;
-        const op = await question.op;
+        // const op = await question.op;
         const staffMembers = await getRepository(User)
             .createQueryBuilder("user")
             .innerJoinAndSelect("user.courseStaff", "courseStaff")
@@ -159,10 +159,11 @@ export class QuestionResolver {
             question.status = questionStatus;
             question.claimerId = user.id;
         } else {
-            if (questionStatus !== QuestionStatus.CLOSED || op.id !== user.id) {
-                throw new Error(permissionDeniedMsg);
-            }
-            question.status = QuestionStatus.CLOSED;
+            // if (questionStatus !== QuestionStatus.CLOSED || op.id !== user.id) {
+            //     throw new Error(permissionDeniedMsg);
+            // }
+            // question.status = QuestionStatus.CLOSED;
+            throw new Error(permissionDeniedMsg);
         }
         const newQuestion = await question.save();
         publish(newQuestion);
