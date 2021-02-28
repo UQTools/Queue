@@ -23,7 +23,7 @@ export class QuestionResolver {
     async askQuestion(
         @Arg("queueId") queueId: string,
         @Ctx() { req }: MyContext,
-        @PubSub(QuestionEvent.NEW_QUESTION) publish: Publisher<Question>
+        @PubSub(QuestionEvent.NEW_QUESTION) publish: Publisher<string>
     ): Promise<Question> {
         let queue: Queue;
         try {
@@ -94,7 +94,7 @@ export class QuestionResolver {
                 questionsAsked: 0,
             }).save();
         }
-        publish(question);
+        await publish(question.id);
         return question;
     }
 
@@ -106,7 +106,7 @@ export class QuestionResolver {
         @Arg("message", () => String, { nullable: true })
         message: string | undefined,
         @Ctx() { req }: MyContext,
-        @PubSub(QuestionEvent.UPDATE_QUESTION) publish: Publisher<Question>
+        @PubSub(QuestionEvent.UPDATE_QUESTION) publish: Publisher<string>
     ): Promise<Question> {
         const user = req.user;
         let question: Question;
@@ -166,7 +166,7 @@ export class QuestionResolver {
             throw new Error(permissionDeniedMsg);
         }
         const newQuestion = await question.save();
-        publish(newQuestion);
+        await publish(question.id);
         return newQuestion;
     }
 
@@ -205,14 +205,20 @@ export class QuestionResolver {
             payload,
             args,
         }: {
-            payload: Question;
+            payload: string;
             args: { roomId: string };
-        }) => args.roomId === (await payload.queue).roomId,
+        }) => {
+            const question = await Question.findOne(payload);
+            if (!question) {
+                return false;
+            }
+            return args.roomId === (await question.queue).roomId;
+        },
     })
     async questionChanges(
         @Arg("roomId") _: string,
-        @Root() question: Question
+        @Root() questionId: string
     ): Promise<Question> {
-        return question;
+        return await Question.findOneOrFail(questionId);
     }
 }
