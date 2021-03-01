@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import {
     Button,
     Modal,
@@ -10,22 +10,19 @@ import {
     ModalOverlay,
     Textarea,
 } from "@chakra-ui/react";
+import { QueueContext } from "../../utils/queue";
+import { QuestionStatus } from "../../generated/graphql";
 
 type Props = {
+    questionId: string;
     isOpen: boolean;
     close: () => void;
-    setMessage: (message: string) => void;
-    message: string;
-    submit: (message: string) => void;
 };
 
-export const ClaimModal: React.FC<Props> = ({
-    isOpen,
-    close,
-    setMessage,
-    message,
-    submit,
-}) => {
+export const ClaimModal: React.FC<Props> = ({ questionId, isOpen, close }) => {
+    const [message, setMessage] = useState("");
+    const { updateQuestionStatus } = useContext(QueueContext);
+
     return (
         <Modal isOpen={isOpen} onClose={close} isCentered>
             <ModalOverlay />
@@ -44,7 +41,11 @@ export const ClaimModal: React.FC<Props> = ({
                         colorScheme="blue"
                         mr={3}
                         onClick={() => {
-                            submit(message);
+                            updateQuestionStatus(
+                                questionId,
+                                QuestionStatus.Claimed,
+                                message
+                            );
                             close();
                         }}
                     >

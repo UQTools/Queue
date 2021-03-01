@@ -10,7 +10,10 @@ import {
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { QueueAction, QueueSortType } from "../../generated/graphql";
-import { Question, QuestionProps } from "./Question";
+import {
+    QuestionContainer,
+    QuestionProps,
+} from "../../containers/QuestionContainer";
 import sortBy from "lodash/sortBy";
 import differenceInSeconds from "date-fns/differenceInSeconds";
 import { secondsToText } from "../../utils/queue";
@@ -19,7 +22,7 @@ export type Props = {
     sortType: QueueSortType;
     questions: QuestionProps[];
     actions: QueueAction[];
-    buttonsOnClick: (question: QuestionProps, queueAction: QueueAction) => void;
+    // buttonsOnClick: (question: QuestionProps, queueAction: QueueAction) => void;
     isStaff: boolean;
     showEnrolledSession: boolean;
 };
@@ -28,7 +31,7 @@ export const QuestionList: React.FC<Props> = ({
     questions,
     sortType,
     actions,
-    buttonsOnClick,
+    // buttonsOnClick,
     isStaff,
     showEnrolledSession,
 }) => {
@@ -100,12 +103,12 @@ export const QuestionList: React.FC<Props> = ({
                     </Thead>
                     <Tbody>
                         {sortedQuestions.map((question, key) => (
-                            <Question
+                            <QuestionContainer
                                 {...question}
                                 key={key}
                                 actions={actions}
                                 index={key + 1}
-                                buttonsOnClick={buttonsOnClick}
+                                // buttonsOnClick={buttonsOnClick}
                                 isStaff={isStaff}
                                 showEnrolledSession={showEnrolledSession}
                             />

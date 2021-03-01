@@ -15,7 +15,6 @@ import {
 } from "../hooks/useApolloHooksWithError";
 import {
     QuestionStatus,
-    QueueAction,
     QueueSortType,
     QueueTheme,
     UpdateQuestionStatusMutation,
@@ -38,7 +37,7 @@ import {
     useMediaQuery,
     useToast,
 } from "@chakra-ui/react";
-import { QuestionProps } from "../components/queue/Question";
+import { QuestionProps } from "./QuestionContainer";
 import { RoomSelector } from "../components/queue/RoomSelector";
 import { Map } from "immutable";
 import { Queue, QueueProps } from "../components/queue/Queue";
@@ -47,7 +46,7 @@ import { ClaimModal } from "../components/queue/ClaimModal";
 import omit from "lodash/omit";
 import { UserContext } from "../utils/user";
 import { QueueModal } from "../components/queue/QueueModal";
-import { generateMailto, pushNotification } from "../utils/queue";
+import { pushNotification, QueueContext } from "../utils/queue";
 import sortBy from "lodash/sortBy";
 import { redacted } from "../../constants";
 
@@ -87,7 +86,6 @@ export const CoursePageContainer: React.FC<Props> = () => {
     const [chosenQueueId, setChosenQueueId] = useState("");
     const [chosenRoomId, setChosenRoomId] = useState("default");
     const [displayedQueues, setDisplayedQueues] = useState<string[]>([]);
-    const [claimMessage, setClaimMessage] = useState("");
     const [selectedQuestion, setSelectedQuestion] = useState("");
     const { courseCode } = useParams<CourseParam>();
     const history = useHistory();
@@ -157,18 +155,18 @@ export const CoursePageContainer: React.FC<Props> = () => {
         },
         [askQuestionMutation]
     );
-    const claimQuestion = useCallback(
-        (message: string) => {
-            updateQuestionMutation({
-                variables: {
-                    questionId: selectedQuestion,
-                    questionStatus: QuestionStatus.Claimed,
-                    message,
-                },
-            });
-        },
-        [updateQuestionMutation, selectedQuestion]
-    );
+    // const claimQuestion = useCallback(
+    //     (message: string) => {
+    //         updateQuestionMutation({
+    //             variables: {
+    //                 questionId: selectedQuestion,
+    //                 questionStatus: QuestionStatus.Claimed,
+    //                 message,
+    //             },
+    //         });
+    //     },
+    //     [updateQuestionMutation, selectedQuestion]
+    // );
     const editQueue = useCallback(
         (queueId: string) => {
             setChosenQueueId(queueId);
@@ -229,10 +227,8 @@ export const CoursePageContainer: React.FC<Props> = () => {
                     ...(prev.get(question.queue.id) || {}),
                     [question.id]: {
                         id: question.id,
-                        askerName:
-                            question.op.name === redacted
-                                ? question.op.username
-                                : question.op.name,
+                        askerName: question.op.name,
+                        askerUsername: question.op.username,
                         askerEmail:
                             question.op.email === redacted
                                 ? `${question.op.username}@student.uq.edu.au`
@@ -264,10 +260,8 @@ export const CoursePageContainer: React.FC<Props> = () => {
                             ...prevValue,
                             [question.id]: {
                                 id: question.id,
-                                askerName:
-                                    question.op.name === redacted
-                                        ? question.op.username
-                                        : question.op.name,
+                                askerName: question.op.name,
+                                askerUsername: question.op.username,
                                 askedTime: parseISO(question.createdTime),
                                 questionCount: question.questionsAsked,
                                 status: question.status,
@@ -336,54 +330,79 @@ export const CoursePageContainer: React.FC<Props> = () => {
         setQueues((prev) => prev.remove(removedId));
     }, [removeQueueData]);
 
-    const queueButtonAction = useCallback(
-        (question: QuestionProps, questionAction: QueueAction) => {
-            if (questionAction === QueueAction.Accept) {
-                updateQuestionMutation({
-                    variables: {
-                        questionStatus: QuestionStatus.Accepted,
-                        questionId: question.id,
-                    },
-                });
-            } else if (questionAction === QueueAction.Remove) {
-                updateQuestionMutation({
-                    variables: {
-                        questionStatus: QuestionStatus.Closed,
-                        questionId: question.id,
-                    },
-                });
-            } else if (questionAction === QueueAction.Claim) {
-                if (question.status === QuestionStatus.Open) {
-                    setSelectedQuestion(question.id);
-                    openClaimModal();
-                } else if (
-                    question.status === QuestionStatus.Claimed &&
-                    question.claimer?.username === user.username
-                ) {
-                    updateQuestionMutation({
-                        variables: {
-                            questionStatus: QuestionStatus.Open,
-                            questionId: question.id,
-                        },
-                    });
-                }
-            } else if (questionAction === QueueAction.Email) {
-                document.location.href = generateMailto(
-                    question.askerEmail,
-                    courseCode,
-                    question.askerName,
-                    user?.name || ` ${courseCode} Tutor team`
-                );
-            }
+    const updateQuestionStatus = useCallback(
+        (
+            questionId: string,
+            questionStatus: QuestionStatus,
+            message?: string
+        ) => {
+            updateQuestionMutation({
+                variables: {
+                    questionStatus,
+                    questionId,
+                    message,
+                },
+            });
         },
-        [
-            updateQuestionMutation,
-            openClaimModal,
-            courseCode,
-            user.name,
-            user.username,
-        ]
+        [updateQuestionMutation]
     );
+    // const queueButtonAction = useCallback(
+    //     (question: QuestionProps, questionAction: QueueAction) => {
+    //         if (questionAction === QueueAction.Accept) {
+    //             updateQuestionMutation({
+    //                 variables: {
+    //                     questionStatus: QuestionStatus.Accepted,
+    //                     questionId: question.id,
+    //                 },
+    //             });
+    //         } else if (questionAction === QueueAction.Remove) {
+    //             updateQuestionMutation({
+    //                 variables: {
+    //                     questionStatus: QuestionStatus.Closed,
+    //                     questionId: question.id,
+    //                 },
+    //             });
+    //         } else if (questionAction === QueueAction.Claim) {
+    //             if (question.status === QuestionStatus.Open) {
+    //                 setSelectedQuestion(question.id);
+    //                 openClaimModal();
+    //             } else if (
+    //                 question.status === QuestionStatus.Claimed &&
+    //                 question.claimer?.username === user.username
+    //             ) {
+    //                 updateQuestionMutation({
+    //                     variables: {
+    //                         questionStatus: QuestionStatus.Open,
+    //                         questionId: question.id,
+    //                     },
+    //                 });
+    //             }
+    //         } else if (questionAction === QueueAction.Email) {
+    //             document.location.href = generateMailto(
+    //                 question.askerEmail,
+    //                 courseCode,
+    //                 question.askerName === redacted
+    //                     ? question.askerUsername
+    //                     : question.askerName,
+    //                 user?.name || ` ${courseCode} Tutor team`
+    //             );
+    //         } else if (questionAction === QueueAction.MarkNotNeeded) {
+    //             updateQuestionMutation({
+    //                 variables: {
+    //                     questionStatus: QuestionStatus.NotNeeded,
+    //                     questionId: question.id,
+    //                 },
+    //             });
+    //         }
+    //     },
+    //     [
+    //         updateQuestionMutation,
+    //         openClaimModal,
+    //         courseCode,
+    //         user.name,
+    //         user.username,
+    //     ]
+    // );
     useEffect(() => {
         if (!updateQuestionData) {
             return;
@@ -408,7 +427,14 @@ export const CoursePageContainer: React.FC<Props> = () => {
         updateQueues(updatedQueue);
     }, [updateQueueData, updateQueues]);
     return (
-        <>
+        <QueueContext.Provider
+            value={{
+                updateQuestionStatus,
+                setSelectedQuestion,
+                openClaimModal,
+                courseCode,
+            }}
+        >
             <Container>
                 <Text fontSize="3xl" mb={3}>
                     {courseCode}
@@ -462,7 +488,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                                 queueQuestions.get(queueId) || {}
                             )}
                             askQuestion={askQuestion}
-                            buttonsOnClick={queueButtonAction}
+                            // buttonsOnClick={queueButtonAction}
                             isStaff={isStaff}
                             openEditQueueModal={editQueue}
                         />
@@ -472,9 +498,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
             <ClaimModal
                 isOpen={isClaimModalOpen}
                 close={closeClaimModal}
-                setMessage={setClaimMessage}
-                message={claimMessage}
-                submit={claimQuestion}
+                questionId={selectedQuestion}
             />
             <QueueModal
                 {...(addingNewQueue
@@ -542,6 +566,6 @@ export const CoursePageContainer: React.FC<Props> = () => {
                           }
                 }
             />
-        </>
+        </QueueContext.Provider>
     );
 };

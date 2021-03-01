@@ -20,7 +20,7 @@ import {
     QueueSortType,
     QueueTheme,
 } from "../../generated/graphql";
-import { QuestionProps } from "./Question";
+import { QuestionProps } from "../../containers/QuestionContainer";
 import { QuestionList } from "./QuestionList";
 import { capitalCase, noCase } from "change-case";
 import { EditIcon } from "@chakra-ui/icons";
@@ -41,7 +41,7 @@ export type QueueProps = {
 export type Props = QueueProps & {
     questions: QuestionProps[];
     askQuestion: (queueId: string) => void;
-    buttonsOnClick: (question: QuestionProps, queueAction: QueueAction) => void;
+    // buttonsOnClick: (question: QuestionProps, queueAction: QueueAction) => void;
     isStaff: boolean;
     openEditQueueModal: (queueId: string) => void;
 };
@@ -56,7 +56,7 @@ export const Queue: React.FC<Props> = ({
     sortType,
     questions,
     askQuestion,
-    buttonsOnClick,
+    // buttonsOnClick,
     isStaff,
     openEditQueueModal,
     showEnrolledSession,
@@ -119,7 +119,7 @@ export const Queue: React.FC<Props> = ({
                 sortType={sortType}
                 questions={questions}
                 actions={actions}
-                buttonsOnClick={buttonsOnClick}
+                // buttonsOnClick={buttonsOnClick}
                 isStaff={isStaff}
                 showEnrolledSession={showEnrolledSession}
             />

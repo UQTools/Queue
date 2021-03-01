@@ -81,6 +81,7 @@ export const QueueModal: React.FC<Props> = ({
                                     QueueAction.Remove,
                                     QueueAction.Claim,
                                     QueueAction.Email,
+                                    QueueAction.MarkNotNeeded,
                                 ]}
                                 name="actions"
                                 direction="row"

@@ -48,7 +48,8 @@ export class QueueResolver {
         return (await queue.questions).filter(
             (question) =>
                 question.status === QuestionStatus.OPEN ||
-                question.status === QuestionStatus.CLAIMED
+                question.status === QuestionStatus.CLAIMED ||
+                question.status === QuestionStatus.NOT_NEEDED
         );
     }
 

@@ -16,6 +16,7 @@ export enum QueueAction {
     ACCEPT = "Accept",
     REMOVE = "Remove",
     EMAIL = "Email",
+    MARK_NOT_NEEDED = "Mark not needed",
 }
 
 export enum QueueSortType {

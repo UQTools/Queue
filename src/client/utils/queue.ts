@@ -1,3 +1,6 @@
+import { createContext } from "react";
+import { QueueUtils } from "../types/queue";
+
 export const secondsToText = (seconds: number) => {
     if (seconds > 3600) {
         const hours = Math.round(seconds / 3600);
@@ -35,5 +38,12 @@ export const pushNotification = (title: string, body: string) => {
 };
 
 export const requestNotification = () => {
-    Notification.requestPermission().then();
+    Notification.requestPermission();
 };
+
+export const QueueContext = createContext<QueueUtils>({
+    updateQuestionStatus: () => {},
+    setSelectedQuestion: () => {},
+    openClaimModal: () => {},
+    courseCode: "",
+});

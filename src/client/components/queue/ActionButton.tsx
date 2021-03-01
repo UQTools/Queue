@@ -1,4 +1,10 @@
-import { CheckIcon, CloseIcon, EmailIcon, LockIcon } from "@chakra-ui/icons";
+import {
+    CheckIcon,
+    CloseIcon,
+    EmailIcon,
+    LockIcon,
+    NotAllowedIcon,
+} from "@chakra-ui/icons";
 import { IconButton } from "@chakra-ui/react";
 import React, { useContext, useMemo } from "react";
 import { QueueAction } from "../../generated/graphql";
@@ -31,6 +37,8 @@ export const ActionButton: React.FC<Props> = ({
                 return EmailIcon;
             case QueueAction.Remove:
                 return CloseIcon;
+            case QueueAction.MarkNotNeeded:
+                return NotAllowedIcon;
         }
     }, [action]);
     const colourScheme = useMemo(() => {
@@ -43,6 +51,8 @@ export const ActionButton: React.FC<Props> = ({
                 return "teal";
             case QueueAction.Remove:
                 return "red";
+            case QueueAction.MarkNotNeeded:
+                return "gray";
         }
     }, [action]);
     return (

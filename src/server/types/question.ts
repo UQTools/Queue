@@ -3,6 +3,7 @@ export enum QuestionStatus {
     CLAIMED = "Claimed",
     CLOSED = "Closed",
     ACCEPTED = "Accepted",
+    NOT_NEEDED = "Not needed",
 }
 
 export enum QuestionEvent {
