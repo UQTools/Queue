@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { ActionButton } from "../../components/queue/ActionButton2";
+import { ActionButton } from "../../components/queue/ActionButton";
 import { QuestionProps } from "../QuestionContainer";
 import { generateMailto, QueueContext } from "../../utils/queue";
 import { QueueAction } from "../../generated/graphql";

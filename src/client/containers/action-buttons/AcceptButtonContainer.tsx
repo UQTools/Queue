@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from "react";
 import { QuestionProps } from "../QuestionContainer";
-import { ActionButton } from "../../components/queue/ActionButton2";
+import { ActionButton } from "../../components/queue/ActionButton";
 import { QuestionStatus, QueueAction } from "../../generated/graphql";
 import { QueueContext } from "../../utils/queue";
 import { CheckIcon } from "@chakra-ui/icons";

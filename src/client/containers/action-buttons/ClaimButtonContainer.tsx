@@ -1,6 +1,6 @@
 import { LockIcon } from "@chakra-ui/icons";
 import React, { useContext, useMemo } from "react";
-import { ActionButton } from "../../components/queue/ActionButton2";
+import { ActionButton } from "../../components/queue/ActionButton";
 import { QuestionProps } from "../QuestionContainer";
 import { QuestionStatus, QueueAction } from "../../generated/graphql";
 import { QueueContext } from "../../utils/queue";

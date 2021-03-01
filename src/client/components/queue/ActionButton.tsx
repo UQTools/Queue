@@ -1,77 +1,48 @@
 import {
-    CheckIcon,
-    CloseIcon,
-    EmailIcon,
-    LockIcon,
-    NotAllowedIcon,
-} from "@chakra-ui/icons";
-import { IconButton } from "@chakra-ui/react";
-import React, { useContext, useMemo } from "react";
+    Box,
+    ButtonProps,
+    IconButton,
+    IconButtonProps,
+    Tooltip,
+} from "@chakra-ui/react";
+import React from "react";
 import { QueueAction } from "../../generated/graphql";
-import { UserContext } from "../../utils/user";
 
 type Props = {
+    id: string;
     action: QueueAction;
-    claimed: boolean;
     onClick: () => void;
-    claimer?: {
-        username: string;
-        name: string;
-    };
+    colourScheme: ButtonProps["colorScheme"];
+    icon: IconButtonProps["icon"];
+    isDisabled: boolean;
+    helpText: string;
+    variant: ButtonProps["variant"];
 };
 
 export const ActionButton: React.FC<Props> = ({
+    id,
     action,
-    claimed,
     onClick,
-    claimer,
+    colourScheme,
+    isDisabled,
+    helpText,
+    variant,
+    icon,
 }) => {
-    const user = useContext(UserContext);
-    const Icon = useMemo(() => {
-        switch (action) {
-            case QueueAction.Accept:
-                return CheckIcon;
-            case QueueAction.Claim:
-                return LockIcon;
-            case QueueAction.Email:
-                return EmailIcon;
-            case QueueAction.Remove:
-                return CloseIcon;
-            case QueueAction.MarkNotNeeded:
-                return NotAllowedIcon;
-        }
-    }, [action]);
-    const colourScheme = useMemo(() => {
-        switch (action) {
-            case QueueAction.Accept:
-                return "green";
-            case QueueAction.Claim:
-                return "blue";
-            case QueueAction.Email:
-                return "teal";
-            case QueueAction.Remove:
-                return "red";
-            case QueueAction.MarkNotNeeded:
-                return "gray";
-        }
-    }, [action]);
     return (
-        <IconButton
-            aria-label={action}
-            icon={<Icon />}
-            colorScheme={colourScheme}
-            variant={
-                claimed && action === QueueAction.Claim ? "solid" : "ghost"
-            }
-            size="sm"
-            onClick={onClick}
-            isRound
-            isDisabled={
-                claimed &&
-                action === QueueAction.Claim &&
-                claimer !== undefined &&
-                user?.username !== claimer.username
-            }
-        />
+        <Tooltip label={helpText} aria-label={`tooltip-button-${id}-${action}`}>
+            <Box>
+                <IconButton
+                    aria-label={`icon-button-${id}-${action}`}
+                    icon={icon}
+                    colorScheme={colourScheme}
+                    variant={variant}
+                    size="sm"
+                    onClick={onClick}
+                    isRound
+                    isDisabled={isDisabled}
+                />
+            </Box>
+        </Tooltip>
     );
 };
