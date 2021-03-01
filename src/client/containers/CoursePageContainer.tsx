@@ -107,6 +107,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
         {
             errorPolicy: "all",
             pollInterval: 30000,
+            fetchPolicy: "cache-and-network",
         }
     );
     const [
