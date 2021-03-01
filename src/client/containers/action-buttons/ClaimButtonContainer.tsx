@@ -13,7 +13,7 @@ export const ClaimButtonContainer: React.FC<Props> = ({
     ...questionProps
 }) => {
     const { id, status, claimer } = questionProps;
-    const user = useContext(UserContext)!;
+    const {username} = useContext(UserContext)!;
     const {
         updateQuestionStatus,
         setSelectedQuestion,
@@ -28,7 +28,7 @@ export const ClaimButtonContainer: React.FC<Props> = ({
                 if (status === QuestionStatus.Open) {
                     setSelectedQuestion(id);
                     openClaimModal();
-                } else if (claimed && claimer?.username === user.username) {
+                } else if (claimed && claimer?.username === username) {
                     updateQuestionStatus(id, QuestionStatus.Open);
                 }
             }}
@@ -36,8 +36,7 @@ export const ClaimButtonContainer: React.FC<Props> = ({
             icon={<LockIcon />}
             isDisabled={
                 claimed &&
-                claimer !== undefined &&
-                user?.username !== claimer?.username
+                username !== claimer?.username
             }
             helpText={
                 claimed

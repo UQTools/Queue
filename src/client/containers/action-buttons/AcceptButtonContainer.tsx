@@ -4,6 +4,7 @@ import { ActionButton } from "../../components/queue/ActionButton";
 import { QuestionStatus, QueueAction } from "../../generated/graphql";
 import { QueueContext } from "../../utils/queue";
 import { CheckIcon } from "@chakra-ui/icons";
+import { UserContext } from "../../utils/user";
 
 type Props = QuestionProps & {};
 
@@ -11,8 +12,9 @@ export const AcceptButtonContainer: React.FC<Props> = ({
     children: _,
     ...questionProps
 }) => {
-    const { id, status } = questionProps;
+    const { id, status, claimer } = questionProps;
     const { updateQuestionStatus } = useContext(QueueContext);
+    const { username } = useContext(UserContext)!;
     const claimed = useMemo(() => status === QuestionStatus.Claimed, [status]);
     return (
         <ActionButton
@@ -23,7 +25,7 @@ export const AcceptButtonContainer: React.FC<Props> = ({
             }}
             colourScheme="green"
             icon={<CheckIcon />}
-            isDisabled={claimed}
+            isDisabled={claimed && claimer?.username !== username}
             helpText="Accept"
             variant="ghost"
         />

@@ -4,6 +4,7 @@ import { QuestionStatus, QueueAction } from "../../generated/graphql";
 import { ActionButton } from "../../components/queue/ActionButton";
 import { CloseIcon } from "@chakra-ui/icons";
 import { QuestionProps } from "../QuestionContainer";
+import { UserContext } from "../../utils/user";
 
 type Props = QuestionProps & {};
 
@@ -11,8 +12,9 @@ export const RejectButtonContainer: React.FC<Props> = ({
     children: _,
     ...questionProps
 }) => {
-    const { id, status } = questionProps;
+    const { id, status, claimer } = questionProps;
     const { updateQuestionStatus } = useContext(QueueContext);
+    const { username } = useContext(UserContext)!;
     const claimed = useMemo(() => status === QuestionStatus.Claimed, [status]);
     return (
         <ActionButton
@@ -23,7 +25,7 @@ export const RejectButtonContainer: React.FC<Props> = ({
             }}
             colourScheme="red"
             icon={<CloseIcon />}
-            isDisabled={claimed}
+            isDisabled={claimed && claimer?.username !== username}
             helpText="Remove"
             variant="ghost"
         />
