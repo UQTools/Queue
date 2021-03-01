@@ -64,7 +64,7 @@ export const QuestionContainer: React.FC<Props> = ({
     const elapsedTimeDisplay = useMemo(() => {
         return secondsToText(elapsedSeconds);
     }, [elapsedSeconds]);
-    const claimedColour = useColorModeValue("pink.100", "pink.700");
+    const claimedColour = useColorModeValue("pink.100", "pink.900");
     const notNeededColour = useColorModeValue("gray.100", "gray.700");
     const getActionButton = useCallback((action: QueueAction) => {
         switch (action) {
