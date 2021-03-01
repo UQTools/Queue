@@ -8,7 +8,7 @@ import {
     Thead,
     Tr,
 } from "@chakra-ui/react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { QueueAction, QueueSortType } from "../../generated/graphql";
 import {
     QuestionContainer,
@@ -17,12 +17,12 @@ import {
 import sortBy from "lodash/sortBy";
 import differenceInSeconds from "date-fns/differenceInSeconds";
 import { secondsToText } from "../../utils/queue";
+import { useInterval } from "../../hooks/useInterval";
 
 export type Props = {
     sortType: QueueSortType;
     questions: QuestionProps[];
     actions: QueueAction[];
-    // buttonsOnClick: (question: QuestionProps, queueAction: QueueAction) => void;
     isStaff: boolean;
     showEnrolledSession: boolean;
 };
@@ -31,13 +31,12 @@ export const QuestionList: React.FC<Props> = ({
     questions,
     sortType,
     actions,
-    // buttonsOnClick,
     isStaff,
     showEnrolledSession,
 }) => {
-    const [currentInterval, setCurrentInterval] = useState<
-        ReturnType<typeof setInterval>
-    >();
+    // const [currentInterval, setCurrentInterval] = useState<
+    //     ReturnType<typeof setInterval>
+    // >();
     const sortedQuestions = useMemo(() => {
         switch (sortType) {
             case QueueSortType.Questions:
@@ -62,17 +61,8 @@ export const QuestionList: React.FC<Props> = ({
             )
             .reduce((a, b) => a + b, 0);
         setAverageWaitTime(totalWaitTime / questions.length);
-        setCurrentInterval(setTimeout(updateAverageTime, 10000));
     }, [questions]);
-    useEffect(() => {
-        updateAverageTime();
-    }, [updateAverageTime]);
-    useEffect(() => {
-        if (currentInterval) {
-            clearInterval(currentInterval);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [questions]);
+    useInterval(updateAverageTime, 5000);
     return (
         <>
             <Divider />
@@ -108,7 +98,6 @@ export const QuestionList: React.FC<Props> = ({
                                 key={key}
                                 actions={actions}
                                 index={key + 1}
-                                // buttonsOnClick={buttonsOnClick}
                                 isStaff={isStaff}
                                 showEnrolledSession={showEnrolledSession}
                             />

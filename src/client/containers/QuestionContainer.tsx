@@ -1,11 +1,5 @@
 import { HStack, Td, Tr, useColorModeValue } from "@chakra-ui/react";
-import React, {
-    useCallback,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-} from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { QuestionStatus, QueueAction } from "../generated/graphql";
 import { differenceInSeconds } from "date-fns";
 import { secondsToText } from "../utils/queue";
@@ -17,6 +11,7 @@ import { MarkNotNeededQuestionContainer } from "./action-buttons/MarkNotNeededQu
 import { ClaimButtonContainer } from "./action-buttons/ClaimButtonContainer";
 import { EmailButtonContainer } from "./action-buttons/EmailButtonContainer";
 import { UserContext } from "../utils/user";
+import { useInterval } from "../hooks/useInterval";
 
 export type QuestionProps = {
     id: string;
@@ -60,17 +55,12 @@ export const QuestionContainer: React.FC<Props> = ({
     } = questionProps;
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
     // Continuously update the time every 10 seconds
-    const updateTime: () => ReturnType<typeof setTimeout> = useCallback(() => {
+    const updateTime = useCallback(() => {
         setElapsedSeconds(differenceInSeconds(new Date(), askedTime));
-        return setTimeout(updateTime, 5000);
     }, [askedTime]);
     const { username } = useContext(UserContext)!;
+    useInterval(updateTime, 5000);
 
-    useEffect(() => {
-        // Call this for the first time
-        const timeout = updateTime();
-        return () => clearInterval(timeout);
-    }, [updateTime]);
     const elapsedTimeDisplay = useMemo(() => {
         return secondsToText(elapsedSeconds);
     }, [elapsedSeconds]);
@@ -110,34 +100,40 @@ export const QuestionContainer: React.FC<Props> = ({
             {showEnrolledSession && <Td>{enrolledSession || "None"}</Td>}
             <Td>
                 <HStack spacing={1}>
-                    {actions.map((action, key) => {
-                        if (action === QueueAction.MarkNotNeeded) {
-                            if (username !== questionProps.askerUsername) {
-                                return;
+                    {Object.values(QueueAction)
+                        .filter((action) => actions.includes(action))
+                        .map((action, key) => {
+                            if (action === QueueAction.MarkNotNeeded) {
+                                if (username !== questionProps.askerUsername) {
+                                    return undefined;
+                                }
+                                if (
+                                    questionProps.status !==
+                                        QuestionStatus.Open &&
+                                    questionProps.status !==
+                                        QuestionStatus.NotNeeded
+                                ) {
+                                    return undefined;
+                                }
+                                return (
+                                    <MarkNotNeededQuestionContainer
+                                        {...questionProps}
+                                        key={key}
+                                    />
+                                );
+                            } else {
+                                if (!isStaff) {
+                                    return undefined;
+                                }
+                                const ActionButton = getActionButton(action);
+                                return (
+                                    <ActionButton
+                                        {...questionProps}
+                                        key={key}
+                                    />
+                                );
                             }
-                            if (
-                                questionProps.status !== QuestionStatus.Open &&
-                                questionProps.status !==
-                                    QuestionStatus.NotNeeded
-                            ) {
-                                return;
-                            }
-                            return (
-                                <MarkNotNeededQuestionContainer
-                                    {...questionProps}
-                                    key={key}
-                                />
-                            );
-                        } else {
-                            if (!isStaff) {
-                                return;
-                            }
-                            const ActionButton = getActionButton(action);
-                            return (
-                                <ActionButton {...questionProps} key={key} />
-                            );
-                        }
-                    })}
+                        })}
                 </HStack>
             </Td>
         </Tr>
