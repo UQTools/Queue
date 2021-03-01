@@ -11,7 +11,7 @@ export const resetQueues = async () => {
         clearAfterMidnight: true,
     });
     const questionsToDelete = await Question.find({
-        queue: In(queues),
+        queueId: In(queues.map(queue => queue.id)),
     });
     await Question.remove(questionsToDelete);
 };
