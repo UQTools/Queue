@@ -278,10 +278,10 @@ export const CoursePageContainer: React.FC<Props> = () => {
                 )
             );
             updateQueues(queue);
-            setDisplayedQueues(
-                roomData.getRoomById.queues.map((queue) => queue.id)
-            );
         });
+        setDisplayedQueues(
+            roomData.getRoomById.queues.map((queue) => queue.id)
+        );
     }, [roomData, courseCode, updateQueues]);
 
     useEffect(() => {
