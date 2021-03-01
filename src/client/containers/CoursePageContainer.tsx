@@ -156,18 +156,6 @@ export const CoursePageContainer: React.FC<Props> = () => {
         },
         [askQuestionMutation]
     );
-    // const claimQuestion = useCallback(
-    //     (message: string) => {
-    //         updateQuestionMutation({
-    //             variables: {
-    //                 questionId: selectedQuestion,
-    //                 questionStatus: QuestionStatus.Claimed,
-    //                 message,
-    //             },
-    //         });
-    //     },
-    //     [updateQuestionMutation, selectedQuestion]
-    // );
     const editQueue = useCallback(
         (queueId: string) => {
             setChosenQueueId(queueId);
@@ -347,63 +335,6 @@ export const CoursePageContainer: React.FC<Props> = () => {
         },
         [updateQuestionMutation]
     );
-    // const queueButtonAction = useCallback(
-    //     (question: QuestionProps, questionAction: QueueAction) => {
-    //         if (questionAction === QueueAction.Accept) {
-    //             updateQuestionMutation({
-    //                 variables: {
-    //                     questionStatus: QuestionStatus.Accepted,
-    //                     questionId: question.id,
-    //                 },
-    //             });
-    //         } else if (questionAction === QueueAction.Remove) {
-    //             updateQuestionMutation({
-    //                 variables: {
-    //                     questionStatus: QuestionStatus.Closed,
-    //                     questionId: question.id,
-    //                 },
-    //             });
-    //         } else if (questionAction === QueueAction.Claim) {
-    //             if (question.status === QuestionStatus.Open) {
-    //                 setSelectedQuestion(question.id);
-    //                 openClaimModal();
-    //             } else if (
-    //                 question.status === QuestionStatus.Claimed &&
-    //                 question.claimer?.username === user.username
-    //             ) {
-    //                 updateQuestionMutation({
-    //                     variables: {
-    //                         questionStatus: QuestionStatus.Open,
-    //                         questionId: question.id,
-    //                     },
-    //                 });
-    //             }
-    //         } else if (questionAction === QueueAction.Email) {
-    //             document.location.href = generateMailto(
-    //                 question.askerEmail,
-    //                 courseCode,
-    //                 question.askerName === redacted
-    //                     ? question.askerUsername
-    //                     : question.askerName,
-    //                 user?.name || ` ${courseCode} Tutor team`
-    //             );
-    //         } else if (questionAction === QueueAction.MarkNotNeeded) {
-    //             updateQuestionMutation({
-    //                 variables: {
-    //                     questionStatus: QuestionStatus.NotNeeded,
-    //                     questionId: question.id,
-    //                 },
-    //             });
-    //         }
-    //     },
-    //     [
-    //         updateQuestionMutation,
-    //         openClaimModal,
-    //         courseCode,
-    //         user.name,
-    //         user.username,
-    //     ]
-    // );
     useEffect(() => {
         if (!updateQuestionData) {
             return;
