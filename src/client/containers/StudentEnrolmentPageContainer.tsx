@@ -44,7 +44,18 @@ export const StudentEnrolmentPageContainer: React.FC<Props> = () => {
     const [parsedData, setParsedData] = useState<
         List<UserEnrolledSessionInput>
     >(List());
-    const toast = useToast();
+    const successToast = useToast({
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+    });
+    const errorToast = useToast({
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+    });
     const [
         addEnrolmentMutation,
         { data: addEnrolmentData, loading: addEnrolmentLoading },
@@ -56,57 +67,70 @@ export const StudentEnrolmentPageContainer: React.FC<Props> = () => {
         const reader = new FileReader();
         const asBinary = !!reader.readAsBinaryString;
         reader.onload = (e) => {
-            const buffer = e.target?.result;
-            const workBook = XLSX.read(buffer, {
-                type: asBinary ? "binary" : "array",
-            });
-            const sheetName = workBook.SheetNames[0];
-            const workSheet = workBook.Sheets[sheetName];
-            const data = XLSX.utils.sheet_to_json(workSheet, { header: 1 });
-            setData(data as string[][]);
+            try {
+                const buffer = e.target?.result;
+                const workBook = XLSX.read(buffer, {
+                    type: asBinary ? "binary" : "array",
+                });
+                const sheetName = workBook.SheetNames[0];
+                const workSheet = workBook.Sheets[sheetName];
+                const data = XLSX.utils.sheet_to_json(workSheet, { header: 1 });
+                setData(data as string[][]);
+            } catch (e) {
+                errorToast({
+                    title: "Invalid file",
+                    description: "An error happened while trying to the file",
+                });
+            }
         };
         if (asBinary) {
             reader.readAsBinaryString(file);
         } else {
             reader.readAsArrayBuffer(file);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
         if (hasError) {
             return;
         }
-        setParsedData((prev) => prev.clear());
-        const studentIndex = data[0].indexOf("STUDENT_CODE");
-        const activityGroupIndex = data[0].indexOf("ACTIVITY_GROUP_CODE");
-        const activityIndex = data[0].indexOf("ACTIVITY_CODE");
-        for (const row of data.slice(1)) {
-            const username = `s${row[studentIndex].substring(
-                0,
-                row[studentIndex].length - 1
-            )}`;
-            const session =
-                row[activityIndex] === "unallocated"
-                    ? "Unallocated"
-                    : `${prefix}${row[activityGroupIndex][0]}${row[activityIndex]}${suffix}`;
-            setParsedData((prev) =>
-                prev.push({
-                    username,
-                    session,
-                })
-            );
+        try {
+            setParsedData((prev) => prev.clear());
+            const studentIndex = data[0].indexOf("STUDENT_CODE");
+            const activityGroupIndex = data[0].indexOf("ACTIVITY_GROUP_CODE");
+            const activityIndex = data[0].indexOf("ACTIVITY_CODE");
+            for (const row of data.slice(1)) {
+                const username = `s${row[studentIndex].substring(
+                    0,
+                    row[studentIndex].length - 1
+                )}`;
+                const session =
+                    row[activityIndex] === "unallocated"
+                        ? "Unallocated"
+                        : `${prefix}${row[activityGroupIndex][0]}${row[activityIndex]}${suffix}`;
+                setParsedData((prev) =>
+                    prev.push({
+                        username,
+                        session,
+                    })
+                );
+            }
+        } catch (e) {
+            errorToast({
+                title: "Invalid file",
+                description: "An error happened while trying to the file",
+            });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, hasError, prefix, suffix]);
     useEffect(() => {
         if (!addEnrolmentData) {
             return;
         }
-        toast({
-            status: "success",
+        successToast({
             title: "Enrolment Applied",
             description:
                 "Enrolment successfully applied and can now be seen on the queues",
-            isClosable: true,
-            duration: 5000,
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [addEnrolmentData]);
@@ -171,7 +195,7 @@ export const StudentEnrolmentPageContainer: React.FC<Props> = () => {
                             />
                         </FormControl>
                     </HStack>
-                    <Heading size="lg">Session preview</Heading>
+                    <Heading size="lg">Enrolment preview</Heading>
                     <Box h="80vh" overflowY="auto">
                         <Table variant="striped">
                             <Thead>
