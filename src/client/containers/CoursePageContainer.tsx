@@ -307,7 +307,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
         }
         const question = askQuestionData.askQuestion;
         updateQueueQuestion(question);
-    }, [askQuestionData, updateQuestionData, updateQueueQuestion]);
+    }, [askQuestionData, updateQueueQuestion]);
     useEffect(() => {
         if (!removeQueueData) {
             return;
@@ -339,8 +339,8 @@ export const CoursePageContainer: React.FC<Props> = () => {
         if (!updateQuestionData) {
             return;
         }
-        const newQuestion = updateQuestionData.updateQuestionStatus;
-        updateQueueQuestion(newQuestion);
+        const updatedQuestion = updateQuestionData.updateQuestionStatus;
+        updateQueueQuestion(updatedQuestion);
     }, [updateQuestionData, updateQueueQuestion]);
     useEffect(() => {
         if (!createQueueData) {
