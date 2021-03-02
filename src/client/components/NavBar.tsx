@@ -57,11 +57,18 @@ export const NavBar: React.FunctionComponent<Props> = () => {
                                             courseStaff.role ===
                                             StaffRole.Coordinator
                                     ).length > 0) && (
-                                    <MenuItem>
-                                        <RouterLink to="/course-staff">
-                                            Course Staff
-                                        </RouterLink>
-                                    </MenuItem>
+                                    <>
+                                        <MenuItem>
+                                            <RouterLink to="/course-staff">
+                                                Course Staff
+                                            </RouterLink>
+                                        </MenuItem>
+                                        <MenuItem>
+                                            <RouterLink to="/student-enrolment">
+                                                Student Enrolment
+                                            </RouterLink>
+                                        </MenuItem>
+                                    </>
                                 )}
                             </MenuList>
                         </Menu>

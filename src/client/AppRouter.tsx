@@ -8,6 +8,7 @@ import { SecretRoute } from "./components/helpers/SecretRoute";
 import { RoomPageContainer } from "./containers/RoomPageContainer";
 import { CourseStaffPageContainer } from "./containers/CourseStaffPageContainer";
 import { StaffRole } from "./generated/graphql";
+import { StudentEnrolmentPageContainer } from "./containers/StudentEnrolmentPageContainer";
 
 export const AppRouter: React.FunctionComponent<{}> = () => {
     return (
@@ -28,6 +29,12 @@ export const AppRouter: React.FunctionComponent<{}> = () => {
                 <SecretRoute
                     path="/course-staff"
                     component={CourseStaffPageContainer}
+                    allowedRoles={[StaffRole.Coordinator]}
+                    exact
+                />
+                <SecretRoute
+                    path="/student-enrolment"
+                    component={StudentEnrolmentPageContainer}
                     allowedRoles={[StaffRole.Coordinator]}
                     exact
                 />

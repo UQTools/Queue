@@ -28,14 +28,13 @@ import { CourseStaffResponseType } from "../types/course-staff";
 import { Loadable } from "../components/helpers/Loadable";
 import { AddCourseStaffModal } from "../components/course-staff/AddCourseStaffModal";
 import { CourseStaffTableContainer } from "./CourseStaffTableContainer";
+import { CourseSelectContainer } from "./CourseSelectContainer";
 
 type Props = {};
 
 export const CourseStaffPageContainer: React.FC<Props> = () => {
-    const user = useContext(UserContext)!;
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [courseId, setCourseId] = useState("");
-    const [availCourses, setAvailCourses] = useState<[string, string][]>([]);
     const toast = useToast();
     const [
         removeCourseStaffMutation,
@@ -53,37 +52,6 @@ export const CourseStaffPageContainer: React.FC<Props> = () => {
     ] = useLazyQueryWithError(useGetCourseStaffLazyQuery, {
         errorPolicy: "all",
     });
-    const [
-        getCourses,
-        { data: getCoursesData },
-    ] = useLazyQueryWithError(useGetCoursesLazyQuery, { errorPolicy: "all" });
-    useEffect(() => {
-        if (user.isAdmin) {
-            getCourses();
-        }
-    }, [user.isAdmin, getCourses]);
-    useEffect(() => {
-        if (user.isAdmin) {
-            setAvailCourses(
-                getCoursesData?.getCourses.map((course) => [
-                    course.id,
-                    course.code,
-                ]) || []
-            );
-        } else {
-            setAvailCourses(
-                user.courseStaff
-                    .filter(
-                        (courseStaff) =>
-                            courseStaff.role === StaffRole.Coordinator
-                    )
-                    .map((courseStaff) => [
-                        courseStaff.course.id,
-                        courseStaff.course.code,
-                    ])
-            );
-        }
-    }, [user, getCoursesData]);
     useEffect(() => {
         if (courseId === "") {
             return;
@@ -156,22 +124,10 @@ export const CourseStaffPageContainer: React.FC<Props> = () => {
         <Container>
             <Heading>Course Staff</Heading>
             <Stack mt={4} spacing={4} direction="column">
-                <FormControl>
-                    <FormLabel fontWeight="bold">Course:</FormLabel>
-                    <Select
-                        onChange={(e) => setCourseId(e.target.value)}
-                        value={courseId}
-                    >
-                        <option value="" disabled>
-                            Choose a value
-                        </option>
-                        {availCourses.map(([courseId, courseCode], key) => (
-                            <option key={key} value={courseId}>
-                                {courseCode}
-                            </option>
-                        ))}
-                    </Select>
-                </FormControl>
+                <CourseSelectContainer
+                    selectCourse={setCourseId}
+                    selectedCourse={courseId}
+                />
                 <Stack direction="row" justifyContent="flex-end">
                     {courseId !== "" && (
                         <Button colorScheme="green" onClick={onOpen}>
