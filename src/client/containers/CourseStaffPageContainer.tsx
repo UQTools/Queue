@@ -1,11 +1,8 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
     Box,
     Button,
-    FormControl,
-    FormLabel,
     Heading,
-    Select,
     Stack,
     useDisclosure,
     useToast,
@@ -14,7 +11,6 @@ import { Container } from "../components/helpers/Container";
 import {
     StaffRole,
     useAddCourseStaffMutation,
-    useGetCoursesLazyQuery,
     useGetCourseStaffLazyQuery,
     useRemoveCourseStaffMutation,
 } from "../generated/graphql";
@@ -22,7 +18,6 @@ import {
     useLazyQueryWithError,
     useMutationWithError,
 } from "../hooks/useApolloHooksWithError";
-import { UserContext } from "../utils/user";
 import { Map } from "immutable";
 import { CourseStaffResponseType } from "../types/course-staff";
 import { Loadable } from "../components/helpers/Loadable";

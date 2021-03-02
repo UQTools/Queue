@@ -1,5 +1,11 @@
-mutation AddStudentEnrolment($courseId: String!, $userEnrolledSessions: [UserEnrolledSessionInput!]!) {
-    addStudentEnrolment(courseId: $courseId, userEnrolledSessions: $userEnrolledSessions) {
+mutation AddStudentEnrolment(
+    $courseId: String!
+    $userEnrolledSessions: [UserEnrolledSessionInput!]!
+) {
+    addStudentEnrolment(
+        courseId: $courseId
+        userEnrolledSessions: $userEnrolledSessions
+    ) {
         user {
             username
         }

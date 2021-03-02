@@ -13,7 +13,7 @@ export const ClaimButtonContainer: React.FC<Props> = ({
     ...questionProps
 }) => {
     const { id, status, claimer } = questionProps;
-    const {username} = useContext(UserContext)!;
+    const { username } = useContext(UserContext)!;
     const {
         updateQuestionStatus,
         setSelectedQuestion,
@@ -34,10 +34,7 @@ export const ClaimButtonContainer: React.FC<Props> = ({
             }}
             colourScheme="blue"
             icon={<LockIcon />}
-            isDisabled={
-                claimed &&
-                username !== claimer?.username
-            }
+            isDisabled={claimed && username !== claimer?.username}
             helpText={
                 claimed
                     ? `Claimed by ${claimer?.name}`

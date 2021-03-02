@@ -35,7 +35,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 
 type Props = {};
 
-export const StudentEnrolmentPageContainer: React.FC<Props> = ({}) => {
+export const StudentEnrolmentPageContainer: React.FC<Props> = () => {
     const [courseId, setCourseId] = useState("");
     const [data, setData] = useState<Array<Array<string>>>([]);
     const [hasError, setHasError] = useState(true);
