@@ -1,0 +1,8 @@
+mutation AddStudentEnrolment($courseId: String!, $userEnrolledSessions: [UserEnrolledSessionInput!]!) {
+    addStudentEnrolment(courseId: $courseId, userEnrolledSessions: $userEnrolledSessions) {
+        user {
+            username
+        }
+        enrolledSession
+    }
+}

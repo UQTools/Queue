@@ -4,9 +4,10 @@ import { List } from "immutable";
 
 type Props = {
     data: Array<Array<string>>;
+    setHasError: (hasError: boolean) => void;
 };
 
-export const DataValidator: React.FC<Props> = ({ data }) => {
+export const DataValidator: React.FC<Props> = ({ data, setHasError }) => {
     const [errors, setErrors] = useState<List<string>>(List());
     useEffect(() => {
         setErrors((prev) => prev.clear());
@@ -42,6 +43,9 @@ export const DataValidator: React.FC<Props> = ({ data }) => {
             }
         }
     }, [data]);
+    useEffect(() => {
+        setHasError(errors.size > 0);
+    }, [errors, setHasError]);
     if (errors.size === 0) {
         return (
             <Text color="green.500" fontWeight="bold">

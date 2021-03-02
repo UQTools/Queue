@@ -22,6 +22,7 @@ import { endOfDayRule, resetQuestionCount, resetQueues } from "./jobs/queue";
 import { UserResolver } from "./resolvers/user-resolver";
 import { QuestionResolver } from "./resolvers/question-resolver";
 import { CourseStaffResolver } from "./resolvers/course-staff-resolver";
+import { CourseUserMetaResolver } from "./resolvers/course-user-meta-resolver";
 
 const app: Express = express();
 const server = createServer(app);
@@ -60,6 +61,7 @@ const main = async () => {
                 QueueResolver,
                 CourseResolver,
                 CourseStaffResolver,
+                CourseUserMetaResolver,
                 RoomResolver,
                 QuestionResolver,
                 UserResolver,
