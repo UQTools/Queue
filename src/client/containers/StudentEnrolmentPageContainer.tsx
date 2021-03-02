@@ -52,23 +52,17 @@ export const StudentEnrolmentPageContainer: React.FC<Props> = () => {
         errorPolicy: "all",
     });
     const onDrop = useCallback((files) => {
-        /* Boilerplate to set up FileReader */
         const file = files[0];
         const reader = new FileReader();
         const asBinary = !!reader.readAsBinaryString;
         reader.onload = (e) => {
-            /* Parse data */
             const buffer = e.target?.result;
             const workBook = XLSX.read(buffer, {
                 type: asBinary ? "binary" : "array",
             });
-            /* Get first worksheet */
             const sheetName = workBook.SheetNames[0];
             const workSheet = workBook.Sheets[sheetName];
-            /* Convert array of arrays */
             const data = XLSX.utils.sheet_to_json(workSheet, { header: 1 });
-            /* Update state */
-            // this.setState({ data: data, cols: make_cols(ws['!ref']) });
             setData(data as string[][]);
         };
         if (asBinary) {
