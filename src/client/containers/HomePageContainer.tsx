@@ -7,7 +7,7 @@ import {
     Stack,
     Text,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 type Props = {};
@@ -15,6 +15,9 @@ type Props = {};
 export const HomePageContainer: React.FC<Props> = () => {
     const history = useHistory();
     const [course, setCourse] = useState("");
+    useEffect(() => {
+        document.title = "Q";
+    }, []);
     return (
         <Box h="90vh">
             <Stack h="100%" justifyContent="center" alignItems="center">

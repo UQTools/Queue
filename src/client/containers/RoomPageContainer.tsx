@@ -56,6 +56,9 @@ export const RoomPageContainer: React.FC<Props> = () => {
         addRoomMutation,
         { data: addRoomMutationData, loading: addRoomMutationLoading },
     ] = useMutationWithError(useAddRoomMutation, { errorPolicy: "all" });
+    useEffect(() => {
+        document.title = "Manage Rooms";
+    }, []);
     const updateRoom = useCallback(
         (room: UpdateRoomMutation["updateRoom"]) => {
             setCourses((prev) =>

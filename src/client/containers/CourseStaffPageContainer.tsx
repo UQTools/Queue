@@ -57,6 +57,9 @@ export const CourseStaffPageContainer: React.FC<Props> = () => {
             },
         });
     }, [courseId, getCourseStaff]);
+    useEffect(() => {
+        document.title = "Course Staff";
+    }, []);
     const removeCourseStaff = useCallback(
         (courseStaffId: string) => {
             removeCourseStaffMutation({

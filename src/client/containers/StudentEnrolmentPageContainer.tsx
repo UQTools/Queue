@@ -8,6 +8,7 @@ import {
     HStack,
     IconButton,
     Input,
+    Link,
     Stack,
     Table,
     Tbody,
@@ -56,6 +57,9 @@ export const StudentEnrolmentPageContainer: React.FC<Props> = () => {
         isClosable: true,
         position: "bottom",
     });
+    useEffect(() => {
+        document.title = "Student Enrolment";
+    }, []);
     const [
         addEnrolmentMutation,
         { data: addEnrolmentData, loading: addEnrolmentLoading },
@@ -141,7 +145,19 @@ export const StudentEnrolmentPageContainer: React.FC<Props> = () => {
 
     return (
         <Container>
-            <Heading>Student Enrolment</Heading>
+            <Heading as="h1">Student Enrolment</Heading>
+            <Text my={5}>
+                Choose an Excel file downloaded from <i>Allocate+</i> with the
+                data of the enrolment. An example of a valid file is located{" "}
+                <Link
+                    href="https://docs.google.com/spreadsheets/d/1xtPFAoRLQjpNG74tkB_gbT7v1IznHV6ippOtVFTc5Z0/edit?usp=sharing"
+                    color="teal.500"
+                    isExternal
+                >
+                    here
+                </Link>
+                .
+            </Text>
             <CourseSelectContainer
                 selectCourse={setCourseId}
                 selectedCourse={courseId}
