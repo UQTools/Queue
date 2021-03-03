@@ -10,6 +10,7 @@ import { UserContext } from "../utils/user";
 import { Map } from "immutable";
 import {
     RoomInput,
+    StaffRole,
     UpdateRoomMutation,
     useAddRoomMutation,
     useUpdateRoomMutation,
@@ -124,7 +125,11 @@ export const RoomPageContainer: React.FC<Props> = () => {
     }, [courses, chosenCourse, chosenRoom, isAdding]);
     return (
         <Container>
-            <CourseSelectContainer selectCourse={setChosenCourse} selectedCourse={chosenCourse}/>
+            <CourseSelectContainer
+                selectCourse={setChosenCourse}
+                selectedCourse={chosenCourse}
+                allowedRoles={[StaffRole.Coordinator, StaffRole.Staff]}
+            />
             {chosenCourse && (
                 <>
                     <FormControl mt={3}>

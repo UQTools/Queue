@@ -13,11 +13,13 @@ import { useLazyQueryWithError } from "../hooks/useApolloHooksWithError";
 type Props = {
     selectCourse: Dispatch<SetStateAction<string>>;
     selectedCourse: string;
+    allowedRoles?: StaffRole[];
 };
 
 export const CourseSelectContainer: React.FC<Props> = ({
     selectCourse,
     selectedCourse,
+    allowedRoles = [StaffRole.Coordinator],
 }) => {
     const [availCourses, setAvailCourses] = useState<[string, string][]>([]);
     const user = useContext(UserContext)!;
@@ -41,9 +43,8 @@ export const CourseSelectContainer: React.FC<Props> = ({
         } else {
             setAvailCourses(
                 user.courseStaff
-                    .filter(
-                        (courseStaff) =>
-                            courseStaff.role === StaffRole.Coordinator
+                    .filter((courseStaff) =>
+                        allowedRoles.includes(courseStaff.role)
                     )
                     .map((courseStaff) => [
                         courseStaff.course.id,
