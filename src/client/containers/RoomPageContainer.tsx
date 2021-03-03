@@ -28,6 +28,7 @@ import { FormikNumberInput } from "../components/helpers/FormikNumberInput";
 import { FormikCheckbox } from "../components/helpers/FormikCheckbox";
 import { FormikActiveTimeInput } from "../components/helpers/FormikActiveTimeInput";
 import { useMutationWithError } from "../hooks/useApolloHooksWithError";
+import { CourseSelectContainer } from "./CourseSelectContainer";
 
 type Props = {};
 
@@ -123,24 +124,7 @@ export const RoomPageContainer: React.FC<Props> = () => {
     }, [courses, chosenCourse, chosenRoom, isAdding]);
     return (
         <Container>
-            <FormControl>
-                <FormLabel>Choose course:</FormLabel>
-                <Select
-                    value={chosenCourse}
-                    onChange={(e) => {
-                        setChosenCourse(e.target.value);
-                    }}
-                >
-                    <option disabled value="">
-                        Choose course
-                    </option>
-                    {user.courseStaff.map((courseStaff, key) => (
-                        <option key={key} value={courseStaff.course.id}>
-                            {courseStaff.course.code}
-                        </option>
-                    ))}
-                </Select>
-            </FormControl>
+            <CourseSelectContainer selectCourse={setChosenCourse} selectedCourse={chosenCourse}/>
             {chosenCourse && (
                 <>
                     <FormControl mt={3}>
