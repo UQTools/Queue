@@ -95,9 +95,10 @@ export const RoomPageContainer: React.FC<Props> = () => {
         updateRoom(newRoom);
         setIsAdding(false);
         setChosenRoom("");
+        setShowing(false);
         toast({
             title: "Room created",
-            description: `Room '${newRoom.name}' has been successfully created`,
+            description: `Room '${newRoom.name}' is successfully created`,
             status: "success",
             isClosable: true,
         });
