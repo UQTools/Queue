@@ -38,6 +38,9 @@ export const pushNotification = (title: string, body: string) => {
 };
 
 export const requestNotification = () => {
+    if (!("Notification" in window)) {
+        return;
+    }
     Notification.requestPermission();
 };
 
