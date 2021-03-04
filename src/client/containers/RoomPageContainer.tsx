@@ -23,6 +23,7 @@ import {
     Select,
     Stack,
     Text,
+    useToast,
 } from "@chakra-ui/react";
 import { FormikInput } from "../components/helpers/FormikInput";
 import { FormikNumberInput } from "../components/helpers/FormikNumberInput";
@@ -50,6 +51,7 @@ export const RoomPageContainer: React.FC<Props> = () => {
     const [courses, setCourses] = useState<
         Map<string, { [key: string]: RoomInput }>
     >(Map());
+    const toast = useToast();
     const [
         updateRoomMutation,
         { data: updateRoomMutationData, loading: updateRoomMutationLoading },
@@ -91,6 +93,15 @@ export const RoomPageContainer: React.FC<Props> = () => {
         }
         const newRoom = addRoomMutationData.createRoom;
         updateRoom(newRoom);
+        setIsAdding(false);
+        setChosenRoom("");
+        toast({
+            title: "Room created",
+            description: `Room '${newRoom.name}' has been successfully created`,
+            status: "success",
+            isClosable: true,
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [addRoomMutationData, updateRoom]);
     useEffect(() => {
         user.courseStaff.forEach((courseStaff) => {
