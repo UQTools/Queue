@@ -148,4 +148,26 @@ export class RoomResolver {
             throw new Error("Cannot find Room");
         }
     }
+
+    @Mutation(() => String)
+    async deleteRoom(
+        @Arg("roomId") roomId: string,
+        @Ctx() { req }: MyContext
+    ): Promise<string> {
+        const room = await Room.findOne(roomId);
+        if (!room) {
+            throw new Error("Cannot find room");
+        }
+        if (!req.user.isAdmin) {
+            await getCourseStaff(room.courseId, req.user.id);
+        }
+        try {
+            await Room.remove(room);
+        } catch (e) {
+            throw new Error(
+                "Cannot delete room. Maybe there are still queues in this room"
+            );
+        }
+        return roomId;
+    }
 }

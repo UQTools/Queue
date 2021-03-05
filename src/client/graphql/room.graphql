@@ -69,3 +69,7 @@ mutation AddRoom($courseId: String!, $roomInput: RoomInput!) {
         }
     }
 }
+
+mutation DeleteRoom($roomId: String!) {
+    deleteRoom(roomId: $roomId)
+}

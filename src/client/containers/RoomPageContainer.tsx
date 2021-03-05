@@ -13,6 +13,7 @@ import {
     StaffRole,
     UpdateRoomMutation,
     useAddRoomMutation,
+    useDeleteRoomMutation,
     useUpdateRoomMutation,
 } from "../generated/graphql";
 import { Form, Formik } from "formik";
@@ -23,6 +24,7 @@ import {
     Select,
     Stack,
     Text,
+    useDisclosure,
     useToast,
 } from "@chakra-ui/react";
 import { FormikInput } from "../components/helpers/FormikInput";
@@ -31,6 +33,8 @@ import { FormikCheckbox } from "../components/helpers/FormikCheckbox";
 import { FormikActiveTimeInput } from "../components/helpers/FormikActiveTimeInput";
 import { useMutationWithError } from "../hooks/useApolloHooksWithError";
 import { CourseSelectContainer } from "./CourseSelectContainer";
+import omit from "lodash/omit";
+import { RoomDeleteAlert } from "../components/room/RoomDeleteAlert";
 
 type Props = {};
 
@@ -48,6 +52,11 @@ export const RoomPageContainer: React.FC<Props> = () => {
     const [chosenCourse, setChosenCourse] = useState("");
     const [showing, setShowing] = useState<boolean>(false);
     const [isAdding, setIsAdding] = useState<boolean>(false);
+    const {
+        isOpen: isDeleteAlertOpen,
+        onClose: closeDeleteAlert,
+        onOpen: openDeleteAlert,
+    } = useDisclosure();
     const [courses, setCourses] = useState<
         Map<string, { [key: string]: RoomInput }>
     >(Map());
@@ -60,9 +69,18 @@ export const RoomPageContainer: React.FC<Props> = () => {
         addRoomMutation,
         { data: addRoomMutationData, loading: addRoomMutationLoading },
     ] = useMutationWithError(useAddRoomMutation, { errorPolicy: "all" });
+    const [
+        deleteRoomMutation,
+        { data: deleteRoomMutationData, loading: deleteRoomMutationLoading },
+    ] = useMutationWithError(useDeleteRoomMutation, { errorPolicy: "all" });
     useEffect(() => {
         document.title = "Manage Rooms";
     }, []);
+    useEffect(() => {
+        setShowing(false);
+        setIsAdding(false);
+        setChosenRoom("");
+    }, [chosenCourse]);
     const updateRoom = useCallback(
         (room: UpdateRoomMutation["updateRoom"]) => {
             setCourses((prev) =>
@@ -80,6 +98,28 @@ export const RoomPageContainer: React.FC<Props> = () => {
         },
         [chosenCourse]
     );
+    useEffect(() => {
+        if (!deleteRoomMutationData) {
+            return;
+        }
+        setCourses((prev) =>
+            prev.set(
+                chosenCourse,
+                omit(
+                    prev.get(chosenCourse) || {},
+                    deleteRoomMutationData.deleteRoom
+                )
+            )
+        );
+        toast({
+            title: "Room deleted",
+            status: "success",
+        });
+        setShowing(false);
+        setIsAdding(false);
+        setChosenRoom("");
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [deleteRoomMutationData, chosenCourse]);
     useEffect(() => {
         if (!updateRoomMutationData) {
             return;
@@ -103,7 +143,7 @@ export const RoomPageContainer: React.FC<Props> = () => {
             isClosable: true,
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [addRoomMutationData, updateRoom]);
+    }, [addRoomMutationData]);
     useEffect(() => {
         user.courseStaff.forEach((courseStaff) => {
             setCourses((prev) =>
@@ -136,102 +176,127 @@ export const RoomPageContainer: React.FC<Props> = () => {
         }
     }, [courses, chosenCourse, chosenRoom, isAdding]);
     return (
-        <Container>
-            <CourseSelectContainer
-                selectCourse={setChosenCourse}
-                selectedCourse={chosenCourse}
-                allowedRoles={[StaffRole.Coordinator, StaffRole.Staff]}
-            />
-            {chosenCourse && (
-                <>
-                    <FormControl mt={3}>
-                        <FormLabel>Choose room:</FormLabel>
-                        <Select
-                            value={chosenRoom}
-                            onChange={(e) => {
-                                setChosenRoom(e.target.value);
+        <>
+            <Container>
+                <CourseSelectContainer
+                    selectCourse={setChosenCourse}
+                    selectedCourse={chosenCourse}
+                    allowedRoles={[StaffRole.Coordinator, StaffRole.Staff]}
+                />
+                {chosenCourse && (
+                    <>
+                        <FormControl mt={3}>
+                            <FormLabel>Choose room:</FormLabel>
+                            <Select
+                                value={chosenRoom}
+                                onChange={(e) => {
+                                    setChosenRoom(e.target.value);
+                                    setShowing(true);
+                                    setIsAdding(false);
+                                }}
+                            >
+                                <option disabled value="">
+                                    Choose room
+                                </option>
+                                {Object.entries(
+                                    courses.get(chosenCourse) || {}
+                                ).map(([roomId, room]) => (
+                                    <option key={roomId} value={roomId}>
+                                        {room.name}
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <Text>or</Text>
+                        <Button
+                            colorScheme="green"
+                            onClick={() => {
+                                setIsAdding(true);
                                 setShowing(true);
-                                setIsAdding(false);
+                                setChosenRoom("");
                             }}
                         >
-                            <option disabled value="">
-                                Choose room
-                            </option>
-                            {Object.entries(
-                                courses.get(chosenCourse) || {}
-                            ).map(([roomId, room]) => (
-                                <option key={roomId} value={roomId}>
-                                    {room.name}
-                                </option>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <Text>or</Text>
-                    <Button
-                        colorScheme="green"
-                        onClick={() => {
-                            setIsAdding(true);
-                            setShowing(true);
-                            setChosenRoom("");
-                        }}
-                    >
-                        Add Room
-                    </Button>
-                </>
-            )}
-            <Formik<RoomInput>
-                initialValues={room}
-                onSubmit={(values) => {
-                    if (isAdding) {
-                        addRoomMutation({
-                            variables: {
-                                courseId: chosenCourse,
-                                roomInput: values,
-                            },
-                        });
-                    } else {
-                        updateRoomMutation({
-                            variables: {
-                                roomId: chosenRoom,
-                                roomInput: values,
-                            },
-                        });
-                    }
-                }}
-                enableReinitialize={true}
-            >
-                {showing && (
-                    <Form>
-                        <Stack spacing={3}>
-                            <FormikInput name="name" />
-                            <FormikNumberInput name="capacity" />
-                            <FormikCheckbox
-                                label="Enforce Capacity:"
-                                name="enforceCapacity"
-                            />
-                            <FormikCheckbox
-                                label="Disabled:"
-                                name="manuallyDisabled"
-                            />
-                            <FormikActiveTimeInput
-                                name="activeTimes"
-                                label="Weekly Active Times"
-                            />
-                            <Button
-                                type="submit"
-                                colorScheme="blue"
-                                w="6em"
-                                isLoading={
-                                    updateRoomMutationLoading ||
-                                    addRoomMutationLoading
-                                }
-                            >
-                                Save
-                            </Button>
-                        </Stack>
-                    </Form>
+                            Add Room
+                        </Button>
+                    </>
                 )}
-            </Formik>
-        </Container>
+                <Formik<RoomInput>
+                    initialValues={room}
+                    onSubmit={(values) => {
+                        if (isAdding) {
+                            addRoomMutation({
+                                variables: {
+                                    courseId: chosenCourse,
+                                    roomInput: values,
+                                },
+                            });
+                        } else {
+                            updateRoomMutation({
+                                variables: {
+                                    roomId: chosenRoom,
+                                    roomInput: values,
+                                },
+                            });
+                        }
+                    }}
+                    enableReinitialize={true}
+                >
+                    {showing && (
+                        <Form>
+                            <Stack spacing={3}>
+                                <FormikInput name="name" />
+                                <FormikNumberInput name="capacity" />
+                                <FormikCheckbox
+                                    label="Enforce Capacity:"
+                                    name="enforceCapacity"
+                                />
+                                <FormikCheckbox
+                                    label="Disabled:"
+                                    name="manuallyDisabled"
+                                />
+                                <FormikActiveTimeInput
+                                    name="activeTimes"
+                                    label="Weekly Active Times"
+                                />
+                                <Stack direction="row">
+                                    <Button
+                                        type="submit"
+                                        colorScheme="blue"
+                                        isLoading={
+                                            updateRoomMutationLoading ||
+                                            addRoomMutationLoading
+                                        }
+                                    >
+                                        Save
+                                    </Button>
+                                    {!isAdding && (
+                                        <Button
+                                            colorScheme="red"
+                                            isLoading={
+                                                deleteRoomMutationLoading
+                                            }
+                                            onClick={openDeleteAlert}
+                                        >
+                                            Delete
+                                        </Button>
+                                    )}
+                                </Stack>
+                            </Stack>
+                        </Form>
+                    )}
+                </Formik>
+            </Container>
+            <RoomDeleteAlert
+                isOpen={isDeleteAlertOpen}
+                close={closeDeleteAlert}
+                submit={() => {
+                    deleteRoomMutation({
+                        variables: {
+                            roomId: chosenRoom,
+                        },
+                    });
+                }}
+            />
+        </>
     );
 };
