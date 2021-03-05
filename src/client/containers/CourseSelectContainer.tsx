@@ -52,7 +52,7 @@ export const CourseSelectContainer: React.FC<Props> = ({
                     ])
             );
         }
-    }, [user, getCoursesData]);
+    }, [user, getCoursesData, allowedRoles]);
     return (
         <FormControl>
             <FormLabel fontWeight="bold">Course:</FormLabel>
