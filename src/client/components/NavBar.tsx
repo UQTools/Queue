@@ -32,7 +32,11 @@ export const NavBar: React.FunctionComponent<Props> = () => {
                 <Flex w="80%" mx="auto" h={14} alignItems="center">
                     <Box>
                         <RouterLink to="/">
-                            <Heading size="md" fontWeight="normal">
+                            <Heading
+                                size="md"
+                                fontWeight="bold"
+                                fontFamily="'Courier New', monospace"
+                            >
                                 Q
                             </Heading>
                         </RouterLink>

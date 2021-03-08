@@ -21,8 +21,10 @@ export const HomePageContainer: React.FC<Props> = () => {
     return (
         <Box h="90vh">
             <Stack h="100%" justifyContent="center" alignItems="center">
-                <Text fontSize="10em">Q</Text>
-                <InputGroup maxW="30vw" size="lg">
+                <Text fontSize="10em" fontFamily="'Courier New', monospace">
+                    Q
+                </Text>
+                <InputGroup w="30vw" size="lg">
                     <InputLeftElement pointerEvents="none">
                         <SearchIcon color="gray.300" />
                     </InputLeftElement>
