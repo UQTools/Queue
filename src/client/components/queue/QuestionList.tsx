@@ -8,7 +8,7 @@ import {
     Thead,
     Tr,
 } from "@chakra-ui/react";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { QueueAction, QueueSortType } from "../../generated/graphql";
 import {
     QuestionContainer,
@@ -34,26 +34,10 @@ export const QuestionList: React.FC<Props> = ({
     isStaff,
     showEnrolledSession,
 }) => {
-    // const [currentInterval, setCurrentInterval] = useState<
-    //     ReturnType<typeof setInterval>
-    // >();
-    const sortedQuestions = useMemo(() => {
-        switch (sortType) {
-            case QueueSortType.Questions:
-                return sortBy(questions, (question) => question.questionCount);
-            case QueueSortType.Time:
-                return sortBy(questions, (question) =>
-                    question.askedTime.getTime()
-                );
-            case QueueSortType.QuestionsAndTime:
-                return sortBy(questions, (question) => {
-                    const elapsedTime =
-                        new Date().getTime() - question.askedTime.getTime();
-                    return -elapsedTime / (question.questionCount + 1);
-                });
-        }
-    }, [questions, sortType]);
     const [averageWaitTime, setAverageWaitTime] = useState(0);
+    const [sortedQuestions, setSortedQuestions] = useState<
+        Array<QuestionProps>
+    >([]);
     const updateAverageTime = useCallback(() => {
         const totalWaitTime = questions
             .map((question) =>
@@ -62,7 +46,40 @@ export const QuestionList: React.FC<Props> = ({
             .reduce((a, b) => a + b, 0);
         setAverageWaitTime(totalWaitTime / questions.length);
     }, [questions]);
+    const sortQuestions = useCallback(() => {
+        switch (sortType) {
+            case QueueSortType.Questions:
+                setSortedQuestions(
+                    sortBy(questions, (question) => question.questionCount)
+                );
+                break;
+            case QueueSortType.Time:
+                setSortedQuestions(
+                    sortBy(questions, (question) =>
+                        question.askedTime.getTime()
+                    )
+                );
+                break;
+            case QueueSortType.QuestionsAndTime:
+                setSortedQuestions(
+                    sortBy(questions, (question) => {
+                        const elapsedTime =
+                            new Date().getTime() - question.askedTime.getTime();
+                        console.log(
+                            -elapsedTime / (question.questionCount + 1),
+                            new Date(),
+                            question.askerName
+                        );
+                        return -elapsedTime / (question.questionCount + 1);
+                    })
+                );
+        }
+    }, [questions, sortType]);
+    useEffect(() => {
+        sortQuestions();
+    }, [sortQuestions]);
     useInterval(updateAverageTime, 5000);
+    useInterval(sortQuestions, 5000);
     return (
         <>
             <Divider />
@@ -88,7 +105,7 @@ export const QuestionList: React.FC<Props> = ({
                             <Th isNumeric>Questions today</Th>
                             <Th>Elapsed time</Th>
                             {showEnrolledSession && <Th>Enrolled in</Th>}
-                            {isStaff && <Th />}
+                            <Th />
                         </Tr>
                     </Thead>
                     <Tbody>

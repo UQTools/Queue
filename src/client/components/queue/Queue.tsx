@@ -119,7 +119,6 @@ export const Queue: React.FC<Props> = ({
                 sortType={sortType}
                 questions={questions}
                 actions={actions}
-                // buttonsOnClick={buttonsOnClick}
                 isStaff={isStaff}
                 showEnrolledSession={showEnrolledSession}
             />
