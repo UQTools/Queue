@@ -145,7 +145,7 @@ export const RoomPageContainer: React.FC<Props> = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [addRoomMutationData]);
     useEffect(() => {
-        user.courseStaff.forEach((courseStaff) => {
+        user.getCourseStaff.forEach((courseStaff) => {
             setCourses((prev) =>
                 prev.set(
                     courseStaff.course.id,

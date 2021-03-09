@@ -16,15 +16,15 @@ export const DataValidator: React.FC<Props> = ({ data, setHasError }) => {
             return;
         }
         if (!data[0].includes("STUDENT_CODE")) {
-            setErrors((prev) => prev.push("Column \"STUDENT_CODE\" not found"));
+            setErrors((prev) => prev.push('Column "STUDENT_CODE" not found'));
         }
         if (!data[0].includes("ACTIVITY_GROUP_CODE")) {
             setErrors((prev) =>
-                prev.push("Column \"ACTIVITY_GROUP_CODE\" not found")
+                prev.push('Column "ACTIVITY_GROUP_CODE" not found')
             );
         }
         if (!data[0].includes("ACTIVITY_CODE")) {
-            setErrors((prev) => prev.push("Column \"ACTIVITY_CODE\" not found"));
+            setErrors((prev) => prev.push('Column "ACTIVITY_CODE" not found'));
         }
         const studentIndex = data[0].indexOf("STUDENT_CODE");
         const activityGroupIndex = data[0].indexOf("ACTIVITY_GROUP_CODE");

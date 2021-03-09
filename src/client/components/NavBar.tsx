@@ -42,7 +42,7 @@ export const NavBar: React.FunctionComponent<Props> = () => {
                         </RouterLink>
                     </Box>
                     <Spacer />
-                    {user && (user.isAdmin || user.courseStaff.length > 0) && (
+                    {user && (user.isAdmin || user.getCourseStaff.length > 0) && (
                         <Menu>
                             <MenuButton
                                 as={NavBarMenuButton}
@@ -56,7 +56,7 @@ export const NavBar: React.FunctionComponent<Props> = () => {
                                     <RouterLink to="/rooms">Rooms</RouterLink>
                                 </MenuItem>
                                 {(user.isAdmin ||
-                                    user.courseStaff.filter(
+                                    user.getCourseStaff.filter(
                                         (courseStaff) =>
                                             courseStaff.role ===
                                             StaffRole.Coordinator

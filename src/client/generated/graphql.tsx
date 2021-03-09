@@ -76,6 +76,7 @@ export type User = {
     questions: Array<Question>;
     claimedQuestions: Array<Question>;
     courseMetas: Array<CourseUserMeta>;
+    getCourseStaff: Array<CourseStaff>;
 };
 
 export type Question = {
@@ -357,7 +358,7 @@ export type MeQuery = { __typename?: "Query" } & {
         User,
         "id" | "username" | "name" | "isAdmin"
     > & {
-            courseStaff: Array<
+            getCourseStaff: Array<
                 { __typename?: "CourseStaff" } & Pick<CourseStaff, "role"> & {
                         course: { __typename?: "Course" } & Pick<
                             Course,
@@ -895,7 +896,7 @@ export const MeDocument = gql`
             username
             name
             isAdmin
-            courseStaff {
+            getCourseStaff {
                 course {
                     id
                     code

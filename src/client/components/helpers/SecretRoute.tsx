@@ -15,11 +15,11 @@ export const SecretRoute: React.FC<Props> = ({
     if (user.isAdmin) {
         return <Route {...props} />;
     }
-    if (user.courseStaff.length === 0) {
+    if (user.getCourseStaff.length === 0) {
         return <Redirect to="/permission-denied" />;
     }
     if (
-        user.courseStaff.filter((courseStaff) =>
+        user.getCourseStaff.filter((courseStaff) =>
             allowedRoles.includes(courseStaff.role)
         ).length === 0
     ) {

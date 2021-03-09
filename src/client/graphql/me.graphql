@@ -4,7 +4,7 @@ query Me {
         username
         name
         isAdmin
-        courseStaff {
+        getCourseStaff {
             course {
                 id
                 code

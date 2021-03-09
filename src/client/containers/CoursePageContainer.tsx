@@ -191,7 +191,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
         if (user.isAdmin) {
             return true;
         }
-        return user.courseStaff.some(
+        return user.getCourseStaff.some(
             (courseStaff) => courseStaff.course.code === courseCode
         );
     }, [user, courseCode]);

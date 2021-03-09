@@ -42,7 +42,7 @@ export const CourseSelectContainer: React.FC<Props> = ({
             );
         } else {
             setAvailCourses(
-                user.courseStaff
+                user.getCourseStaff
                     .filter((courseStaff) =>
                         allowedRoles.includes(courseStaff.role)
                     )
