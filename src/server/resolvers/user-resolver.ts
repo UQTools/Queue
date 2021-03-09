@@ -3,6 +3,7 @@ import { Course, User } from "../entities";
 import { MyContext } from "../types/context";
 import { CourseStaff } from "../entities/course-staff";
 import { StaffRole } from "../types/course-staff";
+import { v4 as uuidV4 } from "uuid";
 
 @Resolver(() => User)
 export class UserResolver {
@@ -16,6 +17,7 @@ export class UserResolver {
         if (req.user.isAdmin) {
             return CourseStaff.create(
                 (await Course.find()).map((course) => ({
+                    id: uuidV4(),
                     courseId: course.id,
                     role: StaffRole.COORDINATOR,
                     userId: req.user.id,
