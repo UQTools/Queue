@@ -18,9 +18,9 @@ export class UserResolver {
             return CourseStaff.create(
                 (await Course.find()).map((course) => ({
                     id: uuidV4(),
-                    courseId: course.id,
+                    course: course,
                     role: StaffRole.COORDINATOR,
-                    userId: req.user.id,
+                    user: req.user,
                 }))
             );
         }
