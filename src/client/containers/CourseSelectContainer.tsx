@@ -52,7 +52,8 @@ export const CourseSelectContainer: React.FC<Props> = ({
                     ])
             );
         }
-    }, [user, getCoursesData, allowedRoles]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user, getCoursesData, JSON.stringify(allowedRoles)]);
     return (
         <FormControl>
             <FormLabel fontWeight="bold">Course:</FormLabel>
