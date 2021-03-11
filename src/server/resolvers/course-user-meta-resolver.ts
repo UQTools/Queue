@@ -2,7 +2,6 @@ import { Arg, Ctx, Field, InputType, Mutation, Resolver } from "type-graphql";
 import { MyContext } from "../types/context";
 import { StaffRole } from "../types/course-staff";
 import { permissionDeniedMsg, redacted } from "../../constants";
-import { getRepository } from "typeorm";
 import { CourseUserMeta, User } from "../entities";
 
 @InputType()
@@ -31,17 +30,8 @@ export class CourseUserMetaResolver {
         if (!isCoordinator && !req.user.isAdmin) {
             throw new Error(permissionDeniedMsg);
         }
-        const existingUser = await getRepository(User)
-            .createQueryBuilder("user")
-            .innerJoinAndSelect("user.courseMetas", "courseUserMeta")
-            .where("courseUserMeta.courseId = :courseId", { courseId })
-            .getMany();
-        const existingUsernames = existingUser.map((user) => user.username);
         const newMeta: CourseUserMeta[] = [];
         for (const userSession of userEnrolledSessions) {
-            if (existingUsernames.includes(userSession.username)) {
-                continue;
-            }
             let user;
             try {
                 user = await User.findOneOrFail({
