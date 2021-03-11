@@ -39,6 +39,7 @@ type Props = {};
 export const StudentEnrolmentPageContainer: React.FC<Props> = () => {
     const [courseId, setCourseId] = useState("");
     const [data, setData] = useState<Array<Array<string>>>([]);
+    const [filename, setFilename] = useState("");
     const [hasError, setHasError] = useState(true);
     const [suffix, setSuffix] = useState("");
     const [prefix, setPrefix] = useState("");
@@ -66,8 +67,9 @@ export const StudentEnrolmentPageContainer: React.FC<Props> = () => {
     ] = useMutationWithError(useAddStudentEnrolmentMutation, {
         errorPolicy: "all",
     });
-    const onDrop = useCallback((files) => {
+    const onDrop = useCallback((files: File[]) => {
         const file = files[0];
+        setFilename(file.name);
         const reader = new FileReader();
         const asBinary = !!reader.readAsBinaryString;
         reader.onload = (e) => {
@@ -136,6 +138,12 @@ export const StudentEnrolmentPageContainer: React.FC<Props> = () => {
             description:
                 "Enrolment successfully applied and can now be seen on the queues",
         });
+        setFilename("");
+        setParsedData(List());
+        setPrefix("");
+        setSuffix("");
+        setHasError(true);
+        setData([]);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [addEnrolmentData]);
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -188,6 +196,7 @@ export const StudentEnrolmentPageContainer: React.FC<Props> = () => {
                     </Center>
                 </Box>
             )}
+            {filename && <Text>{filename}</Text>}
             {data.length > 0 && (
                 <DataValidator data={data} setHasError={setHasError} />
             )}
