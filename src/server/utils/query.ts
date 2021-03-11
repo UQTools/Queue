@@ -12,7 +12,3 @@ export const checkFieldValueInEnum = <T extends any>(
         )
         .join(" OR ");
 };
-
-export const clearQueues = async () => {
-    console.log("Clearing queue");
-};

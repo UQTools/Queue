@@ -169,7 +169,6 @@ export class QuestionResolver {
                         "You cannot mark your question as not needed if it's already claimed"
                     );
                 } else if (question.status !== QuestionStatus.OPEN) {
-                    console.log("1");
                     throw new Error(permissionDeniedMsg);
                 }
                 question.status = QuestionStatus.NOT_NEEDED;
@@ -179,7 +178,6 @@ export class QuestionResolver {
                 }
                 question.status = QuestionStatus.OPEN;
             } else {
-                console.log(3);
                 throw new Error(permissionDeniedMsg);
             }
         }

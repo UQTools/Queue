@@ -31,7 +31,9 @@ import {
 import {
     Button,
     Flex,
-    Spacer,
+    FormControl,
+    FormLabel,
+    Input,
     Text,
     useDisclosure,
     useMediaQuery,
@@ -86,6 +88,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
     const [chosenQueueId, setChosenQueueId] = useState("");
     const [chosenRoomId, setChosenRoomId] = useState("default");
     const [displayedQueues, setDisplayedQueues] = useState<string[]>([]);
+    const [sessionFilter, setSessionFilter] = useState("");
     const [selectedQuestion, setSelectedQuestion] = useState("");
     const { courseCode } = useParams<CourseParam>();
     const history = useHistory();
@@ -371,7 +374,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                 <Text fontSize="3xl" mb={3}>
                     {courseCode}
                 </Text>
-                <Flex alignItems="center">
+                <Flex justifyContent="space-between">
                     <RoomSelector
                         selected={chosenRoomId}
                         onSelect={(roomId) => {
@@ -389,7 +392,6 @@ export const CoursePageContainer: React.FC<Props> = () => {
                             ]) || []
                         }
                     />
-                    <Spacer />
                     {isStaff && chosenRoomId !== "default" && (
                         <Button
                             onClick={() => {
@@ -404,6 +406,22 @@ export const CoursePageContainer: React.FC<Props> = () => {
                         </Button>
                     )}
                 </Flex>
+                {isStaff && chosenRoomId !== "default" && (
+                    <FormControl
+                        d="flex"
+                        flexDirection="row"
+                        alignItems="center"
+                        mt={5}
+                    >
+                        <FormLabel>Session Filter:</FormLabel>
+                        <Input
+                            value={sessionFilter}
+                            onChange={(e) => setSessionFilter(e.target.value)}
+                            placeholder="P01"
+                            w="25vw"
+                        />
+                    </FormControl>
+                )}
                 <Flex
                     wrap="wrap"
                     mt={6}
@@ -419,8 +437,8 @@ export const CoursePageContainer: React.FC<Props> = () => {
                             questions={Object.values(
                                 queueQuestions.get(queueId) || {}
                             )}
+                            sessionFilter={sessionFilter}
                             askQuestion={askQuestion}
-                            // buttonsOnClick={queueButtonAction}
                             isStaff={isStaff}
                             openEditQueueModal={editQueue}
                         />

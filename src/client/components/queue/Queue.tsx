@@ -39,6 +39,7 @@ export type QueueProps = {
 };
 
 export type Props = QueueProps & {
+    sessionFilter: string;
     questions: QuestionProps[];
     askQuestion: (queueId: string) => void;
     // buttonsOnClick: (question: QuestionProps, queueAction: QueueAction) => void;
@@ -56,10 +57,10 @@ export const Queue: React.FC<Props> = ({
     sortType,
     questions,
     askQuestion,
-    // buttonsOnClick,
     isStaff,
     openEditQueueModal,
     showEnrolledSession,
+    sessionFilter,
 }) => {
     const [isSmallerThan540] = useMediaQuery("(max-width: 540px)");
     const queueBgColour = useQueueBgColour(theme);
@@ -121,6 +122,7 @@ export const Queue: React.FC<Props> = ({
                 actions={actions}
                 isStaff={isStaff}
                 showEnrolledSession={showEnrolledSession}
+                sessionFilter={sessionFilter}
             />
         </Stack>
     );

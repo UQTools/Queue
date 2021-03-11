@@ -19,7 +19,7 @@ export const RoomSelector: React.FC<Props> = ({
                 onChange={(e) => {
                     onSelect(e.target.value);
                 }}
-                w="30vw"
+                w="25vw"
                 value={selected}
             >
                 <option value="default" disabled>

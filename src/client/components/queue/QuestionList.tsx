@@ -8,7 +8,7 @@ import {
     Thead,
     Tr,
 } from "@chakra-ui/react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { QueueAction, QueueSortType } from "../../generated/graphql";
 import {
     QuestionContainer,
@@ -25,6 +25,7 @@ export type Props = {
     actions: QueueAction[];
     isStaff: boolean;
     showEnrolledSession: boolean;
+    sessionFilter: string;
 };
 
 export const QuestionList: React.FC<Props> = ({
@@ -33,11 +34,9 @@ export const QuestionList: React.FC<Props> = ({
     actions,
     isStaff,
     showEnrolledSession,
+    sessionFilter,
 }) => {
     const [averageWaitTime, setAverageWaitTime] = useState(0);
-    const [sortedQuestions, setSortedQuestions] = useState<
-        Array<QuestionProps>
-    >([]);
     const updateAverageTime = useCallback(() => {
         const totalWaitTime = questions
             .map((question) =>
@@ -46,40 +45,37 @@ export const QuestionList: React.FC<Props> = ({
             .reduce((a, b) => a + b, 0);
         setAverageWaitTime(totalWaitTime / questions.length);
     }, [questions]);
-    const sortQuestions = useCallback(() => {
-        switch (sortType) {
-            case QueueSortType.Questions:
-                setSortedQuestions(
-                    sortBy(questions, (question) => question.questionCount)
-                );
-                break;
-            case QueueSortType.Time:
-                setSortedQuestions(
-                    sortBy(questions, (question) =>
+    const filterQuestions = useCallback(
+        (questions: QuestionProps[]) => {
+            return questions.filter((question) =>
+                question.enrolledSession?.includes(sessionFilter)
+            );
+        },
+        [sessionFilter]
+    );
+    const sortQuestions = useCallback(
+        (questions: QuestionProps[]) => {
+            switch (sortType) {
+                case QueueSortType.Questions:
+                    return sortBy(
+                        questions,
+                        (question) => question.questionCount
+                    );
+                case QueueSortType.Time:
+                    return sortBy(questions, (question) =>
                         question.askedTime.getTime()
-                    )
-                );
-                break;
-            case QueueSortType.QuestionsAndTime:
-                setSortedQuestions(
-                    sortBy(questions, (question) => {
+                    );
+                case QueueSortType.QuestionsAndTime:
+                    return sortBy(questions, (question) => {
                         const elapsedTime =
                             new Date().getTime() - question.askedTime.getTime();
-                        console.log(
-                            -elapsedTime / (question.questionCount + 1),
-                            new Date(),
-                            question.askerName
-                        );
                         return -elapsedTime / (question.questionCount + 1);
-                    })
-                );
-        }
-    }, [questions, sortType]);
-    useEffect(() => {
-        sortQuestions();
-    }, [sortQuestions]);
+                    });
+            }
+        },
+        [sortType]
+    );
     useInterval(updateAverageTime, 5000);
-    useInterval(sortQuestions, 5000);
     return (
         <>
             <Divider />
@@ -109,16 +105,18 @@ export const QuestionList: React.FC<Props> = ({
                         </Tr>
                     </Thead>
                     <Tbody>
-                        {sortedQuestions.map((question, key) => (
-                            <QuestionContainer
-                                {...question}
-                                key={key}
-                                actions={actions}
-                                index={key + 1}
-                                isStaff={isStaff}
-                                showEnrolledSession={showEnrolledSession}
-                            />
-                        ))}
+                        {sortQuestions(filterQuestions(questions)).map(
+                            (question, key) => (
+                                <QuestionContainer
+                                    {...question}
+                                    key={key}
+                                    actions={actions}
+                                    index={key + 1}
+                                    isStaff={isStaff}
+                                    showEnrolledSession={showEnrolledSession}
+                                />
+                            )
+                        )}
                     </Tbody>
                 </Table>
             </Box>
