@@ -22,12 +22,11 @@ free to use whatever you want.
 ## Setting up dev environment
 1. Create a new PostgreSQL database
 2. Fill the `.env` file using the template from `.env.example`, with the `DB_URL`field as the URL of your database.
-3. Set `CORS_ORIGIN` to `http://localhost:3000`
-4. Run `yarn` to install all the dependencies
-5. Run `yarn migration-run` to set up your database
-6. Run `yarn server-dev` to start the express server
-7. Run `yarn client-dev` on another terminal instance to start the React client development server
-8. Go to `https://localhost:3000`
+3. Run `yarn` to install all the dependencies
+4. Run `yarn migration-run` to set up your database
+5. Run `yarn server-dev` to start the express server
+6. Run `yarn client-dev` on another terminal instance to start the React client development server
+7. Go to `https://localhost:3000`
 
 ## Building
 Run `yarn build` to build, the project is built in the `./build` directory. 
