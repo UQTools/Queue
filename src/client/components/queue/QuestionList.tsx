@@ -48,7 +48,7 @@ export const QuestionList: React.FC<Props> = ({
     const filterQuestions = useCallback(
         (questions: QuestionProps[]) => {
             return questions.filter((question) =>
-                question.enrolledSession?.includes(sessionFilter)
+                (question.enrolledSession || "").includes(sessionFilter)
             );
         },
         [sessionFilter]
