@@ -121,23 +121,25 @@ export const Queue: React.FC<Props> = ({
                     Request {name} help
                 </Button>
             </Center>
-            <Flex justifyItems="flex-end">
-                <Tooltip
-                    label="Undo close most recent question"
-                    aria-label="Undo most recent question tooltip"
-                >
-                    <IconButton
-                        icon={<IoArrowUndo />}
-                        aria-label={`Undo ${name} queue`}
-                        isRound
-                        ml="auto"
-                        variant="ghost"
-                        onClick={() => {
-                            onUndo(id);
-                        }}
-                    />
-                </Tooltip>
-            </Flex>
+            {isStaff && (
+                <Flex justifyItems="flex-end">
+                    <Tooltip
+                        label="Undo close most recent question"
+                        aria-label="Undo most recent question tooltip"
+                    >
+                        <IconButton
+                            icon={<IoArrowUndo />}
+                            aria-label={`Undo ${name} queue`}
+                            isRound
+                            ml="auto"
+                            variant="ghost"
+                            onClick={() => {
+                                onUndo(id);
+                            }}
+                        />
+                    </Tooltip>
+                </Flex>
+            )}
             <QuestionList
                 sortType={sortType}
                 questions={questions}
