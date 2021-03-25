@@ -123,7 +123,7 @@ export const Queue: React.FC<Props> = ({
             <Flex justifyItems="flex-end">
                 <Tooltip
                     label="Undo close most recent question"
-                    aria-label="A tooltip"
+                    aria-label="Undo most recent question tooltip"
                 >
                     <IconButton
                         icon={<IoArrowUndo />}
