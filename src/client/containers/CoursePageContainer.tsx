@@ -25,6 +25,7 @@ import {
     useGetRoomByIdLazyQuery,
     useQuestionChangeSubscription,
     useRemoveQueueMutation,
+    useUndoRemoveMutation,
     useUpdateQuestionStatusMutation,
     useUpdateQueueMutation,
 } from "../generated/graphql";
@@ -145,6 +146,10 @@ export const CoursePageContainer: React.FC<Props> = () => {
         removeQueueMutation,
         { data: removeQueueData },
     ] = useMutationWithError(useRemoveQueueMutation, { errorPolicy: "all" });
+    const [
+        undoRemoveMutation,
+        { data: undoRemoveData },
+    ] = useMutationWithError(useUndoRemoveMutation, { errorPolicy: "all" });
     useEffect(() => {
         if (!activeRoomsError) {
             return;
@@ -312,6 +317,13 @@ export const CoursePageContainer: React.FC<Props> = () => {
         updateQueueQuestion(question);
     }, [askQuestionData, updateQueueQuestion]);
     useEffect(() => {
+        if (!undoRemoveData) {
+            return;
+        }
+        const question = undoRemoveData.undoRemove;
+        updateQueueQuestion(question);
+    }, [undoRemoveData, updateQueueQuestion]);
+    useEffect(() => {
         if (!removeQueueData) {
             return;
         }
@@ -441,6 +453,9 @@ export const CoursePageContainer: React.FC<Props> = () => {
                             askQuestion={askQuestion}
                             isStaff={isStaff}
                             openEditQueueModal={editQueue}
+                            onUndo={(queueId) => {
+                                undoRemoveMutation({ variables: { queueId } });
+                            }}
                         />
                     ))}
                 </Flex>

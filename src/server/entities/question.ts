@@ -51,6 +51,10 @@ export class Question extends BaseEntity {
     @Column({ type: "timestamp with time zone", nullable: true })
     claimTime: Date;
 
+    @Field(() => Date, { nullable: true })
+    @Column({ type: "timestamp with time zone", nullable: true })
+    closedTime: Date;
+
     @Field({ nullable: true })
     @Column({ nullable: true })
     claimMessage: string;

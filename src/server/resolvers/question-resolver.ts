@@ -51,10 +51,10 @@ export class QuestionResolver {
             })
             .getMany();
         if (existingQueues.length > 0) {
-            const exampleQueue = existingQueues[0];
-            const exampleRoom = await exampleQueue.room;
+            const queueWithStudent = existingQueues[0];
+            const roomWithStudent = await queueWithStudent.room;
             throw new Error(
-                `You are already on the queue "${exampleQueue.name}" in room ${exampleRoom.name} of ${course.code}`
+                `You are already on the queue "${queueWithStudent.name}" in room ${roomWithStudent.name} of ${course.code}`
             );
         }
         const room = await queue.room;
@@ -155,6 +155,15 @@ export class QuestionResolver {
                 });
                 courseUserMeta.questionsAsked += 1;
                 await courseUserMeta.save();
+            }
+            // Set closed time to support undoing
+            if (
+                (questionStatus === QuestionStatus.ACCEPTED &&
+                    question.status !== QuestionStatus.ACCEPTED) ||
+                (questionStatus === QuestionStatus.CLOSED &&
+                    question.status !== QuestionStatus.CLOSED)
+            ) {
+                question.closedTime = new Date();
             }
             question.status = questionStatus;
             question.claimerId = user.id;

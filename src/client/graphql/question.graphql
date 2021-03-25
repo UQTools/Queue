@@ -20,6 +20,29 @@ subscription QuestionChange($roomId: String!) {
         claimMessage
     }
 }
+mutation UndoRemove($queueId: String!) {
+    undoRemove(queueId: $queueId) {
+        id
+        status
+        op {
+            email
+            name
+            username
+        }
+        createdTime
+        claimer {
+            username
+            name
+        }
+        questionsAsked
+        queue {
+            id
+        }
+        enrolledIn
+        claimMessage
+    }
+}
+
 mutation AskQuestion($queueId: String!) {
     askQuestion(queueId: $queueId) {
         id

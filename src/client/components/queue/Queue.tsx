@@ -2,10 +2,12 @@ import {
     Box,
     Button,
     Center,
+    Flex,
     IconButton,
     ListItem,
     Stack,
     Text,
+    Tooltip,
     UnorderedList,
     useColorModeValue,
     useMediaQuery,
@@ -24,6 +26,7 @@ import { QuestionProps } from "../../containers/QuestionContainer";
 import { QuestionList } from "./QuestionList";
 import { capitalCase, noCase } from "change-case";
 import { EditIcon } from "@chakra-ui/icons";
+import { IoArrowUndo } from "react-icons/io5";
 
 export type QueueProps = {
     id: string;
@@ -42,7 +45,7 @@ export type Props = QueueProps & {
     sessionFilter: string;
     questions: QuestionProps[];
     askQuestion: (queueId: string) => void;
-    // buttonsOnClick: (question: QuestionProps, queueAction: QueueAction) => void;
+    onUndo: (queueId: string) => void;
     isStaff: boolean;
     openEditQueueModal: (queueId: string) => void;
 };
@@ -61,6 +64,7 @@ export const Queue: React.FC<Props> = ({
     openEditQueueModal,
     showEnrolledSession,
     sessionFilter,
+    onUndo,
 }) => {
     const [isSmallerThan540] = useMediaQuery("(max-width: 540px)");
     const queueBgColour = useQueueBgColour(theme);
@@ -116,6 +120,23 @@ export const Queue: React.FC<Props> = ({
                     Request {name} help
                 </Button>
             </Center>
+            <Flex justifyItems="flex-end">
+                <Tooltip
+                    label="Undo close most recent question"
+                    aria-label="A tooltip"
+                >
+                    <IconButton
+                        icon={<IoArrowUndo />}
+                        aria-label={`Undo ${name} queue`}
+                        isRound
+                        ml="auto"
+                        variant="ghost"
+                        onClick={() => {
+                            onUndo(id);
+                        }}
+                    />
+                </Tooltip>
+            </Flex>
             <QuestionList
                 sortType={sortType}
                 questions={questions}
