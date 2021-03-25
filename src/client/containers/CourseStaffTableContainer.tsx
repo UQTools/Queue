@@ -35,8 +35,8 @@ export const CourseStaffTableContainer: React.FC<Props> = ({
             <Tbody>
                 {sortBy(courseStaffs, (courseStaff) => {
                     return [courseStaff.role, courseStaff.user.name];
-                }).map((courseStaff, key) => (
-                    <Tr key={key}>
+                }).map((courseStaff) => (
+                    <Tr key={courseStaff.id}>
                         <Td>{courseStaff.user.username}</Td>
                         <Td>
                             {courseStaff.user.name}

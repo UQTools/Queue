@@ -46,8 +46,8 @@ export const CourseSelectContainer: React.FC<Props> = ({
                 <option value="" disabled>
                     Choose a value
                 </option>
-                {availCourses.map(([courseId, courseCode], key) => (
-                    <option key={key} value={courseId}>
+                {availCourses.map(([courseId, courseCode]) => (
+                    <option key={courseId} value={courseId}>
                         {courseCode}
                     </option>
                 ))}

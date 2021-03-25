@@ -442,9 +442,9 @@ export const CoursePageContainer: React.FC<Props> = () => {
                 >
                     {sortBy(displayedQueues, (queueId) => {
                         return queues.get(queueId)?.createdAt || new Date();
-                    }).map((queueId, key) => (
+                    }).map((queueId, index) => (
                         <Queue
-                            key={key}
+                            key={queueId}
                             {...(queues.get(queueId) || placeholderQueue)}
                             questions={Object.values(
                                 queueQuestions.get(queueId) || {}
@@ -456,6 +456,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                             onUndo={(queueId) => {
                                 undoRemoveMutation({ variables: { queueId } });
                             }}
+                            index={index + 1}
                         />
                     ))}
                 </Flex>

@@ -25,8 +25,8 @@ export const RoomSelector: React.FC<Props> = ({
                 <option value="default" disabled>
                     Choose an option
                 </option>
-                {rooms.map(([roomId, roomName], key) => (
-                    <option key={key} value={roomId}>
+                {rooms.map(([roomId, roomName]) => (
+                    <option key={roomId} value={roomId}>
                         {roomName}
                     </option>
                 ))}

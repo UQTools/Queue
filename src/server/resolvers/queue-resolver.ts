@@ -147,7 +147,6 @@ export class QueueResolver {
         if (inactiveQuestions.length === 0) {
             throw new Error("No closed question to undo");
         }
-        console.log(inactiveQuestions);
         const mostRecentInactiveQuestion = maxBy(
             inactiveQuestions,
             (question) => question.closedTime.getTime()

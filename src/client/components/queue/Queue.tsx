@@ -48,6 +48,7 @@ export type Props = QueueProps & {
     onUndo: (queueId: string) => void;
     isStaff: boolean;
     openEditQueueModal: (queueId: string) => void;
+    index: number;
 };
 
 export const Queue: React.FC<Props> = ({

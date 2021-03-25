@@ -106,12 +106,12 @@ export const QuestionList: React.FC<Props> = ({
                     </Thead>
                     <Tbody>
                         {sortQuestions(filterQuestions(questions)).map(
-                            (question, key) => (
+                            (question, index) => (
                                 <QuestionContainer
                                     {...question}
-                                    key={key}
+                                    key={question.id}
                                     actions={actions}
-                                    index={key + 1}
+                                    index={index + 1}
                                     isStaff={isStaff}
                                     showEnrolledSession={showEnrolledSession}
                                 />
