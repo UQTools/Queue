@@ -57,10 +57,10 @@ export const QuestionList: React.FC<Props> = ({
         (questions: QuestionProps[]) => {
             switch (sortType) {
                 case QueueSortType.Questions:
-                    return sortBy(
-                        questions,
-                        (question) => question.questionCount
-                    );
+                    return sortBy(questions, (question) => [
+                        question.questionCount,
+                        question.askedTime.getTime(),
+                    ]);
                 case QueueSortType.Time:
                     return sortBy(questions, (question) =>
                         question.askedTime.getTime()
