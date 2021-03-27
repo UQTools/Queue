@@ -118,7 +118,7 @@ export const Queue: React.FC<Props> = ({
                         askQuestion(id);
                     }}
                 >
-                    Request {name} help
+                    Request {capitalCase(name)} Help
                 </Button>
             </Center>
             {isStaff && (
