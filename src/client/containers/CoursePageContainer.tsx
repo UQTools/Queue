@@ -457,6 +457,7 @@ export const CoursePageContainer: React.FC<Props> = () => {
                                 undoRemoveMutation({ variables: { queueId } });
                             }}
                             index={index + 1}
+                            queuesNum={displayedQueues.length}
                         />
                     ))}
                 </Flex>
