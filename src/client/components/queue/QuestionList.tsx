@@ -8,8 +8,12 @@ import {
     Thead,
     Tr,
 } from "@chakra-ui/react";
-import React, { useCallback, useState } from "react";
-import { QueueAction, QueueSortType } from "../../generated/graphql";
+import React, { useCallback, useMemo, useState } from "react";
+import {
+    QuestionStatus,
+    QueueAction,
+    QueueSortType,
+} from "../../generated/graphql";
 import {
     QuestionContainer,
     QuestionProps,
@@ -37,14 +41,20 @@ export const QuestionList: React.FC<Props> = ({
     sessionFilter,
 }) => {
     const [averageWaitTime, setAverageWaitTime] = useState(0);
+    const unclaimedQuestions = useMemo(() => {
+        return questions.filter(
+            (question) => question.status !== QuestionStatus.Claimed
+        );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [JSON.stringify(questions)]);
     const updateAverageTime = useCallback(() => {
-        const totalWaitTime = questions
+        const totalWaitTime = unclaimedQuestions
             .map((question) =>
                 differenceInSeconds(new Date(), question.askedTime)
             )
             .reduce((a, b) => a + b, 0);
-        setAverageWaitTime(totalWaitTime / questions.length);
-    }, [questions]);
+        setAverageWaitTime(totalWaitTime / unclaimedQuestions.length);
+    }, [unclaimedQuestions]);
     const filterQuestions = useCallback(
         (questions: QuestionProps[]) => {
             return questions.filter((question) =>
@@ -80,15 +90,16 @@ export const QuestionList: React.FC<Props> = ({
         <>
             <Divider />
             <Text verticalAlign="middle" py={3}>
-                {questions.length > 0 ? (
+                {unclaimedQuestions.length > 0 ? (
                     <>
                         An average wait time of{" "}
                         <strong>{secondsToText(averageWaitTime)}</strong> for{" "}
-                        <em>{questions.length}</em> student
-                        {questions.length > 1 && "s"}
+                        <em>{unclaimedQuestions.length}</em> student
+                        {unclaimedQuestions.length > 1 && "s"} until receiving
+                        assistance
                     </>
                 ) : (
-                    "No students on queue"
+                    "No students waiting on queue"
                 )}
             </Text>
             <Divider />
