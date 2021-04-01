@@ -26,7 +26,7 @@ export const AcceptButtonContainer: React.FC<Props> = ({
             colourScheme="green"
             icon={<CheckIcon />}
             isDisabled={claimed && claimer?.username !== username}
-            helpText="Accept"
+            helpText="Done"
             variant="ghost"
         />
     );

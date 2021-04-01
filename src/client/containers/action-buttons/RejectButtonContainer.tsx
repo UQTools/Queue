@@ -26,7 +26,7 @@ export const RejectButtonContainer: React.FC<Props> = ({
             colourScheme="red"
             icon={<CloseIcon />}
             isDisabled={claimed && claimer?.username !== username}
-            helpText="Remove"
+            helpText="Cancel"
             variant="ghost"
         />
     );
