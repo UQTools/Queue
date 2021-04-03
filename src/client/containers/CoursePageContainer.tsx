@@ -105,6 +105,8 @@ export const CoursePageContainer: React.FC<Props> = () => {
             courseCode,
         },
         errorPolicy: "all",
+        fetchPolicy: "cache-and-network",
+        pollInterval: 30000,
     });
     const [getRoomById, { data: roomData }] = useLazyQueryWithError(
         useGetRoomByIdLazyQuery,
@@ -373,6 +375,29 @@ export const CoursePageContainer: React.FC<Props> = () => {
         const updatedQueue = updateQueueData.updateQueue;
         updateQueues(updatedQueue);
     }, [updateQueueData, updateQueues]);
+    useEffect(() => {
+        if (!activeRoomsData) {
+            return;
+        }
+        if (
+            chosenRoomId !== "default" &&
+            !activeRoomsData.getActiveRooms
+                .map((room) => room.id)
+                .includes(chosenRoomId)
+        ) {
+            toast({
+                status: "info",
+                title: "Room closed",
+                description:
+                    "This room was just closed and you cannot join the queue anymore",
+                duration: null,
+                isClosable: true,
+            });
+            setChosenRoomId("default");
+            setDisplayedQueues([]);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeRoomsData, chosenRoomId]);
     return (
         <QueueContext.Provider
             value={{
