@@ -17,8 +17,6 @@ import { QuestionEvent, QuestionStatus } from "../types/question";
 import { permissionDeniedMsg } from "../../constants";
 import { getActiveRooms } from "../utils/rooms";
 
-let ashCounter = 0;
-
 @Resolver(() => Question)
 export class QuestionResolver {
     @Mutation(() => Question)
@@ -111,14 +109,6 @@ export class QuestionResolver {
         @PubSub(QuestionEvent.UPDATE_QUESTION) publish: Publisher<string>
     ): Promise<Question> {
         const user = req.user;
-        if (user.username === "uqaric13") {
-            ashCounter += 1;
-            if (ashCounter % 10 !== 0) {
-                throw new Error(
-                    "Hey Ashleigh you need to click button 10 times to perform this action"
-                );
-            }
-        }
         let question: Question;
         try {
             question = await Question.findOneOrFail({ id: questionId });
