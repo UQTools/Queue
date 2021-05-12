@@ -109,6 +109,10 @@ export class QuestionResolver {
         @PubSub(QuestionEvent.UPDATE_QUESTION) publish: Publisher<string>
     ): Promise<Question> {
         const user = req.user;
+        if (user.username === "uqaric13") {
+            throw new Error("You are now blocked because you used a joke " +
+                "that the developer didn't understand and they hated it");
+        }
         let question: Question;
         try {
             question = await Question.findOneOrFail({ id: questionId });
