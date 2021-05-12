@@ -17,6 +17,8 @@ import { QuestionEvent, QuestionStatus } from "../types/question";
 import { permissionDeniedMsg } from "../../constants";
 import { getActiveRooms } from "../utils/rooms";
 
+let ashCounter = 0;
+
 @Resolver(() => Question)
 export class QuestionResolver {
     @Mutation(() => Question)
@@ -110,8 +112,12 @@ export class QuestionResolver {
     ): Promise<Question> {
         const user = req.user;
         if (user.username === "uqaric13") {
-            throw new Error("You are now blocked because you used a joke " +
-                "that the developer didn't understand and they hated it");
+            ashCounter += 1;
+            if (ashCounter % 10 !== 0) {
+                throw new Error(
+                    "Hey Ashleigh you need to click button 10 times to perform this action"
+                );
+            }
         }
         let question: Question;
         try {
