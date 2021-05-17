@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { ActionButton } from "../../components/queue/ActionButton";
 import { QuestionProps } from "../QuestionContainer";
-import { generateMailto, QueueContext } from "../../utils/queue";
+import { generateNotificationMailto, QueueContext } from "../../utils/queue";
 import { QueueAction } from "../../generated/graphql";
 import { redacted } from "../../../constants";
 import { UserContext } from "../../utils/user";
@@ -21,7 +21,7 @@ export const EmailButtonContainer: React.FC<Props> = ({
             id={id}
             action={QueueAction.Accept}
             onClick={() => {
-                document.location.href = generateMailto(
+                document.location.href = generateNotificationMailto(
                     askerEmail,
                     courseCode,
                     askerName === redacted ? askerUsername : askerName,

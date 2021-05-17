@@ -19,6 +19,7 @@ import { BsPersonFill } from "react-icons/all";
 import { NavBarMenuButton } from "./navbar/NavBarMenuButton";
 import { Link as RouterLink } from "react-router-dom";
 import { StaffRole } from "../generated/graphql";
+import { NAVBAR_HEIGHT } from "../constants";
 
 type Props = {};
 
@@ -29,7 +30,7 @@ export const NavBar: React.FunctionComponent<Props> = () => {
     return (
         <>
             <Box w="100%" bgColor={bgColor}>
-                <Flex w="80%" mx="auto" h={14} alignItems="center">
+                <Flex w="80%" mx="auto" h={NAVBAR_HEIGHT} alignItems="center">
                     <Box>
                         <RouterLink to="/">
                             <Heading

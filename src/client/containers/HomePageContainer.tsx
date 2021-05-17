@@ -24,7 +24,7 @@ export const HomePageContainer: React.FC<Props> = () => {
                 <Text fontSize="10em" fontFamily="'Courier New', monospace">
                     Q
                 </Text>
-                <InputGroup w="30vw" size="lg">
+                <InputGroup w="max(30vw, 200px)" size="lg">
                     <InputLeftElement pointerEvents="none">
                         <SearchIcon color="gray.300" />
                     </InputLeftElement>
