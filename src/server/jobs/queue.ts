@@ -1,5 +1,5 @@
 import { RecurrenceRule } from "node-schedule";
-import { In } from "typeorm";
+import { In, Not } from "typeorm";
 import { CourseUserMeta, Question, Queue } from "../entities";
 import { QuestionStatus } from "../types/question";
 
@@ -14,6 +14,7 @@ export const resetQueues = async () => {
     });
     const questionsToClose = await Question.find({
         queueId: In(queues.map((queue) => queue.id)),
+        status: Not(QuestionStatus.CLOSED),
     });
     for (const question of questionsToClose) {
         question.closedTime = new Date();
